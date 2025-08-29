@@ -4,7 +4,7 @@ import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:drift/wasm.dart' as wasm;
+import 'package:drift/web.dart';
 
 part 'app_database.g.dart';
 
@@ -27,32 +27,8 @@ class AppDatabase extends _$AppDatabase {
 
 QueryExecutor _openConnection() {
   if (kIsWeb) {
-    return LazyDatabase(() async {
-      final opened = await wasm.WasmDatabase.open(
-        databaseName: 'rehearsal',
-        sqlite3Uri: Uri.parse('sqlite3.wasm'),
-        driftWorkerUri: Uri.parse('drift_worker.js'),
-      );
-
-      // Drift versions differ: some return a QueryExecutor directly,
-      // others wrap it (e.g., WasmDatabaseResult). Be tolerant.
-      if (opened is QueryExecutor) {
-        return opened;
-      }
-
-      // Try to pull out a known executor field dynamically without
-      // tying to a specific API version (avoids analyzer errors).
-      final dyn = opened as dynamic;
-      final maybeExec = (dyn.executor ?? dyn.database);
-      if (maybeExec is QueryExecutor) {
-        return maybeExec;
-      }
-
-      throw UnsupportedError(
-        'Unexpected return type from WasmDatabase.open(): ${opened.runtimeType}. '
-        'Please ensure drift/wasm version is compatible.',
-      );
-    });
+    // Temporary hotfix for CI: use WebDatabase to avoid js_interop types on VM tests.
+    return WebDatabase('rehearsal');
   } else {
     return LazyDatabase(() async {
       final dir = (Platform.isIOS || Platform.isMacOS)
