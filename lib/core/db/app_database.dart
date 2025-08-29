@@ -28,12 +28,17 @@ class AppDatabase extends _$AppDatabase {
 QueryExecutor _openConnection() {
   if (kIsWeb) {
     return LazyDatabase(() async {
-      final db = await wasm.WasmDatabase.open(
+      final result = await wasm.WasmDatabase.open(
         databaseName: 'rehearsal',
         sqlite3Uri: Uri.parse('sqlite3.wasm'),
         driftWorkerUri: Uri.parse('drift_worker.js'),
       );
-      return db;
+
+      if (result is QueryExecutor) {
+        return result;
+      } else {
+        return (result as wasm.WasmDatabaseResult).database;
+      }
     });
   } else {
     return LazyDatabase(() async {
