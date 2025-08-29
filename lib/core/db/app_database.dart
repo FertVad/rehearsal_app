@@ -1,3 +1,4 @@
+// ignore_for_file: use_super_parameters
 import 'package:drift/drift.dart';
 
 import 'connection.dart';
@@ -24,7 +25,8 @@ class Users extends Table {
 @DriftDatabase(tables: [Users])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(openConnection());
-  AppDatabase.forTesting(DatabaseConnection connection) : super(connection);
+  AppDatabase.forTesting({required QueryExecutor connection})
+    : super(connection);
 
   @override
   int get schemaVersion => 1;
