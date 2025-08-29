@@ -8,70 +8,158 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $UsersTable(this.attachedDatabase, [this._alias]);
+
   static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
+  static const VerificationMeta _createdAtUtcMeta =
+      const VerificationMeta('createdAtUtc');
+  static const VerificationMeta _updatedAtUtcMeta =
+      const VerificationMeta('updatedAtUtc');
+  static const VerificationMeta _deletedAtUtcMeta =
+      const VerificationMeta('deletedAtUtc');
+  static const VerificationMeta _lastWriterMeta =
+      const VerificationMeta('lastWriter');
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  static const VerificationMeta _avatarUrlMeta =
+      const VerificationMeta('avatarUrl');
+  static const VerificationMeta _tzMeta = const VerificationMeta('tz');
+
   @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
   @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
+  late final GeneratedColumn<int> createdAtUtc = GeneratedColumn<int>(
+    'created_at_utc',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, name, createdAt];
+  late final GeneratedColumn<int> updatedAtUtc = GeneratedColumn<int>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumn<int> deletedAtUtc = GeneratedColumn<int>(
+    'deleted_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumn<String> lastWriter = GeneratedColumn<String>(
+    'last_writer',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumn<String> avatarUrl = GeneratedColumn<String>(
+    'avatar_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumn<String> tz = GeneratedColumn<String>(
+    'tz',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        createdAtUtc,
+        updatedAtUtc,
+        deletedAtUtc,
+        lastWriter,
+        name,
+        avatarUrl,
+        tz
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'users';
+
   @override
-  VerificationContext validateIntegrity(
-    Insertable<User> instance, {
-    bool isInserting = false,
-  }) {
+  VerificationContext validateIntegrity(Insertable<User> instance,
+      {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+      context.handle(
+          _idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+          _createdAtUtcMeta,
+          createdAtUtc.isAcceptableOrUnknown(
+              data['created_at_utc']!, _createdAtUtcMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+          _updatedAtUtcMeta,
+          updatedAtUtc.isAcceptableOrUnknown(
+              data['updated_at_utc']!, _updatedAtUtcMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    if (data.containsKey('deleted_at_utc')) {
+      context.handle(
+          _deletedAtUtcMeta,
+          deletedAtUtc.isAcceptableOrUnknown(
+              data['deleted_at_utc']!, _deletedAtUtcMeta));
+    }
+    if (data.containsKey('last_writer')) {
+      context.handle(
+          _lastWriterMeta,
+          lastWriter.isAcceptableOrUnknown(
+              data['last_writer']!, _lastWriterMeta));
+    } else if (isInserting) {
+      context.missing(_lastWriterMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     }
-    if (data.containsKey('created_at')) {
+    if (data.containsKey('avatar_url')) {
       context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
+          _avatarUrlMeta,
+          avatarUrl.isAcceptableOrUnknown(
+              data['avatar_url']!, _avatarUrlMeta));
+    }
+    if (data.containsKey('tz')) {
+      context.handle(_tzMeta, tz.isAcceptableOrUnknown(data['tz']!, _tzMeta));
+    } else if (isInserting) {
+      context.missing(_tzMeta);
     }
     return context;
   }
@@ -82,18 +170,22 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   User map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return User(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}created_at_utc'])!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}updated_at_utc'])!,
+      deletedAtUtc: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}deleted_at_utc']),
+      lastWriter: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_writer'])!,
       name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
+          DriftSqlType.string, data['${effectivePrefix}name']),
+      avatarUrl: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}avatar_url']),
+      tz: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}tz'])!,
     );
   }
 
@@ -104,58 +196,129 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
 }
 
 class User extends DataClass implements Insertable<User> {
-  final int id;
-  final String name;
-  final DateTime createdAt;
-  const User({required this.id, required this.name, required this.createdAt});
+  final String id;
+  final int createdAtUtc;
+  final int updatedAtUtc;
+  final int? deletedAtUtc;
+  final String lastWriter;
+  final String? name;
+  final String? avatarUrl;
+  final String tz;
+  const User({
+    required this.id,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+    this.deletedAtUtc,
+    required this.lastWriter,
+    this.name,
+    this.avatarUrl,
+    required this.tz,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    map['created_at'] = Variable<DateTime>(createdAt);
+    map['id'] = Variable<String>(id);
+    map['created_at_utc'] = Variable<int>(createdAtUtc);
+    map['updated_at_utc'] = Variable<int>(updatedAtUtc);
+    if (!nullToAbsent || deletedAtUtc != null) {
+      map['deleted_at_utc'] = Variable<int?>(deletedAtUtc);
+    }
+    map['last_writer'] = Variable<String>(lastWriter);
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String?>(name);
+    }
+    if (!nullToAbsent || avatarUrl != null) {
+      map['avatar_url'] = Variable<String?>(avatarUrl);
+    }
+    map['tz'] = Variable<String>(tz);
     return map;
   }
 
   UsersCompanion toCompanion(bool nullToAbsent) {
     return UsersCompanion(
       id: Value(id),
-      name: Value(name),
-      createdAt: Value(createdAt),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+      deletedAtUtc: deletedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAtUtc),
+      lastWriter: Value(lastWriter),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      avatarUrl: avatarUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarUrl),
+      tz: Value(tz),
     );
   }
 
-  factory User.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory User.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return User(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      id: serializer.fromJson<String>(json['id']),
+      createdAtUtc: serializer.fromJson<int>(json['createdAtUtc']),
+      updatedAtUtc: serializer.fromJson<int>(json['updatedAtUtc']),
+      deletedAtUtc: serializer.fromJson<int?>(json['deletedAtUtc']),
+      lastWriter: serializer.fromJson<String>(json['lastWriter']),
+      name: serializer.fromJson<String?>(json['name']),
+      avatarUrl: serializer.fromJson<String?>(json['avatarUrl']),
+      tz: serializer.fromJson<String>(json['tz']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'id': serializer.toJson<String>(id),
+      'createdAtUtc': serializer.toJson<int>(createdAtUtc),
+      'updatedAtUtc': serializer.toJson<int>(updatedAtUtc),
+      'deletedAtUtc': serializer.toJson<int?>(deletedAtUtc),
+      'lastWriter': serializer.toJson<String>(lastWriter),
+      'name': serializer.toJson<String?>(name),
+      'avatarUrl': serializer.toJson<String?>(avatarUrl),
+      'tz': serializer.toJson<String>(tz),
     };
   }
 
-  User copyWith({int? id, String? name, DateTime? createdAt}) => User(
-    id: id ?? this.id,
-    name: name ?? this.name,
-    createdAt: createdAt ?? this.createdAt,
-  );
+  User copyWith({
+    String? id,
+    int? createdAtUtc,
+    int? updatedAtUtc,
+    Value<int?> deletedAtUtc = const Value.absent(),
+    String? lastWriter,
+    Value<String?> name = const Value.absent(),
+    Value<String?> avatarUrl = const Value.absent(),
+    String? tz,
+  }) =>
+      User(
+        id: id ?? this.id,
+        createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+        updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+        deletedAtUtc:
+            deletedAtUtc.present ? deletedAtUtc.value : this.deletedAtUtc,
+        lastWriter: lastWriter ?? this.lastWriter,
+        name: name.present ? name.value : this.name,
+        avatarUrl: avatarUrl.present ? avatarUrl.value : this.avatarUrl,
+        tz: tz ?? this.tz,
+      );
   User copyWithCompanion(UsersCompanion data) {
     return User(
       id: data.id.present ? data.id.value : this.id,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+      deletedAtUtc: data.deletedAtUtc.present
+          ? data.deletedAtUtc.value
+          : this.deletedAtUtc,
+      lastWriter:
+          data.lastWriter.present ? data.lastWriter.value : this.lastWriter,
       name: data.name.present ? data.name.value : this.name,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      avatarUrl:
+          data.avatarUrl.present ? data.avatarUrl.value : this.avatarUrl,
+      tz: data.tz.present ? data.tz.value : this.tz,
     );
   }
 
@@ -163,58 +326,112 @@ class User extends DataClass implements Insertable<User> {
   String toString() {
     return (StringBuffer('User(')
           ..write('id: $id, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('lastWriter: $lastWriter, ')
           ..write('name: $name, ')
-          ..write('createdAt: $createdAt')
+          ..write('avatarUrl: $avatarUrl, ')
+          ..write('tz: $tz')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, createdAt);
+  int get hashCode => Object.hash(id, createdAtUtc, updatedAtUtc, deletedAtUtc,
+      lastWriter, name, avatarUrl, tz);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is User &&
           other.id == this.id &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc &&
+          other.deletedAtUtc == this.deletedAtUtc &&
+          other.lastWriter == this.lastWriter &&
           other.name == this.name &&
-          other.createdAt == this.createdAt);
+          other.avatarUrl == this.avatarUrl &&
+          other.tz == this.tz);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<DateTime> createdAt;
+  final Value<String> id;
+  final Value<int> createdAtUtc;
+  final Value<int> updatedAtUtc;
+  final Value<int?> deletedAtUtc;
+  final Value<String> lastWriter;
+  final Value<String?> name;
+  final Value<String?> avatarUrl;
+  final Value<String> tz;
   const UsersCompanion({
     this.id = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.deletedAtUtc = const Value.absent(),
+    this.lastWriter = const Value.absent(),
     this.name = const Value.absent(),
-    this.createdAt = const Value.absent(),
+    this.avatarUrl = const Value.absent(),
+    this.tz = const Value.absent(),
   });
   UsersCompanion.insert({
-    this.id = const Value.absent(),
-    required String name,
-    this.createdAt = const Value.absent(),
-  }) : name = Value(name);
+    required String id,
+    required int createdAtUtc,
+    required int updatedAtUtc,
+    Value<int?> deletedAtUtc = const Value.absent(),
+    required String lastWriter,
+    Value<String?> name = const Value.absent(),
+    Value<String?> avatarUrl = const Value.absent(),
+    required String tz,
+  })  : id = Value(id),
+        createdAtUtc = Value(createdAtUtc),
+        updatedAtUtc = Value(updatedAtUtc),
+        deletedAtUtc = deletedAtUtc,
+        lastWriter = Value(lastWriter),
+        name = name,
+        avatarUrl = avatarUrl,
+        tz = Value(tz);
+
   static Insertable<User> custom({
-    Expression<int>? id,
+    Expression<String>? id,
+    Expression<int>? createdAtUtc,
+    Expression<int>? updatedAtUtc,
+    Expression<int>? deletedAtUtc,
+    Expression<String>? lastWriter,
     Expression<String>? name,
-    Expression<DateTime>? createdAt,
+    Expression<String>? avatarUrl,
+    Expression<String>? tz,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (deletedAtUtc != null) 'deleted_at_utc': deletedAtUtc,
+      if (lastWriter != null) 'last_writer': lastWriter,
       if (name != null) 'name': name,
-      if (createdAt != null) 'created_at': createdAt,
+      if (avatarUrl != null) 'avatar_url': avatarUrl,
+      if (tz != null) 'tz': tz,
     });
   }
 
   UsersCompanion copyWith({
-    Value<int>? id,
-    Value<String>? name,
-    Value<DateTime>? createdAt,
+    Value<String>? id,
+    Value<int>? createdAtUtc,
+    Value<int>? updatedAtUtc,
+    Value<int?>? deletedAtUtc,
+    Value<String>? lastWriter,
+    Value<String?>? name,
+    Value<String?>? avatarUrl,
+    Value<String>? tz,
   }) {
     return UsersCompanion(
       id: id ?? this.id,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      deletedAtUtc: deletedAtUtc ?? this.deletedAtUtc,
+      lastWriter: lastWriter ?? this.lastWriter,
       name: name ?? this.name,
-      createdAt: createdAt ?? this.createdAt,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      tz: tz ?? this.tz,
     );
   }
 
@@ -222,13 +439,28 @@ class UsersCompanion extends UpdateCompanion<User> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<int>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<int>(updatedAtUtc.value);
+    }
+    if (deletedAtUtc.present) {
+      map['deleted_at_utc'] = Variable<int?>(deletedAtUtc.value);
+    }
+    if (lastWriter.present) {
+      map['last_writer'] = Variable<String>(lastWriter.value);
     }
     if (name.present) {
-      map['name'] = Variable<String>(name.value);
+      map['name'] = Variable<String?>(name.value);
     }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
+    if (avatarUrl.present) {
+      map['avatar_url'] = Variable<String?>(avatarUrl.value);
+    }
+    if (tz.present) {
+      map['tz'] = Variable<String>(tz.value);
     }
     return map;
   }
@@ -237,8 +469,13 @@ class UsersCompanion extends UpdateCompanion<User> {
   String toString() {
     return (StringBuffer('UsersCompanion(')
           ..write('id: $id, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('lastWriter: $lastWriter, ')
           ..write('name: $name, ')
-          ..write('createdAt: $createdAt')
+          ..write('avatarUrl: $avatarUrl, ')
+          ..write('tz: $tz')
           ..write(')'))
         .toString();
   }
@@ -246,164 +483,10 @@ class UsersCompanion extends UpdateCompanion<User> {
 
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
-  $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $UsersTable users = $UsersTable(this);
+
   @override
-  Iterable<TableInfo<Table, Object?>> get allTables =>
-      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+  Iterable<TableInfo<Table, Object?>> get allTables => [users];
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [users];
-}
-
-typedef $$UsersTableCreateCompanionBuilder =
-    UsersCompanion Function({
-      Value<int> id,
-      required String name,
-      Value<DateTime> createdAt,
-    });
-typedef $$UsersTableUpdateCompanionBuilder =
-    UsersCompanion Function({
-      Value<int> id,
-      Value<String> name,
-      Value<DateTime> createdAt,
-    });
-
-class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
-  $$UsersTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$UsersTableOrderingComposer
-    extends Composer<_$AppDatabase, $UsersTable> {
-  $$UsersTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$UsersTableAnnotationComposer
-    extends Composer<_$AppDatabase, $UsersTable> {
-  $$UsersTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-}
-
-class $$UsersTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $UsersTable,
-          User,
-          $$UsersTableFilterComposer,
-          $$UsersTableOrderingComposer,
-          $$UsersTableAnnotationComposer,
-          $$UsersTableCreateCompanionBuilder,
-          $$UsersTableUpdateCompanionBuilder,
-          (User, BaseReferences<_$AppDatabase, $UsersTable, User>),
-          User,
-          PrefetchHooks Function()
-        > {
-  $$UsersTableTableManager(_$AppDatabase db, $UsersTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$UsersTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$UsersTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$UsersTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
-              }) => UsersCompanion(id: id, name: name, createdAt: createdAt),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required String name,
-                Value<DateTime> createdAt = const Value.absent(),
-              }) => UsersCompanion.insert(
-                id: id,
-                name: name,
-                createdAt: createdAt,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$UsersTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $UsersTable,
-      User,
-      $$UsersTableFilterComposer,
-      $$UsersTableOrderingComposer,
-      $$UsersTableAnnotationComposer,
-      $$UsersTableCreateCompanionBuilder,
-      $$UsersTableUpdateCompanionBuilder,
-      (User, BaseReferences<_$AppDatabase, $UsersTable, User>),
-      User,
-      PrefetchHooks Function()
-    >;
-
-class $AppDatabaseManager {
-  final _$AppDatabase _db;
-  $AppDatabaseManager(this._db);
-  $$UsersTableTableManager get users =>
-      $$UsersTableTableManager(_db, _db.users);
 }
