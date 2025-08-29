@@ -28,17 +28,20 @@ class AppDatabase extends _$AppDatabase {
 
 QueryExecutor _openConnection() {
   if (kIsWeb) {
-    return wasm.WasmDatabase.open(
-      backgroundSerial: false,
-      sqlite3Uri: Uri.parse('sqlite3.wasm'),
-    );
+    return LazyDatabase(() async {
+      return await wasm.WasmDatabase.open(
+        databaseName: 'rehearsal',
+        sqlite3Uri: Uri.parse('sqlite3.wasm'),
+        driftWorkerUri: Uri.parse('drift_worker.js'),
+      );
+    });
   } else {
-    return NativeDatabase.createInBackground(() async {
-      final dir = Platform.isIOS || Platform.isMacOS
+    return LazyDatabase(() async {
+      final dir = (Platform.isIOS || Platform.isMacOS)
           ? await getLibraryDirectory()
           : await getApplicationSupportDirectory();
-      final dbPath = p.join(dir.path, 'app.sqlite');
-      return File(dbPath);
-    }());
+      final file = File(p.join(dir.path, 'app.sqlite'));
+      return NativeDatabase(file);
+    });
   }
 }
