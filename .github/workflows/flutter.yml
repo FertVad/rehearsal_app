@@ -1,25 +1,40 @@
 name: flutter-ci
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
+    branches: [ "main" ]
+  push:
     branches: [ "main" ]
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+
       - run: flutter --version
       - run: flutter pub get
+      - run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Ensure generated code up-to-date
+        run: |
+          if ! git diff --quiet; then
+            echo "::error::Generated files are out of date. Run build_runner and commit changes."
+            git status
+            exit 1
+          fi
+
       - run: flutter analyze
       - run: flutter test --coverage
-      - run: flutter config --enable-web
-      - run: flutter build web
+
+      - run: |
+          flutter config --enable-web
+          flutter build web
+
       - uses: actions/upload-artifact@v4
         with:
           name: web-build
