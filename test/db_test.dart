@@ -7,17 +7,19 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('users insert & query', () async {
-    final db = AppDatabase.forTesting(testConnection());
+    final db = AppDatabase.forTesting(connection: testConnection());
 
     final now = DateTime.now().millisecondsSinceEpoch;
-    await db.insertUser(UsersCompanion.insert(
-      id: 'user-1',
-      createdAtUtc: now,
-      updatedAtUtc: now,
-      lastWriter: 'tester',
-      tz: 'UTC',
-      name: const Value('Vadim'),
-    ));
+    await db.insertUser(
+      UsersCompanion.insert(
+        id: 'user-1',
+        createdAtUtc: now,
+        updatedAtUtc: now,
+        lastWriter: 'tester',
+        tz: 'UTC',
+        name: const Value('Vadim'),
+      ),
+    );
 
     final all = await db.getAllUsers();
     expect(all.length, 1);
