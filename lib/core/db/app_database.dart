@@ -1,10 +1,6 @@
-import 'dart:io' show File, Platform;
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
-import 'package:drift/web.dart';
+
+import 'connection.dart';
 
 part 'app_database.g.dart';
 
@@ -16,26 +12,11 @@ class Users extends Table {
 
 @DriftDatabase(tables: [Users])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  AppDatabase() : super(openConnection());
 
   @override
   int get schemaVersion => 1;
 
   Future<int> insertUser(UsersCompanion entry) => into(users).insert(entry);
   Future<List<User>> getAllUsers() => select(users).get();
-}
-
-QueryExecutor _openConnection() {
-  if (kIsWeb) {
-    // Temporary hotfix for CI: use WebDatabase to avoid js_interop types on VM tests.
-    return WebDatabase('rehearsal');
-  } else {
-    return LazyDatabase(() async {
-      final dir = (Platform.isIOS || Platform.isMacOS)
-          ? await getLibraryDirectory()
-          : await getApplicationSupportDirectory();
-      final file = File(p.join(dir.path, 'app.sqlite'));
-      return NativeDatabase(file);
-    });
-  }
 }
