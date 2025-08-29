@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drift/drift.dart';
 import 'package:rehearsal_app/core/db/app_database.dart';
 
 void main() {
