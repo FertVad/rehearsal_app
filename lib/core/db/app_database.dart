@@ -1,18 +1,17 @@
 import 'dart:io' show File, Platform;
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:drift/wasm.dart' as wasm;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:drift/web.dart' as web;
 
 part 'app_database.g.dart';
 
 class Users extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 @DriftDatabase(tables: [Users])
@@ -28,13 +27,8 @@ class AppDatabase extends _$AppDatabase {
 
 QueryExecutor _openConnection() {
   if (kIsWeb) {
-    return LazyDatabase(() async {
-      return await wasm.WasmDatabase.open(
-        databaseName: 'rehearsal',
-        sqlite3Uri: Uri.parse('sqlite3.wasm'),
-        driftWorkerUri: Uri.parse('drift_worker.js'),
-      );
-    });
+    // Временное решение: старый, но рабочий WebDatabase
+    return web.WebDatabase('rehearsal');
   } else {
     return LazyDatabase(() async {
       final dir = (Platform.isIOS || Platform.isMacOS)
