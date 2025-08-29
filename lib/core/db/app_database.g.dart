@@ -215,14 +215,9 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   }
 }
 
-mixin _$UserDaoMixin on DatabaseAccessor<AppDatabase> {
-  $UsersTable get users => attachedDatabase.users;
-}
-
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $UsersTable users = $UsersTable(this);
-  late final UserDao userDao = UserDao(this as AppDatabase);
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [users];
 }
