@@ -4,7 +4,7 @@ import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:drift/web.dart' as web;
+import 'package:drift/wasm.dart' as wasm;
 
 part 'app_database.g.dart';
 
@@ -27,8 +27,11 @@ class AppDatabase extends _$AppDatabase {
 
 QueryExecutor _openConnection() {
   if (kIsWeb) {
-    // Временное решение: старый, но рабочий WebDatabase
-    return web.WebDatabase('rehearsal');
+    return wasm.WasmDatabase.open(
+      databaseName: 'rehearsal',
+      sqlite3Uri: Uri.parse('sqlite3.wasm'),
+      driftWorkerUri: Uri.parse('drift_worker.js'),
+    );
   } else {
     return LazyDatabase(() async {
       final dir = (Platform.isIOS || Platform.isMacOS)
