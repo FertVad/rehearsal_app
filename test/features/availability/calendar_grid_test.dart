@@ -6,12 +6,11 @@ import 'package:rehearsal_app/features/availability/presentation/widgets/calenda
 void main() {
   group('CalendarGrid', () {
     testWidgets('renders month with 31 days', (tester) async {
-      await tester.pumpWidget(const MaterialApp(
-        home: CalendarGrid(
-          month: DateTime(2024, 1),
-          byDate: {},
+      await tester.pumpWidget(
+        MaterialApp(
+          home: CalendarGrid(month: DateTime(2024, 1), byDate: {}),
         ),
-      ));
+      );
 
       // 31 days + 4 trailing days = 35 cells
       expect(find.byType(GestureDetector), findsNWidgets(35));
@@ -28,34 +27,35 @@ void main() {
         dateUtc00(dayPartial): AvailabilityStatus.partial,
       };
 
-      await tester.pumpWidget(MaterialApp(
-        home: CalendarGrid(
-          month: DateTime(2024, 1),
-          byDate: map,
+      await tester.pumpWidget(
+        MaterialApp(
+          home: CalendarGrid(month: DateTime(2024, 1), byDate: map),
         ),
-      ));
+      );
 
       BoxDecoration decoration;
 
-      decoration = tester.widget<Container>(
-        find.byKey(ValueKey('dot-${dateUtc00(dayFree)}')),
-      ).decoration! as BoxDecoration;
+      BoxDecoration? decorationFor(int dateUtc) {
+        final dot = find.byKey(ValueKey('dot-$dateUtc'));
+        final containerFinder = find.descendant(
+          of: dot,
+          matching: find.byType(Container),
+        );
+        final container = tester.widget<Container>(containerFinder);
+        return container.decoration as BoxDecoration?;
+      }
+
+      decoration = decorationFor(dateUtc00(dayFree))!;
       expect(decoration.color, Colors.green);
 
-      decoration = tester.widget<Container>(
-        find.byKey(ValueKey('dot-${dateUtc00(dayBusy)}')),
-      ).decoration! as BoxDecoration;
+      decoration = decorationFor(dateUtc00(dayBusy))!;
       expect(decoration.color, Colors.red);
 
-      decoration = tester.widget<Container>(
-        find.byKey(ValueKey('dot-${dateUtc00(dayPartial)}')),
-      ).decoration! as BoxDecoration;
+      decoration = decorationFor(dateUtc00(dayPartial))!;
       expect(decoration.color, Colors.yellow);
 
       final dayNone = DateTime(2024, 1, 13);
-      decoration = tester.widget<Container>(
-        find.byKey(ValueKey('dot-${dateUtc00(dayNone)}')),
-      ).decoration! as BoxDecoration;
+      decoration = decorationFor(dateUtc00(dayNone))!;
       final Border? border = decoration.border as Border?;
       expect(border?.top.color, Colors.grey);
     });
@@ -64,13 +64,15 @@ void main() {
       DateTime? tapped;
       final day = DateTime(2024, 1, 15);
 
-      await tester.pumpWidget(MaterialApp(
-        home: CalendarGrid(
-          month: DateTime(2024, 1),
-          byDate: const {},
-          onDayTap: (d) => tapped = d,
+      await tester.pumpWidget(
+        MaterialApp(
+          home: CalendarGrid(
+            month: DateTime(2024, 1),
+            byDate: const {},
+            onDayTap: (d) => tapped = d,
+          ),
         ),
-      ));
+      );
 
       await tester.tap(find.byKey(ValueKey('day-${dateUtc00(day)}')));
       expect(tapped, day);

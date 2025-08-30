@@ -47,7 +47,7 @@ class CalendarGrid extends StatelessWidget {
         final isCurrentMonth = day.month == month.month;
 
         return GestureDetector(
-          key: ValueKey('day-' + keyBase.toString()),
+          key: ValueKey('day-$keyBase'),
           onTap: () => onDayTap?.call(day),
           child: Container(
             alignment: Alignment.center,
@@ -61,10 +61,7 @@ class CalendarGrid extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                _StatusDot(
-                  key: ValueKey('dot-' + keyBase.toString()),
-                  status: status,
-                ),
+                _StatusDot(key: ValueKey('dot-$keyBase'), status: status),
               ],
             ),
           ),
