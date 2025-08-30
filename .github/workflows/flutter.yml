@@ -14,8 +14,9 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'  # Pin to your local Flutter version to avoid lockfile diffs
+          flutter-version: '3.27.0'  # Updated to use Dart 3.9 in CI
           channel: stable
+          cache: false
 
       - run: flutter --version
       - run: flutter pub get
