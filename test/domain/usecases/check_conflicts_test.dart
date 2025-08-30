@@ -1,4 +1,4 @@
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:rehearsal_app/core/db/app_database.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 import 'package:rehearsal_app/domain/repositories/rehearsals_repository.dart';
@@ -25,10 +25,7 @@ void main() {
       lastWriter: 'system',
       tz: 'UTC',
     );
-    final result = await usecase(
-      rehearsal: rehearsal,
-      attendees: [attendee],
-    );
+    final result = await usecase(rehearsal: rehearsal, attendees: [attendee]);
     expect(result, isEmpty);
   });
 }
