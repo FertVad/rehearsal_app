@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 enum AvailabilityStatus { free, busy, partial }
 
 class AvailabilityView {
@@ -36,8 +34,8 @@ class AvailabilityState {
   }
 
   static AvailabilityState initial() => AvailabilityState(
-        visibleMonth: DateTime.now(),
-        byDate: const {},
-        isLoading: false,
-      );
+    visibleMonth: DateTime.now(),
+    byDate: const {},
+    isLoading: false,
+  );
 }
