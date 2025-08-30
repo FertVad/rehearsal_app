@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:rehearsal_app/features/about/presentation/about_page.dart';
 import 'package:rehearsal_app/features/home/presentation/home_page.dart';
+import 'package:rehearsal_app/features/calendar/presentation/calendar_page.dart';
 
 class AppRouter {
   AppRouter();
@@ -14,6 +15,10 @@ class AppRouter {
       GoRoute(
         path: '/about',
         builder: (context, state) => const AboutPage(),
+      ),
+      GoRoute(
+        path: '/calendar',
+        builder: (context, state) => const CalendarPage(),
       ),
     ],
   );
