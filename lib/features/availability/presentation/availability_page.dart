@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../controller/availability_provider.dart';
 import 'widgets/calendar_grid.dart' as grid;
@@ -16,21 +15,23 @@ class AvailabilityPage extends ConsumerWidget {
       (_, month) {
         ref.read(availabilityControllerProvider.notifier).loadMonth(month);
       },
-      fireImmediately: true,
     );
 
     final pageState = ref.watch(availabilityControllerProvider);
-    final l10n = AppLocalizations.of(context)!;
+    // Ensure initial month data is loaded at least once after first frame.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(availabilityControllerProvider.notifier)
+          .loadMonth(pageState.visibleMonth);
+    });
 
     final byDate = pageState.byDate.map(
-      (key, view) => MapEntry(
-        key,
-        grid.AvailabilityStatus.values[view.status.index],
-      ),
+      (key, view) =>
+          MapEntry(key, grid.AvailabilityStatus.values[view.status.index]),
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.availability_title)),
+      appBar: AppBar(title: const Text('Availability')),
       body: Column(
         children: [
           const SizedBox(height: 8),
@@ -67,4 +68,3 @@ class AvailabilityPage extends ConsumerWidget {
     );
   }
 }
-
