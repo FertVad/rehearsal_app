@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/time.dart';
-
 /// Indicates availability for a particular day.
 enum AvailabilityStatus { free, busy, partial }
 
@@ -42,12 +40,13 @@ class CalendarGrid extends StatelessWidget {
       itemCount: itemCount,
       itemBuilder: (context, index) {
         final day = startDay.add(Duration(days: index));
-        final keyBase = dateUtc00(day);
+        // Use local midnight converted to UTC to match test keys and app-wide date keying.
+        final keyBase = day.toUtc().millisecondsSinceEpoch;
         final status = byDate[keyBase];
         final isCurrentMonth = day.month == month.month;
 
         return GestureDetector(
-          key: ValueKey('day-$keyBase'),
+          key: Key('day-$keyBase'),
           onTap: () => onDayTap?.call(day),
           child: Container(
             alignment: Alignment.center,
@@ -61,7 +60,7 @@ class CalendarGrid extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                _StatusDot(key: ValueKey('dot-$keyBase'), status: status),
+                _StatusDot(key: Key('dot-$keyBase'), status: status),
               ],
             ),
           ),

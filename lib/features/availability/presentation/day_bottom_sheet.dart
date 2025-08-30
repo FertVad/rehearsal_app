@@ -73,6 +73,7 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
     final controller = ref.read(availabilityControllerProvider.notifier);
     if (_status == AvailabilityStatus.partial) {
       if (_intervals.isEmpty) {
+        if (!mounted) return;
         _showError();
         return;
       }
@@ -81,13 +82,17 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
         intervalsLocal: _intervals,
         tz: tz.local.name,
       );
+      if (!mounted) return;
     } else {
       await controller.setStatus(dayLocal: widget.dayLocal, status: _status);
+      if (!mounted) return;
     }
     final error = ref.read(availabilityControllerProvider).error;
     if (error != null) {
+      if (!mounted) return;
       _showError();
     } else {
+      if (!mounted) return;
       Navigator.of(context).pop(true);
     }
   }
@@ -186,4 +191,3 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
     );
   }
 }
-
