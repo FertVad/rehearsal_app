@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:rehearsal_app/core/db/app_database.dart';
 
 import '../repositories/availability_repository.dart';
@@ -16,13 +18,64 @@ class CheckConflicts {
   final AvailabilityRepository availabilityRepository;
 
   /// Returns a list of detected conflicts.
-  ///
-  /// The current placeholder implementation returns an empty list.
   Future<List<Conflict>> call({
     required Rehearsal rehearsal,
     required List<User> attendees,
   }) async {
-    return [];
+    var start = rehearsal.startsAtUtc;
+    var end = rehearsal.endsAtUtc;
+    if (end < start) {
+      final tmp = start;
+      start = end;
+      end = tmp;
+    }
+
+    final dateUtc00 = _dateUtc00(start);
+    final conflicts = <Conflict>[];
+
+    for (final user in attendees) {
+      final availability = await availabilityRepository.getForUserOnDateUtc(
+        userId: user.id,
+        dateUtc00: dateUtc00,
+      );
+      if (availability != null) {
+        if (availability.status == 'busy') {
+          conflicts.add(
+            Conflict(userId: user.id, type: ConflictType.busy),
+          );
+        } else if (availability.status == 'partial') {
+          final intervals = _parseIntervals(availability.intervalsJson);
+          final hasOverlap = intervals.any(
+            (i) => _overlaps(start, end, i.start, i.end),
+          );
+          if (!hasOverlap) {
+            conflicts.add(
+              Conflict(userId: user.id, type: ConflictType.partial),
+            );
+          }
+        }
+      }
+
+      final otherRehearsals = await rehearsalsRepository.listForUserOnDateUtc(
+        userId: user.id,
+        dateUtc00: dateUtc00,
+      );
+      for (final other in otherRehearsals) {
+        if (other.id == rehearsal.id) continue;
+        if (_overlaps(start, end, other.startsAtUtc, other.endsAtUtc)) {
+          conflicts.add(
+            Conflict(
+              userId: user.id,
+              type: ConflictType.overlap,
+              details: other.id,
+            ),
+          );
+          break;
+        }
+      }
+    }
+
+    return conflicts;
   }
 }
 
@@ -40,4 +93,28 @@ class Conflict {
   final String userId;
   final ConflictType type;
   final String? details;
+}
+
+const _msPerDay = 86400000;
+
+int _dateUtc00(int msUtc) => msUtc - msUtc % _msPerDay;
+
+bool _overlaps(int aStart, int aEnd, int bStart, int bEnd) =>
+    aStart < bEnd && bStart < aEnd;
+
+List<(int start, int end)> _parseIntervals(String? json) {
+  if (json == null || json.isEmpty) {
+    return const <(int start, int end)>[];
+  }
+  try {
+    final list = jsonDecode(json) as List<dynamic>;
+    return list
+        .map<(int start, int end)>((e) => (
+              start: (e as Map<String, dynamic>)['startUtc'] as int,
+              end: e['endUtc'] as int,
+            ))
+        .toList();
+  } catch (_) {
+    return const <(int start, int end)>[];
+  }
 }

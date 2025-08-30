@@ -30,6 +30,22 @@ void main() {
   });
 }
 
-class _FakeRehearsalsRepository implements RehearsalsRepository {}
+class _FakeRehearsalsRepository implements RehearsalsRepository {
+  @override
+  Future<List<Rehearsal>> listForUserOnDateUtc({
+    required String userId,
+    required int dateUtc00,
+  }) async {
+    return const <Rehearsal>[];
+  }
+}
 
-class _FakeAvailabilityRepository implements AvailabilityRepository {}
+class _FakeAvailabilityRepository implements AvailabilityRepository {
+  @override
+  Future<Availability?> getForUserOnDateUtc({
+    required String userId,
+    required int dateUtc00,
+  }) async {
+    return null;
+  }
+}
