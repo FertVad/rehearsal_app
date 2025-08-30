@@ -23,6 +23,11 @@ class HomePage extends StatelessWidget {
               onPressed: () => context.go('/calendar'),
               child: const Text('Календарь'),
             ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => context.go('/availability'),
+              child: const Text('Availability'),
+            ),
           ],
         ),
       ),
