@@ -40,11 +40,11 @@ class CheckConflicts {
       );
       if (availability != null) {
         if (availability.status == 'busy') {
-          conflicts.add(
-            Conflict(userId: user.id, type: ConflictType.busy),
-          );
+          conflicts.add(Conflict(userId: user.id, type: ConflictType.busy));
         } else if (availability.status == 'partial') {
-          final intervals = _parseIntervals(availability.intervalsJson);
+          final List<Interval> intervals = _parseIntervals(
+            availability.intervalsJson,
+          );
           final hasOverlap = intervals.any(
             (i) => _overlaps(start, end, i.start, i.end),
           );
@@ -82,13 +82,11 @@ class CheckConflicts {
 /// Types of conflicts detected for an attendee.
 enum ConflictType { busy, partial, overlap }
 
+typedef Interval = ({int start, int end});
+
 /// Describes a scheduling conflict for a user.
 class Conflict {
-  const Conflict({
-    required this.userId,
-    required this.type,
-    this.details,
-  });
+  const Conflict({required this.userId, required this.type, this.details});
 
   final String userId;
   final ConflictType type;
@@ -102,19 +100,17 @@ int _dateUtc00(int msUtc) => msUtc - msUtc % _msPerDay;
 bool _overlaps(int aStart, int aEnd, int bStart, int bEnd) =>
     aStart < bEnd && bStart < aEnd;
 
-List<(int start, int end)> _parseIntervals(String? json) {
+List<Interval> _parseIntervals(String? json) {
   if (json == null || json.isEmpty) {
-    return const <(int start, int end)>[];
+    return const <Interval>[];
   }
   try {
     final list = jsonDecode(json) as List<dynamic>;
-    return list
-        .map<(int start, int end)>((e) => (
-              start: (e as Map<String, dynamic>)['startUtc'] as int,
-              end: e['endUtc'] as int,
-            ))
-        .toList();
+    return list.map<Interval>((e) {
+      final m = e as Map<String, dynamic>;
+      return (start: m['startUtc'] as int, end: m['endUtc'] as int);
+    }).toList();
   } catch (_) {
-    return const <(int start, int end)>[];
+    return const <Interval>[];
   }
 }
