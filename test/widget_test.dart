@@ -14,5 +14,10 @@ void main() {
       find.text('О приложении'),
       findsOneWidget,
     );
+
+    expect(
+      find.text('Календарь'),
+      findsOneWidget,
+    );
   });
 }

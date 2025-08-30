@@ -1,0 +1,97 @@
+import 'package:flutter/material.dart';
+
+import 'day_sheet.dart';
+import 'month_view.dart';
+import 'week_view.dart';
+
+/// Main calendar page with Month/Week tabs.
+class CalendarPage extends StatefulWidget {
+  const CalendarPage({super.key});
+
+  @override
+  State<CalendarPage> createState() => _CalendarPageState();
+}
+
+class _CalendarPageState extends State<CalendarPage>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+  DateTime _anchor = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _openDay(DateTime date) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => DaySheet(date: date),
+    );
+  }
+
+  void _next() {
+    setState(() {
+      if (_tabController.index == 0) {
+        _anchor = DateTime(_anchor.year, _anchor.month + 1, 1);
+      } else {
+        _anchor = _anchor.add(const Duration(days: 7));
+      }
+    });
+  }
+
+  void _prev() {
+    setState(() {
+      if (_tabController.index == 0) {
+        _anchor = DateTime(_anchor.year, _anchor.month - 1, 1);
+      } else {
+        _anchor = _anchor.subtract(const Duration(days: 7));
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Calendar'),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Month'),
+            Tab(text: 'Week'),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: _prev,
+          ),
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: _next,
+          ),
+        ],
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          MonthView(
+            anchor: _anchor,
+            onDaySelected: _openDay,
+          ),
+          WeekView(
+            anchor: _anchor,
+            onDaySelected: _openDay,
+          ),
+        ],
+      ),
+    );
+  }
+}

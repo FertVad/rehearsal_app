@@ -18,6 +18,11 @@ class HomePage extends StatelessWidget {
               onPressed: () => context.go('/about'),
               child: const Text('О приложении'),
             ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => context.go('/calendar'),
+              child: const Text('Календарь'),
+            ),
           ],
         ),
       ),
