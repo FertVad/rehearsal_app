@@ -38,6 +38,9 @@ class _FakeRehearsalsRepository implements RehearsalsRepository {
   }) async {
     return const <Rehearsal>[];
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _FakeAvailabilityRepository implements AvailabilityRepository {
@@ -48,4 +51,7 @@ class _FakeAvailabilityRepository implements AvailabilityRepository {
   }) async {
     return null;
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

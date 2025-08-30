@@ -34,20 +34,22 @@ void main() {
     final date = dateUtc00(base.startsAtUtc);
     final usecase = CheckConflicts(
       rehearsalsRepository: _FakeRehearsalsRepository(),
-      availabilityRepository: _FakeAvailabilityRepository(availByUserAndDate: {
-        ('u1', date): Availability(
-          id: 'a1',
-          createdAtUtc: 0,
-          updatedAtUtc: 0,
-          deletedAtUtc: null,
-          lastWriter: 't',
-          userId: 'u1',
-          dateUtc: date,
-          status: 'busy',
-          intervalsJson: null,
-          note: null,
-        ),
-      }),
+      availabilityRepository: _FakeAvailabilityRepository(
+        availByUserAndDate: {
+          ('u1', date): Availability(
+            id: 'a1',
+            createdAtUtc: 0,
+            updatedAtUtc: 0,
+            deletedAtUtc: null,
+            lastWriter: 't',
+            userId: 'u1',
+            dateUtc: date,
+            status: 'busy',
+            intervalsJson: null,
+            note: null,
+          ),
+        },
+      ),
     );
     final res = await usecase(rehearsal: base, attendees: [u1]);
     expect(
@@ -71,19 +73,21 @@ void main() {
         {
           'startUtc': base.startsAtUtc - 7200000,
           'endUtc': base.startsAtUtc - 3600000,
-        }
+        },
       ]),
       note: null,
     );
     final usecase = CheckConflicts(
       rehearsalsRepository: _FakeRehearsalsRepository(),
-      availabilityRepository: _FakeAvailabilityRepository(availByUserAndDate: {
-        ('u1', date): avail,
-      }),
+      availabilityRepository: _FakeAvailabilityRepository(
+        availByUserAndDate: {('u1', date): avail},
+      ),
     );
     final res = await usecase(rehearsal: base, attendees: [u1]);
     expect(
-      res.where((c) => c.userId == 'u1' && c.type == ConflictType.partial).length,
+      res
+          .where((c) => c.userId == 'u1' && c.type == ConflictType.partial)
+          .length,
       1,
     );
   });
@@ -99,14 +103,18 @@ void main() {
       endsAtUtc: base.endsAtUtc + 600000,
     );
     final usecase = CheckConflicts(
-      rehearsalsRepository: _FakeRehearsalsRepository(rehearsalsByUserAndDate: {
-        ('u1', date): [other],
-      }),
+      rehearsalsRepository: _FakeRehearsalsRepository(
+        rehearsalsByUserAndDate: {
+          ('u1', date): [other],
+        },
+      ),
       availabilityRepository: _FakeAvailabilityRepository(),
     );
     final res = await usecase(rehearsal: base, attendees: [u1]);
     expect(
-      res.where((c) => c.userId == 'u1' && c.type == ConflictType.overlap).length,
+      res
+          .where((c) => c.userId == 'u1' && c.type == ConflictType.overlap)
+          .length,
       1,
     );
   });
@@ -130,14 +138,18 @@ void main() {
     );
     final date = dateUtc00(dstBase.startsAtUtc);
     final usecase = CheckConflicts(
-      rehearsalsRepository: _FakeRehearsalsRepository(rehearsalsByUserAndDate: {
-        ('u1', date): [other],
-      }),
+      rehearsalsRepository: _FakeRehearsalsRepository(
+        rehearsalsByUserAndDate: {
+          ('u1', date): [other],
+        },
+      ),
       availabilityRepository: _FakeAvailabilityRepository(),
     );
     final res = await usecase(rehearsal: dstBase, attendees: [u1]);
     expect(
-      res.where((c) => c.userId == 'u1' && c.type == ConflictType.overlap).length,
+      res
+          .where((c) => c.userId == 'u1' && c.type == ConflictType.overlap)
+          .length,
       1,
     );
   });
@@ -145,8 +157,9 @@ void main() {
 
 class _FakeAvailabilityRepository implements AvailabilityRepository {
   final Map<(String, int), Availability?> availByUserAndDate;
-  _FakeAvailabilityRepository({Map<(String, int), Availability?>? availByUserAndDate})
-      : availByUserAndDate = availByUserAndDate ?? {};
+  _FakeAvailabilityRepository({
+    Map<(String, int), Availability?>? availByUserAndDate,
+  }) : availByUserAndDate = availByUserAndDate ?? {};
 
   @override
   Future<Availability?> getForUserOnDateUtc({
@@ -155,12 +168,16 @@ class _FakeAvailabilityRepository implements AvailabilityRepository {
   }) async {
     return availByUserAndDate[(userId, dateUtc00)];
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _FakeRehearsalsRepository implements RehearsalsRepository {
   final Map<(String, int), List<Rehearsal>> rehearsalsByUserAndDate;
-  _FakeRehearsalsRepository({Map<(String, int), List<Rehearsal>>? rehearsalsByUserAndDate})
-      : rehearsalsByUserAndDate = rehearsalsByUserAndDate ?? {};
+  _FakeRehearsalsRepository({
+    Map<(String, int), List<Rehearsal>>? rehearsalsByUserAndDate,
+  }) : rehearsalsByUserAndDate = rehearsalsByUserAndDate ?? {};
 
   @override
   Future<List<Rehearsal>> listForUserOnDateUtc({
@@ -169,4 +186,7 @@ class _FakeRehearsalsRepository implements RehearsalsRepository {
   }) async {
     return rehearsalsByUserAndDate[(userId, dateUtc00)] ?? const <Rehearsal>[];
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
