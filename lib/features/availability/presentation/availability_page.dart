@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controller/availability_provider.dart';
+import 'day_bottom_sheet.dart';
 import 'widgets/calendar_grid.dart' as grid;
 
 class AvailabilityPage extends ConsumerWidget {
@@ -53,13 +54,11 @@ class AvailabilityPage extends ConsumerWidget {
           grid.CalendarGrid(
             month: pageState.visibleMonth,
             byDate: byDate,
-            onDayTap: (day) {
-              showModalBottomSheet(
+            onDayTap: (day) async {
+              await showModalBottomSheet<bool>(
                 context: context,
-                builder: (_) => Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text('Day: $day'),
-                ),
+                isScrollControlled: true,
+                builder: (_) => DayBottomSheet(dayLocal: day),
               );
             },
           ),
