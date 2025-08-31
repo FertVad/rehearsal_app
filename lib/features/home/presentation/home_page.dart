@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rehearsal_app/l10n/app.dart';
+import 'package:rehearsal_app/features/settings/presentation/language_menu.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -8,7 +9,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.appTitle)),
+      appBar: AppBar(title: Text(context.l10n.appTitle), actions: const [LanguageMenu()]),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
