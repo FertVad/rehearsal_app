@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'core/design_system/theme.dart';
-import 'l10n/app.dart';
+import 'package:rehearsal_app/l10n/app.dart';
+import 'package:rehearsal_app/l10n/app_localizations.dart';
 import 'core/router/app_router.dart';
 
 class App extends StatelessWidget {
