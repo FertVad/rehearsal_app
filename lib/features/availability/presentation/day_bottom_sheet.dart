@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:rehearsal_app/core/l10n/l10n.dart';
+import 'package:rehearsal_app/l10n/app.dart';
 
 import '../controller/availability_provider.dart';
 import '../controller/availability_state.dart';
