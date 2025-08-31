@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rehearsal_app/core/l10n/l10n.dart';
+import 'package:rehearsal_app/l10n/app.dart';
 
 import 'day_sheet.dart';
 import 'month_view.dart';
