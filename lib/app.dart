@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'core/design_system/theme.dart';
 import 'core/l10n/l10n.dart';
 import 'core/router/app_router.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class App extends StatelessWidget {
   App({super.key});
