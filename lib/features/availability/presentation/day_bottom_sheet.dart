@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:rehearsal_app/core/l10n/l10n.dart';
 
 import '../controller/availability_provider.dart';
 import '../controller/availability_state.dart';
@@ -64,7 +65,7 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         key: const Key('availability_snackbar_error'),
-        content: const Text('Error'),
+        content: Text(context.l10n.availabilityError),
       ),
     );
   }
@@ -114,7 +115,7 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
             children: [
               ChoiceChip(
                 key: const Key('status_free'),
-                label: const Text('Free'),
+                label: Text(context.l10n.availabilityStatusFree),
                 selected: _status == AvailabilityStatus.free,
                 onSelected: (_) => setState(() {
                   _status = AvailabilityStatus.free;
@@ -123,7 +124,7 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
               const SizedBox(width: 8),
               ChoiceChip(
                 key: const Key('status_busy'),
-                label: const Text('Busy'),
+                label: Text(context.l10n.availabilityStatusBusy),
                 selected: _status == AvailabilityStatus.busy,
                 onSelected: (_) => setState(() {
                   _status = AvailabilityStatus.busy;
@@ -132,7 +133,7 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
               const SizedBox(width: 8),
               ChoiceChip(
                 key: const Key('status_partial'),
-                label: const Text('Partial'),
+                label: Text(context.l10n.availabilityStatusPartial),
                 selected: _status == AvailabilityStatus.partial,
                 onSelected: (_) => setState(() {
                   _status = AvailabilityStatus.partial;
@@ -145,7 +146,7 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
             ElevatedButton(
               key: const Key('add_interval'),
               onPressed: _addInterval,
-              child: const Text('Add interval'),
+              child: Text(context.l10n.availabilityAddInterval),
             ),
             const SizedBox(height: 8),
             for (var i = 0; i < _intervals.length; i++)
@@ -176,13 +177,13 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
               TextButton(
                 key: const Key('cancel_btn'),
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.availabilityCancel),
               ),
               const SizedBox(width: 8),
               ElevatedButton(
                 key: const Key('save_btn'),
                 onPressed: _save,
-                child: const Text('Save'),
+                child: Text(context.l10n.availabilitySave),
               ),
             ],
           ),

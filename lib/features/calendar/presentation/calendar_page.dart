@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rehearsal_app/core/l10n/l10n.dart';
 
 import 'day_sheet.dart';
 import 'month_view.dart';
@@ -60,12 +61,12 @@ class _CalendarPageState extends State<CalendarPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calendar'),
+        title: Text(context.l10n.calendarTitle),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Month'),
-            Tab(text: 'Week'),
+          tabs: [
+            Tab(text: context.l10n.calendarTabMonth),
+            Tab(text: context.l10n.calendarTabWeek),
           ],
         ),
         actions: [

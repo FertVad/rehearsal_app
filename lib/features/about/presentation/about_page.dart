@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rehearsal_app/core/l10n/l10n.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -6,8 +7,8 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('О приложении')),
-      body: const Center(child: Text('Rehearsal App v0.1')),
+      appBar: AppBar(title: Text(context.l10n.aboutTitle)),
+      body: Center(child: Text(context.l10n.aboutVersion)),
     );
   }
 }

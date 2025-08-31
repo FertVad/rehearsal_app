@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'core/design_system/theme.dart';
+import 'core/l10n/l10n.dart';
 import 'core/router/app_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class App extends StatelessWidget {
   App({super.key});
@@ -10,9 +12,11 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Rehearsal',
+      onGenerateTitle: (context) => context.l10n.appTitle,
       theme: buildAppTheme(),
       routerConfig: _appRouter.router,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }
