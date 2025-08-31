@@ -42,7 +42,7 @@ class LocalAvailabilityRepository implements AvailabilityRepository {
     String? note,
     String lastWriter = 'device:local',
   }) async {
-    final now = DateTime.now().toUtc().millisecondsSinceEpoch;
+    final nowUtc = DateTime.now().toUtc().millisecondsSinceEpoch;
     final existing = await getForUserOnDateUtc(
       userId: userId,
       dateUtc00: dateUtc00,
@@ -57,8 +57,8 @@ class LocalAvailabilityRepository implements AvailabilityRepository {
               status: status,
               intervalsJson: Value(intervalsJson),
               note: Value(note),
-              createdAtUtc: now,
-              updatedAtUtc: now,
+              createdAtUtc: nowUtc,
+              updatedAtUtc: nowUtc,
               lastWriter: lastWriter,
             ),
           );
@@ -70,7 +70,7 @@ class LocalAvailabilityRepository implements AvailabilityRepository {
           status: Value(status),
           intervalsJson: Value(intervalsJson),
           note: Value(note),
-          updatedAtUtc: Value(now),
+          updatedAtUtc: Value(nowUtc),
           lastWriter: Value(lastWriter),
         ),
       );
