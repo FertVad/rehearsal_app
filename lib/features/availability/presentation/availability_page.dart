@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rehearsal_app/core/l10n/l10n.dart';
 import 'day_bottom_sheet.dart';
 
 class AvailabilityPage extends StatelessWidget {
@@ -7,7 +8,7 @@ class AvailabilityPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Availability')),
+      appBar: AppBar(title: Text(context.l10n.availabilityTitle)),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
@@ -17,7 +18,7 @@ class AvailabilityPage extends StatelessWidget {
               builder: (ctx) => DayBottomSheet(dayLocal: DateTime.now()),
             );
           },
-          child: const Text('Open Day'),
+          child: Text(context.l10n.availabilityOpenDay),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rehearsal_app/core/l10n/l10n.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -7,26 +8,26 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Rehearsal App')),
+      appBar: AppBar(title: Text(context.l10n.appTitle)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Добро пожаловать! Это стартовый экран.'),
+            Text(context.l10n.homeWelcome),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => context.go('/about'),
-              child: const Text('О приложении'),
+              child: Text(context.l10n.homeAboutButton),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => context.go('/calendar'),
-              child: const Text('Календарь'),
+              child: Text(context.l10n.homeCalendarButton),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => context.go('/availability'),
-              child: const Text('Availability'),
+              child: Text(context.l10n.homeAvailabilityButton),
             ),
           ],
         ),
