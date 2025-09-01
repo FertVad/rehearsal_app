@@ -14,6 +14,7 @@ final class AppColors {
   // === NEUTRALS ===
   static const Color black = Color(0xFF0B0B0B);
   static const Color white = Color(0xFFFFFFFF);
+  static const Color darkBase = black;
 
   // === TEXT (\u043f\u043e \u0443\u043c\u043e\u043b\u0447\u0430\u043d\u0438\u044e \u0434\u043b\u044f light) ===
   static final Color textPrimary        = black.withValues(alpha: 0.85);
