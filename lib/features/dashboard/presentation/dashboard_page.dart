@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rehearsal_app/core/ui/liquid_glass_panel.dart';
+import 'package:rehearsal_app/core/ui/haptics.dart';
 import 'package:rehearsal_app/features/dashboard/widgets/day_scroller.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -10,14 +10,7 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  late DateTime _selected;
-
-  @override
-  void initState() {
-    super.initState();
-    final now = DateTime.now();
-    _selected = DateTime(now.year, now.month, now.day);
-  }
+  DateTime _selected = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -30,26 +23,17 @@ class _DashboardPageState extends State<DashboardPage> {
       body: Column(
         children: [
           const SizedBox(height: 12),
-          // Glass panel with the weekly header inside
           Center(
-            child: SizedBox(
-              width: 388,
-              height: 120,
-              child: LiquidGlassPanel(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  child: DayScroller(),
-                ),
-              ),
+            child: DayScroller(
+              initialDate: _selected,
+              onDateChanged: (d) => setState(() => _selected = d),
+              onHaptic: () => Haptics.selection(),
+              eventPredicate: (_) => false,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Выбрано: '
-            '${DateTimeRange(start: _selected, end: _selected).start.toString().split(' ').first}',
+            'Выбрано: ${_selected.toString().split(' ').first}',
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: Colors.white70),
