@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rehearsal_app/core/ui/haptics.dart';
+import 'package:rehearsal_app/core/design_system/haptics.dart';
 import 'package:rehearsal_app/features/dashboard/widgets/day_scroller.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -27,7 +27,7 @@ class _DashboardPageState extends State<DashboardPage> {
             child: DayScroller(
               initialDate: _selected,
               onDateChanged: (d) => setState(() => _selected = d),
-              onHaptic: () => Haptics.selection(),
+              onHaptic: () => AppHaptics.selection(),
               eventPredicate: (_) => false,
             ),
           ),
