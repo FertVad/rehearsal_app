@@ -5,6 +5,7 @@ import 'app_colors.dart';
 import 'app_spacing.dart';
 
 enum GlassStyle { light, dark, accent }
+
 enum GlassSize { small, medium, large }
 
 class AppGlass extends StatelessWidget {
@@ -89,16 +90,10 @@ class AppGlass extends StatelessWidget {
     switch (style) {
       case GlassStyle.light:
         // Белое матовое стекло
-        return (brightness == Brightness.light
-                ? AppColors.glassLightFill
-                : AppColors.glassLightFill) // сохраняем «белизну» стекла и в дарке
-            .withValues(alpha: 0.22);
+        return Colors.white.withValues(alpha: 0.22);
       case GlassStyle.dark:
         // Дымчатое стекло для дарка
-        return (brightness == Brightness.light
-                ? AppColors.glassDarkFill
-                : AppColors.glassDarkFill)
-            .withValues(alpha: 0.32);
+        return const Color(0xFF0B0B0B).withValues(alpha: 0.32);
       case GlassStyle.accent:
         // Едва заметная подсветка акцентным
         return AppColors.accentHotPink.withValues(alpha: 0.10);
@@ -115,10 +110,10 @@ class AppGlass extends StatelessWidget {
           end: Alignment.bottomCenter,
           stops: const [0.0, 0.35, 0.65, 1.0],
           colors: [
-            AppColors.glassHighlightHi,                  // ~0.20
-            AppColors.glassHighlightLo,                  // ~0.06
-            AppColors.glassHighlightLo.withValues(alpha: 0.04),
-            AppColors.glassHighlightHi.withValues(alpha: 0.14),
+            Colors.white.withValues(alpha: 0.20),
+            Colors.white.withValues(alpha: 0.06),
+            Colors.white.withValues(alpha: 0.04),
+            Colors.white.withValues(alpha: 0.14),
           ],
         );
       case GlassStyle.dark:
@@ -151,15 +146,9 @@ class AppGlass extends StatelessWidget {
   Color _getBorderColor(Brightness brightness) {
     switch (style) {
       case GlassStyle.light:
-        return (brightness == Brightness.light
-                ? AppColors.glassBorderLight
-                : AppColors.glassBorderLight)
-            .withValues(alpha: 0.28);
+        return Colors.white.withValues(alpha: 0.28);
       case GlassStyle.dark:
-        return (brightness == Brightness.light
-                ? AppColors.glassBorderDark
-                : AppColors.glassBorderDark)
-            .withValues(alpha: 0.18);
+        return Colors.white.withValues(alpha: 0.18);
       case GlassStyle.accent:
         // акцентная обводка чуть заметней
         return AppColors.accentHotPink.withValues(alpha: 0.30);
@@ -227,17 +216,18 @@ class GlassButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark
+        ? Colors.white.withValues(alpha: 0.95)
+        : Colors.black.withValues(alpha: 0.85);
     return AppGlass(
       style: selected ? GlassStyle.accent : GlassStyle.light,
       size: size,
       onTap: onTap,
       child: DefaultTextStyle.merge(
-        style: TextStyle(
-          color: AppColors.textOn(context),
-        ),
+        style: TextStyle(color: textColor),
         child: child,
       ),
     );
   }
 }
-

@@ -30,10 +30,7 @@ class EventDot extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-        ),
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
       ),
     );
   }
@@ -41,11 +38,7 @@ class EventDot extends StatelessWidget {
 
 /// Индикатор статуса доступности (для availability grid).
 class StatusIndicator extends StatelessWidget {
-  const StatusIndicator({
-    super.key,
-    required this.status,
-    this.size = 8,
-  });
+  const StatusIndicator({super.key, required this.status, this.size = 8});
 
   final AvailabilityStatus status;
   final double size;
@@ -94,9 +87,9 @@ class CalendarDayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
-    final textColor = brightness == Brightness.dark
-        ? AppColors.textSecondaryDark
+    final b = Theme.of(context).brightness;
+    final Color textSecondary = b == Brightness.dark
+        ? Colors.white.withValues(alpha: 0.70)
         : AppColors.textSecondary;
 
     return Column(
@@ -105,7 +98,7 @@ class CalendarDayButton extends StatelessWidget {
         // Weekday кратко (Mon/Tue/…)
         Text(
           _weekdayShort(day),
-          style: AppTypography.calendarWeekday.copyWith(color: textColor),
+          style: AppTypography.calendarWeekday.copyWith(color: textSecondary),
         ),
         const SizedBox(height: AppSpacing.xs),
 
@@ -135,12 +128,10 @@ class CalendarDayButton extends StatelessWidget {
                       style: AppTypography.calendarDay.copyWith(
                         // более контрастный текст для выбранного
                         color: isSelected
-                            ? (brightness == Brightness.dark
-                                ? AppColors.textPrimaryDark
-                                : AppColors.textPrimary)
-                            : (brightness == Brightness.dark
-                                ? AppColors.textSecondaryDark
-                                : AppColors.textSecondary),
+                            ? (b == Brightness.dark
+                                  ? Colors.white.withValues(alpha: 0.95)
+                                  : AppColors.textPrimary)
+                            : textSecondary,
                       ),
                     ),
                   ),
@@ -166,10 +157,7 @@ class CalendarDayButton extends StatelessWidget {
 /// Тонкая подложка-обводка для «капли», чтобы даже без акцента
 /// было ощущение стеклянного объёма.
 class _DropletSurface extends StatelessWidget {
-  const _DropletSurface({
-    required this.child,
-    required this.selected,
-  });
+  const _DropletSurface({required this.child, required this.selected});
 
   final Widget child;
   final bool selected;
@@ -177,9 +165,9 @@ class _DropletSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final b = Theme.of(context).brightness;
-    final border = b == Brightness.dark
-        ? AppColors.lightBase.withValues(alpha: 0.18)
-        : AppColors.lightBase.withValues(alpha: 0.28);
+    final Color borderBase = b == Brightness.dark
+        ? Colors.white.withValues(alpha: 0.18)
+        : Colors.white.withValues(alpha: 0.28);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -187,7 +175,7 @@ class _DropletSurface extends StatelessWidget {
         border: Border.all(
           color: selected
               ? AppColors.accentHotPink.withValues(alpha: 0.30)
-              : border,
+              : borderBase,
           width: selected ? 1.0 : 0.8,
         ),
       ),
@@ -195,4 +183,3 @@ class _DropletSurface extends StatelessWidget {
     );
   }
 }
-
