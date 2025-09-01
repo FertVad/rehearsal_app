@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/design_system/theme.dart';
+import 'package:rehearsal_app/core/design_system/theme.dart';
 import 'core/l10n/locale_provider.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 import 'package:rehearsal_app/l10n/app_localizations.dart';
@@ -17,6 +17,8 @@ class App extends ConsumerWidget {
       locale: ref.watch(localeProvider),
       onGenerateTitle: (context) => context.l10n.appTitle,
       theme: buildAppTheme(),
+      darkTheme: buildAppDarkTheme(),
+      themeMode: ThemeMode.system,
       routerConfig: _appRouter.router,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
