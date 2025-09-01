@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:rehearsal_app/core/ui/haptics.dart';
+import 'package:rehearsal_app/core/design_system/haptics.dart';
 
 /// A glassy, horizontally scrollable strip of days with:
 ///  • centered month label (updates as you scroll)
@@ -202,7 +202,7 @@ class _DayScrollerState extends State<DayScroller> {
                         final newDate = _dateForIndex(index);
                         // Fire haptics once per day change
                         if (_selected != newDate) {
-                          Haptics.selection();
+                          AppHaptics.selection();
                           widget.onHaptic?.call();
                         }
                         setState(() => _selected = newDate);

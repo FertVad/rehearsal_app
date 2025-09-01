@@ -3,7 +3,7 @@ import 'app_colors.dart';
 import 'app_typography.dart';
 import 'app_spacing.dart';
 import 'glass_system.dart';
-import 'haptics.dart';
+import 'package:rehearsal_app/core/design_system/haptics.dart';
 
 /// Статус доступности для сеток/точек.
 enum AvailabilityStatus { free, busy, partial }
