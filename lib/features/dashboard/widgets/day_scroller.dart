@@ -135,6 +135,9 @@ class _DayScrollerState extends State<DayScroller> {
   Widget build(BuildContext context) {
     final radius = Radius.circular(widget.radius);
     final isLight = widget.backgroundBrightness == Brightness.light;
+    final textColor =
+        isLight ? const Color(0xFF111111) : Colors.white; // near-black on light
+    final strokeColor = isLight ? const Color(0xFF111111) : Colors.white;
 
     // glass palette tuned for “liquid glass” look
     final baseFill = isLight
@@ -181,6 +184,7 @@ class _DayScrollerState extends State<DayScroller> {
                     child: _MonthText(
                       key: ValueKey(_monthTitle(_selected)),
                       title: _monthTitle(_selected),
+                      color: textColor,
                     ),
                   ),
                 ),
@@ -218,6 +222,9 @@ class _DayScrollerState extends State<DayScroller> {
                             date: date,
                             selected: isSelected,
                             hasEvent: hasEvent,
+                            textColor: textColor,
+                            strokeColor: strokeColor,
+                            isLightBackground: isLight,
                           ),
                         );
                       },
@@ -234,19 +241,20 @@ class _DayScrollerState extends State<DayScroller> {
 }
 
 class _MonthText extends StatelessWidget {
-  const _MonthText({super.key, required this.title});
+  const _MonthText({super.key, required this.title, required this.color});
   final String title;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         // iOS vibe: SF Pro Light–ish
         fontSize: 16,
         fontWeight: FontWeight.w300,
         letterSpacing: 0.3,
-        color: Colors.white,
+        color: color,
       ),
     );
   }
@@ -257,11 +265,17 @@ class _DayDroplet extends StatelessWidget {
     required this.date,
     required this.selected,
     required this.hasEvent,
+    required this.textColor,
+    required this.strokeColor,
+    required this.isLightBackground,
   });
 
   final DateTime date;
   final bool selected;
   final bool hasEvent;
+  final Color textColor;
+  final Color strokeColor;
+  final bool isLightBackground;
 
   String get _weekdayShort {
     const map = {
@@ -278,10 +292,10 @@ class _DayDroplet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color baseStroke = Colors.white.withValues(
+    final Color baseStroke = strokeColor.withValues(
       alpha: selected ? 0.35 : 0.18,
     );
-    final Color numeral = Colors.white;
+    final Color numeral = textColor;
 
     return SizedBox(
       width: 52,
@@ -293,10 +307,10 @@ class _DayDroplet extends StatelessWidget {
             opacity: 0.7,
             child: Text(
               _weekdayShort,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w300,
-                color: Colors.white,
+                color: textColor,
               ),
             ),
           ),
@@ -310,10 +324,18 @@ class _DayDroplet extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: baseStroke, width: 1),
               gradient: selected
-                  ? const LinearGradient(
+                  ? LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [Color(0x22FFFFFF), Color(0x0FFFFFFF)],
+                      colors: isLightBackground
+                          ? [
+                              const Color(0x22000000),
+                              const Color(0x0F000000),
+                            ]
+                          : [
+                              const Color(0x22FFFFFF),
+                              const Color(0x0FFFFFFF),
+                            ],
                     )
                   : null,
             ),
