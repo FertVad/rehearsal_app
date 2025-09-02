@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
+import 'package:rehearsal_app/core/design_system/glass_system.dart';
 import 'package:rehearsal_app/core/design_system/haptics.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -124,17 +125,11 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ChoiceChip(
+              GlassChip(
                 key: const Key('status_free'),
-                label: Text(
-                  context.l10n.availabilityStatusFree,
-                  style: AppTypography.label,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                ),
+                label: context.l10n.availabilityStatusFree,
                 selected: _status == AvailabilityStatus.free,
-                onSelected: (_) {
+                onTap: () {
                   setState(() {
                     _status = AvailabilityStatus.free;
                   });
@@ -142,17 +137,11 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
                 },
               ),
               const SizedBox(width: AppSpacing.sm),
-              ChoiceChip(
+              GlassChip(
                 key: const Key('status_busy'),
-                label: Text(
-                  context.l10n.availabilityStatusBusy,
-                  style: AppTypography.label,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                ),
+                label: context.l10n.availabilityStatusBusy,
                 selected: _status == AvailabilityStatus.busy,
-                onSelected: (_) {
+                onTap: () {
                   setState(() {
                     _status = AvailabilityStatus.busy;
                   });
@@ -160,17 +149,11 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
                 },
               ),
               const SizedBox(width: AppSpacing.sm),
-              ChoiceChip(
+              GlassChip(
                 key: const Key('status_partial'),
-                label: Text(
-                  context.l10n.availabilityStatusPartial,
-                  style: AppTypography.label,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                ),
+                label: context.l10n.availabilityStatusPartial,
                 selected: _status == AvailabilityStatus.partial,
-                onSelected: (_) {
+                onTap: () {
                   setState(() {
                     _status = AvailabilityStatus.partial;
                   });
