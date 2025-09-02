@@ -125,40 +125,61 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              GlassChip(
+              GlassButton(
                 key: const Key('status_free'),
-                label: context.l10n.availabilityStatusFree,
                 selected: _status == AvailabilityStatus.free,
                 onTap: () {
-                  setState(() {
-                    _status = AvailabilityStatus.free;
-                  });
+                  setState(() => _status = AvailabilityStatus.free);
                   Haptics.selection();
                 },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.xs,
+                  ),
+                  child: Text(
+                    context.l10n.availabilityStatusFree,
+                    style: AppTypography.label,
+                  ),
+                ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              GlassChip(
+              GlassButton(
                 key: const Key('status_busy'),
-                label: context.l10n.availabilityStatusBusy,
                 selected: _status == AvailabilityStatus.busy,
                 onTap: () {
-                  setState(() {
-                    _status = AvailabilityStatus.busy;
-                  });
+                  setState(() => _status = AvailabilityStatus.busy);
                   Haptics.selection();
                 },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.xs,
+                  ),
+                  child: Text(
+                    context.l10n.availabilityStatusBusy,
+                    style: AppTypography.label,
+                  ),
+                ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              GlassChip(
+              GlassButton(
                 key: const Key('status_partial'),
-                label: context.l10n.availabilityStatusPartial,
                 selected: _status == AvailabilityStatus.partial,
                 onTap: () {
-                  setState(() {
-                    _status = AvailabilityStatus.partial;
-                  });
+                  setState(() => _status = AvailabilityStatus.partial);
                   Haptics.selection();
                 },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.xs,
+                  ),
+                  child: Text(
+                    context.l10n.availabilityStatusPartial,
+                    style: AppTypography.label,
+                  ),
+                ),
               ),
             ],
           ),
