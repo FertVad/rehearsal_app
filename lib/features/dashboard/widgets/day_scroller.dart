@@ -2,6 +2,9 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:rehearsal_app/core/design_system/app_colors.dart';
+import 'package:rehearsal_app/core/design_system/app_spacing.dart';
+import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/design_system/haptics.dart';
 
 /// A glassy, horizontally scrollable strip of days with:
@@ -20,7 +23,7 @@ class DayScroller extends StatefulWidget {
     this.onHaptic,
     this.width = 388,
     this.height = 120,
-    this.radius = 32,
+    this.radius = AppSpacing.radiusXL,
     this.visibleItems = 7,
     this.backgroundBrightness = Brightness.light,
   });
@@ -106,8 +109,8 @@ class _DayScrollerState extends State<DayScroller> {
 
   static double _viewportFractionFor(double width, int visibleItems) {
     final itemWidth = math.max(
-      48.0,
-      (width - 24) / visibleItems,
+      AppSpacing.calendarCell,
+      (width - AppSpacing.xxl) / visibleItems,
     ); // leave some padding for edges
     return itemWidth / width;
   }
@@ -135,17 +138,13 @@ class _DayScrollerState extends State<DayScroller> {
   Widget build(BuildContext context) {
     final radius = Radius.circular(widget.radius);
     final isLight = widget.backgroundBrightness == Brightness.light;
-    final textColor =
-        isLight ? const Color(0xFF111111) : Colors.white; // near-black on light
-    final strokeColor = isLight ? const Color(0xFF111111) : Colors.white;
+    final brightness = widget.backgroundBrightness;
+    final textColor = AppColors.onGlassText(brightness);
+    final strokeColor = AppColors.onGlassText(brightness);
 
-    // glass palette tuned for “liquid glass” look
-    final baseFill = isLight
-        ? const Color(0x66FFFFFF)
-        : const Color(0x661D1D1D);
-    final stroke = isLight
-        ? Colors.white.withValues(alpha: 0.12)
-        : Colors.white.withValues(alpha: 0.08);
+    // glass palette from design tokens
+    final baseFill = AppColors.glassBase(brightness);
+    final stroke = AppColors.glassStroke(brightness);
 
     return ClipRRect(
       borderRadius: BorderRadius.all(radius),
@@ -161,17 +160,15 @@ class _DayScrollerState extends State<DayScroller> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               stops: const [0.0, 0.35, 0.65, 1.0],
-              colors: [
-                const Color(0x33FFFFFF),
-                const Color(0x11FFFFFF),
-                const Color(0x0FFFFFFF),
-                const Color(0x26FFFFFF),
-              ],
+              colors: AppColors.glassStops(brightness),
             ),
             border: Border.all(color: stroke, width: 0.8),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
             child: Stack(
               children: [
                 // Centered month title
@@ -193,7 +190,8 @@ class _DayScrollerState extends State<DayScroller> {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: SizedBox(
-                    height: widget.height - 40,
+                    height:
+                        widget.height - (AppSpacing.xxxl + AppSpacing.sm),
                     child: PageView.builder(
                       controller: _controller,
                       scrollDirection: Axis.horizontal,
@@ -246,13 +244,7 @@ class _MonthText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: TextStyle(
-        // iOS vibe: SF Pro Light–ish
-        fontSize: 16,
-        fontWeight: FontWeight.w300,
-        letterSpacing: 0.3,
-        color: color,
-      ),
+      style: AppTypography.calendarMonth.copyWith(color: color),
     );
   }
 }
@@ -304,14 +296,11 @@ class _DayDroplet extends StatelessWidget {
             opacity: 0.7,
             child: Text(
               _weekdayShort,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w300,
-                color: textColor,
-              ),
+              style:
+                  AppTypography.calendarWeekday.copyWith(color: textColor),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.sm),
 
           // Droplet shape with number inside
           Container(
@@ -326,12 +315,12 @@ class _DayDroplet extends StatelessWidget {
                       end: Alignment.bottomRight,
                       colors: isLightBackground
                           ? [
-                              const Color(0x22000000),
-                              const Color(0x0F000000),
+                              AppColors.black.withValues(alpha: 0.13),
+                              AppColors.black.withValues(alpha: 0.06),
                             ]
                           : [
-                              const Color(0x22FFFFFF),
-                              const Color(0x0FFFFFFF),
+                              AppColors.white.withValues(alpha: 0.13),
+                              AppColors.white.withValues(alpha: 0.06),
                             ],
                     )
                   : null,
@@ -339,26 +328,23 @@ class _DayDroplet extends StatelessWidget {
             child: Center(
               child: Text(
                 '${date.day}',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: numeral,
-                ),
+                style:
+                    AppTypography.calendarDay.copyWith(color: numeral),
               ),
             ),
           ),
 
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
 
           // Event dot
           AnimatedOpacity(
             duration: const Duration(milliseconds: 180),
             opacity: hasEvent ? 1.0 : 0.0,
             child: Container(
-              width: 4,
-              height: 4,
+              width: AppSpacing.xs,
+              height: AppSpacing.xs,
               decoration: const BoxDecoration(
-                color: Color(0xFFFF1493),
+                color: AppColors.accentHotPink,
                 shape: BoxShape.circle,
               ),
             ),
