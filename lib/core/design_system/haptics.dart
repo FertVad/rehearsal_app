@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 
 /// Унифицированные тактильные эффекты с мягким троттлингом,
 /// чтобы не «звенеть» при быстрой прокрутке.
-final class AppHaptics {
-  AppHaptics._();
+final class Haptics {
+  Haptics._();
 
   static DateTime _last = DateTime.fromMillisecondsSinceEpoch(0);
   static const _minGap = Duration(milliseconds: 40); // ~25 Hz максимум
@@ -25,8 +25,8 @@ final class AppHaptics {
     }
   }
 
-  /// Чёткий «успех»
-  static Future<void> success() async {
+  /// Ненавязчивый импакт для действий/кнопок
+  static Future<void> light() async {
     if (_canFire()) {
       await HapticFeedback.lightImpact();
     }
@@ -38,4 +38,10 @@ final class AppHaptics {
       await HapticFeedback.heavyImpact();
     }
   }
+
+  /// Совместимость со старым API
+  static Future<void> success() async => light();
 }
+
+// Backward-compat alias
+typedef AppHaptics = Haptics;

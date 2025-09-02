@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 import 'day_sheet.dart';
@@ -33,6 +34,11 @@ class _CalendarPageState extends State<CalendarPage>
   void _openDay(DateTime date) {
     showModalBottomSheet(
       context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.radiusXL),
+        ),
+      ),
       builder: (context) => DaySheet(date: date),
     );
   }
