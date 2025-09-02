@@ -325,9 +325,9 @@ class GlassBackground extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color(0xFF8D7BFF),
-                Color(0xFFF149B8),
-                Color(0xFF3DE8E1),
+                AppColors.primaryPurple,
+                AppColors.primaryPink,
+                AppColors.primaryCyan,
               ],
               stops: [0.0, 0.55, 1.0],
             ),
@@ -348,9 +348,12 @@ class _GlassBackgroundBlobPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..isAntiAlias = true;
 
-    paint.shader = const RadialGradient(
-      colors: [Color(0xFFFFFFFF), Color(0x00FFFFFF)],
-      stops: [0.0, 1.0],
+    paint.shader = RadialGradient(
+      colors: [
+        AppColors.white,
+        AppColors.white.withValues(alpha: 0.0),
+      ],
+      stops: const [0.0, 1.0],
     ).createShader(
       Rect.fromCircle(
         center: Offset(size.width * 0.15, size.height * 0.0),
@@ -363,12 +366,12 @@ class _GlassBackgroundBlobPainter extends CustomPainter {
       paint,
     );
 
-    paint.shader = const RadialGradient(
+    paint.shader = RadialGradient(
       colors: [
-        Color(0xCC8DF9F6),
-        Color(0x008DF9F6),
+        AppColors.primaryCyan.withValues(alpha: 0.8),
+        AppColors.primaryCyan.withValues(alpha: 0.0),
       ],
-      stops: [0.0, 1.0],
+      stops: const [0.0, 1.0],
     ).createShader(
       Rect.fromCircle(
         center: Offset(size.width * 0.85, size.height * 0.95),
