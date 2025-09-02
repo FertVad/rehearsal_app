@@ -27,7 +27,7 @@ class WeeklyHeader extends StatelessWidget {
           DateTime(start.year, start.month, start.day).add(Duration(days: i)),
     );
 
-    return GlassCard(
+    return GlassPanel(
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
