@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 import 'app_spacing.dart';
+import 'app_typography.dart';
 
 enum GlassStyle { light, dark, accent }
 
@@ -227,6 +228,53 @@ class GlassButton extends StatelessWidget {
       child: DefaultTextStyle.merge(
         style: TextStyle(color: textColor),
         child: child,
+      ),
+    );
+  }
+}
+
+/// Компактный стеклянный чип для выбора опций.
+/// Похож на GlassButton, но меньше и с фиксированным размером.
+class GlassChip extends StatelessWidget {
+  const GlassChip({
+    super.key,
+    required this.label,
+    required this.onTap,
+    this.selected = false,
+  });
+
+  final String label;
+  final VoidCallback onTap;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = selected
+        ? (isDark ? Colors.white : Colors.white.withValues(alpha: 0.95))
+        : (isDark
+            ? Colors.white.withValues(alpha: 0.70)
+            : Colors.black.withValues(alpha: 0.60));
+
+    return SizedBox(
+      height: 32, // Фиксированная высота для чипов
+      child: AppGlass(
+        style: selected ? GlassStyle.accent : GlassStyle.light,
+        size: GlassSize.small,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xs,
+        ),
+        onTap: onTap,
+        child: Center(
+          child: Text(
+            label,
+            style: AppTypography.label.copyWith(
+              color: textColor,
+              fontSize: 13,
+            ),
+          ),
+        ),
       ),
     );
   }
