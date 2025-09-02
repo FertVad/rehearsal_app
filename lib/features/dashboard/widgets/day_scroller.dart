@@ -6,6 +6,7 @@ import 'package:rehearsal_app/core/design_system/app_colors.dart';
 import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/design_system/haptics.dart';
+import 'package:rehearsal_app/core/design_system/calendar_components.dart';
 
 /// A glassy, horizontally scrollable strip of days with:
 ///  • centered month label (updates as you scroll)
@@ -137,10 +138,8 @@ class _DayScrollerState extends State<DayScroller> {
   @override
   Widget build(BuildContext context) {
     final radius = Radius.circular(widget.radius);
-    final isLight = widget.backgroundBrightness == Brightness.light;
     final brightness = widget.backgroundBrightness;
     final textColor = AppColors.onGlassText(brightness);
-    final strokeColor = AppColors.onGlassText(brightness);
 
     // glass palette from design tokens
     final baseFill = AppColors.glassBase(brightness);
@@ -213,13 +212,15 @@ class _DayScrollerState extends State<DayScroller> {
                         final bool hasEvent =
                             widget.eventPredicate?.call(date) ?? false;
                         return Center(
-                          child: _DayDroplet(
-                            date: date,
-                            selected: isSelected,
-                            hasEvent: hasEvent,
-                            textColor: textColor,
-                            strokeColor: strokeColor,
-                            isLightBackground: isLight,
+                          child: SizedBox(
+                            width: 52,
+                            child: CalendarDayButton(
+                              day: date,
+                              isSelected: isSelected,
+                              hasEvent: hasEvent,
+                              size: 36,
+                              onTap: null,
+                            ),
                           ),
                         );
                       },
@@ -245,112 +246,6 @@ class _MonthText extends StatelessWidget {
     return Text(
       title,
       style: AppTypography.calendarMonth.copyWith(color: color),
-    );
-  }
-}
-
-class _DayDroplet extends StatelessWidget {
-  const _DayDroplet({
-    required this.date,
-    required this.selected,
-    required this.hasEvent,
-    required this.textColor,
-    required this.strokeColor,
-    required this.isLightBackground,
-  });
-
-  final DateTime date;
-  final bool selected;
-  final bool hasEvent;
-  final Color textColor;
-  final Color strokeColor;
-  final bool isLightBackground;
-
-  String get _weekdayShort {
-    const map = {
-      DateTime.monday: 'Mon',
-      DateTime.tuesday: 'Tue',
-      DateTime.wednesday: 'Wed',
-      DateTime.thursday: 'Thu',
-      DateTime.friday: 'Fri',
-      DateTime.saturday: 'Sat',
-      DateTime.sunday: 'Sun',
-    };
-    return map[date.weekday] ?? '';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final Color baseStroke = strokeColor.withValues(
-      alpha: selected ? 0.35 : 0.18,
-    );
-    final Color numeral = textColor;
-
-    return SizedBox(
-      width: 52,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // Weekday label
-          Opacity(
-            opacity: 0.7,
-            child: Text(
-              _weekdayShort,
-              style:
-                  AppTypography.calendarWeekday.copyWith(color: textColor),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-
-          // Droplet shape with number inside
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: baseStroke, width: 1),
-              gradient: selected
-                  ? LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: isLightBackground
-                          ? [
-                              AppColors.black.withValues(alpha: 0.13),
-                              AppColors.black.withValues(alpha: 0.06),
-                            ]
-                          : [
-                              AppColors.white.withValues(alpha: 0.13),
-                              AppColors.white.withValues(alpha: 0.06),
-                            ],
-                    )
-                  : null,
-            ),
-            child: Center(
-              child: Text(
-                '${date.day}',
-                style:
-                    AppTypography.calendarDay.copyWith(color: numeral),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: AppSpacing.xs),
-
-          // Event dot
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 180),
-            opacity: hasEvent ? 1.0 : 0.0,
-            child: Container(
-              width: AppSpacing.xs,
-              height: AppSpacing.xs,
-              decoration: const BoxDecoration(
-                color: AppColors.accentHotPink,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

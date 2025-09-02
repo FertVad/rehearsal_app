@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
-/// Indicates availability for a particular day.
-enum AvailabilityStatus { free, busy, partial }
+import 'package:rehearsal_app/core/design_system/calendar_components.dart';
 
 /// Grid-based calendar widget that shows availability indicators for days.
 class CalendarGrid extends StatelessWidget {
@@ -60,45 +58,15 @@ class CalendarGrid extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                _StatusDot(key: Key('dot-$keyBase'), status: status),
+                if (status != null)
+                  StatusIndicator(key: Key('dot-$keyBase'), status: status!)
+                else
+                  const SizedBox(height: 8, width: 8),
               ],
             ),
           ),
         );
       },
-    );
-  }
-}
-
-class _StatusDot extends StatelessWidget {
-  const _StatusDot({super.key, this.status});
-
-  final AvailabilityStatus? status;
-
-  Color? _color() {
-    switch (status) {
-      case AvailabilityStatus.free:
-        return Colors.green;
-      case AvailabilityStatus.busy:
-        return Colors.red;
-      case AvailabilityStatus.partial:
-        return Colors.yellow;
-      case null:
-        return null;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final color = _color();
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-        border: color == null ? Border.all(color: Colors.grey) : null,
-      ),
     );
   }
 }
