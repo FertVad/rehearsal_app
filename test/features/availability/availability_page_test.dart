@@ -7,6 +7,8 @@ import 'package:rehearsal_app/core/db/app_database.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 import 'package:rehearsal_app/features/availability/controller/availability_provider.dart';
 import 'package:rehearsal_app/features/availability/presentation/availability_page.dart';
+import 'package:rehearsal_app/features/availability/presentation/day_bottom_sheet.dart';
+import 'package:rehearsal_app/core/design_system/glass_system.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
 
 /// Простая in-memory фейка
@@ -91,6 +93,90 @@ void main() {
     expect(find.byType(AvailabilityPage), findsOneWidget);
     expect(find.byType(Scaffold), findsOneWidget);
     expect(find.byType(AppBar), findsOneWidget);
+  });
+
+  testWidgets('day_bottom_sheet uses GlassButton for status selection', (tester) async {
+    // Arrange
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (_) => DayBottomSheet(dayLocal: DateTime.now()),
+                );
+              },
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Act
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    // Assert
+    expect(find.byType(GlassButton), findsNWidgets(3));
+    expect(find.byKey(const Key('status_free')), findsOneWidget);
+    expect(find.byKey(const Key('status_busy')), findsOneWidget);
+    expect(find.byKey(const Key('status_partial')), findsOneWidget);
+  });
+
+  testWidgets('day_bottom_sheet displays selected status correctly', (tester) async {
+    // Arrange
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (_) => DayBottomSheet(dayLocal: DateTime.now()),
+                );
+              },
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Act
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+
+    // Assert initial state
+    expect(
+      tester.widget<GlassButton>(find.byKey(const Key('status_free'))).selected,
+      isTrue,
+    );
+    expect(
+      tester.widget<GlassButton>(find.byKey(const Key('status_busy'))).selected,
+      isFalse,
+    );
+
+    // Change selection
+    await tester.tap(find.byKey(const Key('status_busy')));
+    await tester.pumpAndSettle();
+
+    // Assert updated state
+    expect(
+      tester.widget<GlassButton>(find.byKey(const Key('status_busy'))).selected,
+      isTrue,
+    );
+    expect(
+      tester.widget<GlassButton>(find.byKey(const Key('status_free'))).selected,
+      isFalse,
+    );
   });
 
   group('integration stubs (skipped)', () {
