@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rehearsal_app/core/utils/time.dart';
 import 'package:rehearsal_app/features/availability/presentation/widgets/calendar_grid.dart';
+import 'package:rehearsal_app/core/design_system/calendar_components.dart';
 
 void main() {
   group('CalendarGrid', () {

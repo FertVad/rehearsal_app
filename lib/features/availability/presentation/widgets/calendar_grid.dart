@@ -59,7 +59,7 @@ class CalendarGrid extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 if (status != null)
-                  StatusIndicator(key: Key('dot-$keyBase'), status: status!)
+                  StatusIndicator(key: Key('dot-$keyBase'), status: status)
                 else
                   const SizedBox(height: 8, width: 8),
               ],
