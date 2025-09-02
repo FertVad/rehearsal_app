@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:rehearsal_app/core/design_system/glass_system.dart' as ds;
 import 'package:rehearsal_app/features/dashboard/widgets/day_scroller.dart';
-import 'package:rehearsal_app/features/dashboard/widgets/dash_background.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -15,7 +14,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DashBackground(
+      body: ds.GlassBackground(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

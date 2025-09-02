@@ -231,3 +231,109 @@ class GlassButton extends StatelessWidget {
     );
   }
 }
+
+class GlassPanel extends StatelessWidget {
+  const GlassPanel({
+    super.key,
+    required this.child,
+    this.style = GlassStyle.light,
+    this.size = GlassSize.medium,
+    this.padding,
+    this.onTap,
+  });
+
+  final Widget child;
+  final GlassStyle style;
+  final GlassSize size;
+  final EdgeInsetsGeometry? padding;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppGlass(
+      style: style,
+      size: size,
+      padding: padding,
+      onTap: onTap,
+      child: child,
+    );
+  }
+}
+
+class GlassBackground extends StatelessWidget {
+  const GlassBackground({super.key, required this.child, this.padding});
+
+  final Widget child;
+  final EdgeInsets? padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        const DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF8D7BFF),
+                Color(0xFFF149B8),
+                Color(0xFF3DE8E1),
+              ],
+              stops: [0.0, 0.55, 1.0],
+            ),
+          ),
+        ),
+        IgnorePointer(child: CustomPaint(painter: _GlassBackgroundBlobPainter())),
+        if (padding != null)
+          Padding(padding: padding!, child: child)
+        else
+          child,
+      ],
+    );
+  }
+}
+
+class _GlassBackgroundBlobPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..isAntiAlias = true;
+
+    paint.shader = const RadialGradient(
+      colors: [Color(0xFFFFFFFF), Color(0x00FFFFFF)],
+      stops: [0.0, 1.0],
+    ).createShader(
+      Rect.fromCircle(
+        center: Offset(size.width * 0.15, size.height * 0.0),
+        radius: size.width * 0.7,
+      ),
+    );
+    canvas.drawCircle(
+      Offset(size.width * 0.15, size.height * 0.0),
+      size.width * 0.65,
+      paint,
+    );
+
+    paint.shader = const RadialGradient(
+      colors: [
+        Color(0xCC8DF9F6),
+        Color(0x008DF9F6),
+      ],
+      stops: [0.0, 1.0],
+    ).createShader(
+      Rect.fromCircle(
+        center: Offset(size.width * 0.85, size.height * 0.95),
+        radius: size.width * 0.75,
+      ),
+    );
+    canvas.drawCircle(
+      Offset(size.width * 0.85, size.height * 0.95),
+      size.width * 0.7,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
