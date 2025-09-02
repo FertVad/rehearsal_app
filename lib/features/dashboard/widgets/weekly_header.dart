@@ -9,10 +9,7 @@ import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 /// Рисует названия дней и числа в одной строке.
 /// [start] — первый день недели (обычно понедельник, без времён).
 class WeeklyHeader extends StatelessWidget {
-  const WeeklyHeader({
-    super.key,
-    required this.start,
-  });
+  const WeeklyHeader({super.key, required this.start});
 
   /// Первый день недели (например, понедельник).
   final DateTime start;
@@ -21,15 +18,13 @@ class WeeklyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
-    final labelColor = brightness == Brightness.dark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondary;
-    final valueColor = AppColors.textOn(context);
+    final labelColor = AppColors.textSecondary;
+    final valueColor = AppColors.textPrimary;
 
     final days = List<DateTime>.generate(
       7,
-      (i) => DateTime(start.year, start.month, start.day).add(Duration(days: i)),
+      (i) =>
+          DateTime(start.year, start.month, start.day).add(Duration(days: i)),
     );
 
     return GlassCard(
