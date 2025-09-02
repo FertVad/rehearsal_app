@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 import 'day_bottom_sheet.dart';
 
@@ -15,6 +16,11 @@ class AvailabilityPage extends StatelessWidget {
             showModalBottomSheet<void>(
               context: context,
               isScrollControlled: true,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(AppSpacing.radiusXL),
+                ),
+              ),
               builder: (ctx) => DayBottomSheet(dayLocal: DateTime.now()),
             );
           },

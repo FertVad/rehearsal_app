@@ -32,6 +32,15 @@ final class AppTypography {
     height: 1.2,
   );
 
+  // === Заголовки поменьше ===
+  static const TextStyle titleSm = TextStyle(
+    fontFamily: _fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0,
+    height: 1.3,
+  );
+
   // === Основной текст / Body ===
   static const TextStyle bodyLarge = TextStyle(
     fontFamily: _fontFamily,
@@ -55,6 +64,15 @@ final class AppTypography {
     fontWeight: FontWeight.w400,
     letterSpacing: 0.4,
     height: 1.3,
+  );
+
+  // === Лейблы/кнопки ===
+  static const TextStyle label = TextStyle(
+    fontFamily: _fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.1,
+    height: 1.2,
   );
 
   // === Календарь ===

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timezone/timezone.dart' as tz;
+import 'package:rehearsal_app/core/design_system/app_spacing.dart';
+import 'package:rehearsal_app/core/design_system/app_typography.dart';
+import 'package:rehearsal_app/core/design_system/haptics.dart';
 import 'package:rehearsal_app/l10n/app.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 import '../controller/availability_provider.dart';
 import '../controller/availability_state.dart';
@@ -21,6 +24,7 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
 
   void _addInterval() {
     if (_intervals.length >= 6) return;
+    Haptics.light();
     setState(() {
       _intervals.add((
         start: const TimeOfDay(hour: 10, minute: 0),
@@ -56,6 +60,7 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
   }
 
   void _removeInterval(int index) {
+    Haptics.light();
     setState(() {
       _intervals.removeAt(index);
     });
@@ -102,88 +107,154 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-        top: 16,
+        left: AppSpacing.lg,
+        right: AppSpacing.lg,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.lg,
+        top: AppSpacing.lg,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            context.l10n.daySheetChangeAvailability,
+            style: AppTypography.titleSm,
+          ),
+          const SizedBox(height: AppSpacing.lg),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ChoiceChip(
                 key: const Key('status_free'),
-                label: Text(context.l10n.availabilityStatusFree),
+                label: Text(
+                  context.l10n.availabilityStatusFree,
+                  style: AppTypography.label,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+                ),
                 selected: _status == AvailabilityStatus.free,
-                onSelected: (_) => setState(() {
-                  _status = AvailabilityStatus.free;
-                }),
+                onSelected: (_) {
+                  setState(() {
+                    _status = AvailabilityStatus.free;
+                  });
+                  Haptics.selection();
+                },
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
               ChoiceChip(
                 key: const Key('status_busy'),
-                label: Text(context.l10n.availabilityStatusBusy),
+                label: Text(
+                  context.l10n.availabilityStatusBusy,
+                  style: AppTypography.label,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+                ),
                 selected: _status == AvailabilityStatus.busy,
-                onSelected: (_) => setState(() {
-                  _status = AvailabilityStatus.busy;
-                }),
+                onSelected: (_) {
+                  setState(() {
+                    _status = AvailabilityStatus.busy;
+                  });
+                  Haptics.selection();
+                },
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
               ChoiceChip(
                 key: const Key('status_partial'),
-                label: Text(context.l10n.availabilityStatusPartial),
+                label: Text(
+                  context.l10n.availabilityStatusPartial,
+                  style: AppTypography.label,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+                ),
                 selected: _status == AvailabilityStatus.partial,
-                onSelected: (_) => setState(() {
-                  _status = AvailabilityStatus.partial;
-                }),
+                onSelected: (_) {
+                  setState(() {
+                    _status = AvailabilityStatus.partial;
+                  });
+                  Haptics.selection();
+                },
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           if (_status == AvailabilityStatus.partial) ...[
             ElevatedButton(
               key: const Key('add_interval'),
-              onPressed: _addInterval,
-              child: Text(context.l10n.availabilityAddInterval),
+              onPressed: () {
+                Haptics.light();
+                _addInterval();
+              },
+              child: Text(
+                context.l10n.availabilityAddInterval,
+                style: AppTypography.label,
+              ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             for (var i = 0; i < _intervals.length; i++)
               Row(
                 children: [
                   TextButton(
                     key: Key('start_$i'),
-                    onPressed: () => _pickStart(i),
-                    child: Text(_intervals[i].start.format(context)),
+                    onPressed: () {
+                      Haptics.selection();
+                      _pickStart(i);
+                    },
+                    child: Text(
+                      _intervals[i].start.format(context),
+                      style: AppTypography.label,
+                    ),
                   ),
                   TextButton(
                     key: Key('end_$i'),
-                    onPressed: () => _pickEnd(i),
-                    child: Text(_intervals[i].end.format(context)),
+                    onPressed: () {
+                      Haptics.selection();
+                      _pickEnd(i);
+                    },
+                    child: Text(
+                      _intervals[i].end.format(context),
+                      style: AppTypography.label,
+                    ),
                   ),
                   IconButton(
                     key: Key('remove_$i'),
-                    onPressed: () => _removeInterval(i),
+                    onPressed: () {
+                      Haptics.light();
+                      _removeInterval(i);
+                    },
                     icon: const Icon(Icons.close),
                   ),
                 ],
               ),
           ],
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
                 key: const Key('cancel_btn'),
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(context.l10n.availabilityCancel),
+                onPressed: () {
+                  Haptics.light();
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  context.l10n.availabilityCancel,
+                  style: AppTypography.label,
+                ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
               ElevatedButton(
                 key: const Key('save_btn'),
-                onPressed: _save,
-                child: Text(context.l10n.availabilitySave),
+                onPressed: () {
+                  Haptics.light();
+                  _save();
+                },
+                child: Text(
+                  context.l10n.availabilitySave,
+                  style: AppTypography.label,
+                ),
               ),
             ],
           ),
