@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rehearsal_app/core/design_system/app_colors.dart';
+import 'package:rehearsal_app/core/design_system/app_spacing.dart';
+import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/design_system/calendar_components.dart';
 
 /// Grid-based calendar widget that shows availability indicators for days.
@@ -53,15 +56,17 @@ class CalendarGrid extends StatelessWidget {
               children: [
                 Text(
                   '${day.day}',
-                  style: TextStyle(
-                    color: isCurrentMonth ? Colors.black : Colors.grey,
+                  style: AppTypography.calendarDay.copyWith(
+                    color: isCurrentMonth
+                        ? AppColors.textPrimary
+                        : AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 if (status != null)
                   StatusIndicator(key: Key('dot-$keyBase'), status: status)
                 else
-                  const SizedBox(height: 8, width: 8),
+                  const SizedBox(height: AppSpacing.sm, width: AppSpacing.sm),
               ],
             ),
           ),
