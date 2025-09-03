@@ -122,14 +122,11 @@ class AppGlass extends StatelessWidget {
         );
       case GlassStyle.accent:
         // лёгкий диагональный «свет» в сторону акцентного
-        return const LinearGradient(
+        return LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          stops: [0.0, 1.0],
-          colors: [
-            AppColors.glassAccentTop,
-            AppColors.glassAccentBottom,
-          ],
+          stops: const [0.0, 1.0],
+          colors: [AppColors.glassAccentTop, AppColors.glassAccentBottom],
         );
     }
   }
@@ -208,8 +205,8 @@ class GlassButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark
-        ? AppColors.white.withOpacity(0.95)
-        : AppColors.black.withOpacity(0.85);
+        ? AppColors.white.withValues(alpha: 0.95)
+        : AppColors.black.withValues(alpha: 0.85);
     return AppGlass(
       style: selected ? GlassStyle.accent : GlassStyle.light,
       size: size,
@@ -240,10 +237,10 @@ class GlassChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = selected
-        ? (isDark ? AppColors.white : AppColors.white.withOpacity(0.95))
+        ? (isDark ? AppColors.white : AppColors.white.withValues(alpha: 0.95))
         : (isDark
-            ? AppColors.white.withOpacity(0.70)
-            : AppColors.black.withOpacity(0.60));
+              ? AppColors.white.withValues(alpha: 0.70)
+              : AppColors.black.withValues(alpha: 0.60));
 
     return SizedBox(
       height: 32, // Фиксированная высота для чипов
@@ -258,10 +255,7 @@ class GlassChip extends StatelessWidget {
         child: Center(
           child: Text(
             label,
-            style: AppTypography.label.copyWith(
-              color: textColor,
-              fontSize: 13,
-            ),
+            style: AppTypography.label.copyWith(color: textColor, fontSize: 13),
           ),
         ),
       ),
@@ -298,7 +292,6 @@ class GlassPanel extends StatelessWidget {
 }
 
 /// Фоновый градиент/«пятна» для экранов.
-/// TODO: можно вынести цвета в ThemeExtension, чтобы переопределять из темы.
 class GlassBackground extends StatelessWidget {
   const GlassBackground({
     super.key,
@@ -318,8 +311,9 @@ class GlassBackground extends StatelessWidget {
       children: [
         DecoratedBox(
           decoration: BoxDecoration(
-            gradient: gradient ??
-                const LinearGradient(
+            gradient:
+                gradient ??
+                LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
@@ -331,7 +325,9 @@ class GlassBackground extends StatelessWidget {
                 ),
           ),
         ),
-        IgnorePointer(child: CustomPaint(painter: _GlassBackgroundBlobPainter())),
+        IgnorePointer(
+          child: CustomPaint(painter: _GlassBackgroundBlobPainter()),
+        ),
         if (padding != null)
           Padding(padding: padding!, child: child)
         else
@@ -346,36 +342,38 @@ class _GlassBackgroundBlobPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..isAntiAlias = true;
 
-    paint.shader = RadialGradient(
-      colors: [
-        AppColors.bgBlobPrimary,
-        AppColors.bgBlobPrimary.withOpacity(0.0),
-      ],
-      stops: const [0.0, 1.0],
-    ).createShader(
-      Rect.fromCircle(
-        center: Offset(size.width * 0.15, size.height * 0.0),
-        radius: size.width * 0.7,
-      ),
-    );
+    paint.shader =
+        RadialGradient(
+          colors: [
+            AppColors.bgBlobPrimary,
+            AppColors.bgBlobPrimary.withValues(alpha: 0.0),
+          ],
+          stops: const [0.0, 1.0],
+        ).createShader(
+          Rect.fromCircle(
+            center: Offset(size.width * 0.15, size.height * 0.0),
+            radius: size.width * 0.7,
+          ),
+        );
     canvas.drawCircle(
       Offset(size.width * 0.15, size.height * 0.0),
       size.width * 0.65,
       paint,
     );
 
-    paint.shader = RadialGradient(
-      colors: [
-        AppColors.bgBlobSecondary.withOpacity(0.8),
-        AppColors.bgBlobSecondary.withOpacity(0.0),
-      ],
-      stops: const [0.0, 1.0],
-    ).createShader(
-      Rect.fromCircle(
-        center: Offset(size.width * 0.85, size.height * 0.95),
-        radius: size.width * 0.75,
-      ),
-    );
+    paint.shader =
+        RadialGradient(
+          colors: [
+            AppColors.bgBlobSecondary.withValues(alpha: 0.8),
+            AppColors.bgBlobSecondary.withValues(alpha: 0.0),
+          ],
+          stops: const [0.0, 1.0],
+        ).createShader(
+          Rect.fromCircle(
+            center: Offset(size.width * 0.85, size.height * 0.95),
+            radius: size.width * 0.75,
+          ),
+        );
     canvas.drawCircle(
       Offset(size.width * 0.85, size.height * 0.95),
       size.width * 0.7,

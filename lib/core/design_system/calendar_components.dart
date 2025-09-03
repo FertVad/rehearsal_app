@@ -89,7 +89,7 @@ class CalendarDayButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final b = Theme.of(context).brightness;
     final Color textSecondary = b == Brightness.dark
-        ? Colors.white.withOpacity(0.70)
+        ? Colors.white.withValues(alpha: 0.70)
         : AppColors.textSecondary;
 
     return Column(
@@ -129,7 +129,7 @@ class CalendarDayButton extends StatelessWidget {
                         // более контрастный текст для выбранного
                         color: isSelected
                             ? (b == Brightness.dark
-                                  ? Colors.white.withOpacity(0.95)
+                                  ? Colors.white.withValues(alpha: 0.95)
                                   : AppColors.textPrimary)
                             : textSecondary,
                       ),
@@ -166,15 +166,15 @@ class _DropletSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     final b = Theme.of(context).brightness;
     final Color borderBase = b == Brightness.dark
-        ? Colors.white.withOpacity(0.18)
-        : Colors.white.withOpacity(0.28);
+        ? Colors.white.withValues(alpha: 0.18)
+        : Colors.white.withValues(alpha: 0.28);
 
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
           color: selected
-              ? AppColors.accentHotPink.withOpacity(0.30)
+              ? AppColors.accentHotPink.withValues(alpha: 0.30)
               : borderBase,
           width: selected ? 1.0 : 0.8,
         ),
