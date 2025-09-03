@@ -17,11 +17,11 @@ final class AppColors {
   static const Color darkBase = black;
 
   // === TEXT (\u043f\u043e \u0443\u043c\u043e\u043b\u0447\u0430\u043d\u0438\u044e \u0434\u043b\u044f light) ===
-  static final Color textPrimary        = black.withValues(alpha: 0.85);
-  static final Color textSecondary      = black.withValues(alpha: 0.60);
-  static final Color textTertiary       = black.withValues(alpha: 0.40);
-  static final Color textOnGlassPrimary = white.withValues(alpha: 0.95);
-  static final Color textOnGlassMuted   = white.withValues(alpha: 0.70);
+  static final Color textPrimary        = black.withOpacity(0.85);
+  static final Color textSecondary      = black.withOpacity(0.60);
+  static final Color textTertiary       = black.withOpacity(0.40);
+  static final Color textOnGlassPrimary = white.withOpacity(0.95);
+  static final Color textOnGlassMuted   = white.withOpacity(0.70);
 
   // === STATUS ===
   static const Color statusFree    = Color(0xFF4CAF50);
@@ -30,23 +30,23 @@ final class AppColors {
 
   // === GLASS BACKGROUNDS ===
   // \u0421\u0432\u0435\u0442\u043b\u043e\u0435 \u0441\u0442\u0435\u043a\u043b\u043e
-  static final Color glassLightBase   = white.withValues(alpha: 0.25);
-  static final Color glassLightTop    = white.withValues(alpha: 0.20);
-  static final Color glassLightMid    = white.withValues(alpha: 0.07);
-  static final Color glassLightBottom = white.withValues(alpha: 0.30);
-  static final Color glassLightStroke = white.withValues(alpha: 0.30);
+  static final Color glassLightBase   = white.withOpacity(0.25);
+  static final Color glassLightTop    = white.withOpacity(0.20);
+  static final Color glassLightMid    = white.withOpacity(0.07);
+  static final Color glassLightBottom = white.withOpacity(0.30);
+  static final Color glassLightStroke = white.withOpacity(0.30);
 
   // \u0422\u0451\u043c\u043d\u043e\u0435 \u0441\u0442\u0435\u043a\u043b\u043e
-  static final Color glassDarkBase   = black.withValues(alpha: 0.35);
-  static final Color glassDarkTop    = white.withValues(alpha: 0.08);
-  static final Color glassDarkMid    = white.withValues(alpha: 0.04);
-  static final Color glassDarkBottom = white.withValues(alpha: 0.18);
-  static final Color glassDarkStroke = white.withValues(alpha: 0.18);
+  static final Color glassDarkBase   = black.withOpacity(0.35);
+  static final Color glassDarkTop    = white.withOpacity(0.08);
+  static final Color glassDarkMid    = white.withOpacity(0.04);
+  static final Color glassDarkBottom = white.withOpacity(0.18);
+  static final Color glassDarkStroke = white.withOpacity(0.18);
 
   // === GLASS OVERLAYS & BACKGROUNDS ===
-  static final Color glassOverlayLight  = white.withValues(alpha: 0.22);
-  static final Color glassOverlayDark   = black.withValues(alpha: 0.32);
-  static final Color glassOverlayAccent = accentHotPink.withValues(alpha: 0.10);
+  static final Color glassOverlayLight  = white.withOpacity(0.22);
+  static final Color glassOverlayDark   = black.withOpacity(0.32);
+  static final Color glassOverlayAccent = accentHotPink.withOpacity(0.10);
 
   static const Color bgGradTop = primaryPurple;
   static const Color bgGradMid = primaryPink;
@@ -55,9 +55,9 @@ final class AppColors {
   static const Color bgBlobPrimary   = white;
   static const Color bgBlobSecondary = primaryCyan;
 
-  static final Color glassAccentTop    = accentHotPink.withValues(alpha: 0.16);
-  static final Color glassAccentBottom = accentHotPink.withValues(alpha: 0.04);
-  static final Color glassAccentStroke = accentHotPink.withValues(alpha: 0.30);
+  static final Color glassAccentTop    = accentHotPink.withOpacity(0.16);
+  static final Color glassAccentBottom = accentHotPink.withOpacity(0.04);
+  static final Color glassAccentStroke = accentHotPink.withOpacity(0.30);
 
   /// \u0423\u0442\u0438\u043b\u0438\u0442\u0430 \u0434\u043b\u044f \u0432\u044b\u0431\u043e\u0440\u0430 \u0446\u0432\u0435\u0442\u0430 \u0442\u0435\u043a\u0441\u0442\u0430 \u043f\u043e\u0432\u0435\u0440\u0445 \u0441\u0442\u0435\u043a\u043b\u0430.
   static Color onGlassText(Brightness b, {bool muted = false}) =>
