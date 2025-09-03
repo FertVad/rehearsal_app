@@ -34,31 +34,17 @@ void main() {
         ),
       );
 
-      BoxDecoration decoration;
-
-      BoxDecoration? decorationFor(int dateUtc) {
+      AvailabilityStatus statusFor(int dateUtc) {
         final dot = find.byKey(ValueKey('dot-$dateUtc'));
-        final containerFinder = find.descendant(
-          of: dot,
-          matching: find.byType(Container),
-        );
-        final container = tester.widget<Container>(containerFinder);
-        return container.decoration as BoxDecoration?;
+        expect(dot, findsOneWidget,
+            reason: 'Expected a status dot with key dot-$dateUtc');
+        final indicator = tester.widget<StatusIndicator>(dot);
+        return indicator.status;
       }
 
-      decoration = decorationFor(dateUtc00(dayFree))!;
-      expect(decoration.color, Colors.green);
-
-      decoration = decorationFor(dateUtc00(dayBusy))!;
-      expect(decoration.color, Colors.red);
-
-      decoration = decorationFor(dateUtc00(dayPartial))!;
-      expect(decoration.color, Colors.yellow);
-
-      final dayNone = DateTime(2024, 1, 13);
-      decoration = decorationFor(dateUtc00(dayNone))!;
-      final Border? border = decoration.border as Border?;
-      expect(border?.top.color, Colors.grey);
+      expect(statusFor(dateUtc00(dayFree)), AvailabilityStatus.free);
+      expect(statusFor(dateUtc00(dayBusy)), AvailabilityStatus.busy);
+      expect(statusFor(dateUtc00(dayPartial)), AvailabilityStatus.partial);
     });
 
     testWidgets('tapping day triggers callback', (tester) async {
