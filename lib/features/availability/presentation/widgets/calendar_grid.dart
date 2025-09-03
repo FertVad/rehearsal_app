@@ -3,8 +3,13 @@ import 'package:rehearsal_app/core/design_system/app_colors.dart';
 import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/design_system/calendar_components.dart';
+import 'package:rehearsal_app/core/utils/time.dart';
 
 /// Grid-based calendar widget that shows availability indicators for days.
+///
+/// Each day cell and its indicator expose stable [ValueKey]s for tests:
+/// `day-<dateUtc>` for the cell and `dot-<dateUtc>` for the status dot where
+/// `dateUtc` is `dateUtc00` of the day.
 class CalendarGrid extends StatelessWidget {
   const CalendarGrid({
     super.key,
@@ -41,8 +46,7 @@ class CalendarGrid extends StatelessWidget {
       itemCount: itemCount,
       itemBuilder: (context, index) {
         final day = startDay.add(Duration(days: index));
-        // Use local midnight converted to UTC to match test keys and app-wide date keying.
-        final keyBase = day.toUtc().millisecondsSinceEpoch;
+        final keyBase = dateUtc00(day);
         final status = byDate[keyBase];
         final isCurrentMonth = day.month == month.month;
 

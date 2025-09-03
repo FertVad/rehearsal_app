@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rehearsal_app/core/utils/time.dart';
 import 'package:rehearsal_app/features/availability/presentation/widgets/calendar_grid.dart';
 import 'package:rehearsal_app/core/design_system/calendar_components.dart';
-import 'package:rehearsal_app/core/design_system/app_colors.dart';
 
 void main() {
   group('CalendarGrid', () {
@@ -35,33 +34,21 @@ void main() {
         ),
       );
 
-      BoxDecoration decoration;
-
-      BoxDecoration? decorationFor(int dateUtc) {
-        final dot = find.byKey(ValueKey('dot-$dateUtc'));
-        final containerFinder = find.descendant(
-          of: dot,
-          matching: find.byType(Container),
-        );
-        final container = tester.widget<Container>(containerFinder);
-        return container.decoration as BoxDecoration?;
+      AvailabilityStatus statusFor(DateTime day) {
+        final finder = find.byKey(ValueKey('dot-${dateUtc00(day)}'));
+        final indicator = tester.widget<StatusIndicator>(finder);
+        return indicator.status;
       }
 
-      BoxDecoration decoration;
-
-      decoration = decorationFor(dateUtc00(dayFree))!;
-      expect(decoration.color, Colors.green);
-
-      decoration = decorationFor(dateUtc00(dayBusy))!;
-      expect(decoration.color, Colors.red);
-
-      decoration = decorationFor(dateUtc00(dayPartial))!;
-      expect(decoration.color, Colors.yellow);
+      expect(statusFor(dayFree), AvailabilityStatus.free);
+      expect(statusFor(dayBusy), AvailabilityStatus.busy);
+      expect(statusFor(dayPartial), AvailabilityStatus.partial);
 
       final dayNone = DateTime(2024, 1, 13);
-      decoration = decorationFor(dateUtc00(dayNone))!;
-      final Border? border = decoration.border as Border?;
-      expect(border?.top.color, Colors.grey);
+      expect(
+        find.byKey(ValueKey('dot-${dateUtc00(dayNone)}')),
+        findsNothing,
+      );
     });
 
     testWidgets('tapping day triggers callback', (tester) async {
