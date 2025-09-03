@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rehearsal_app/core/design_system/app_spacing.dart';
+import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 /// Bottom sheet displaying basic information about a day.
@@ -11,22 +13,28 @@ class DaySheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final formatted = '${date.toLocal()}';
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(formatted, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 12),
-          Text(context.l10n.daySheetAvailabilityNone),
-          const SizedBox(height: 8),
-          Text(context.l10n.daySheetRehearsals0),
-          const SizedBox(height: 16),
+          Text(formatted, style: AppTypography.titleSm),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            context.l10n.daySheetAvailabilityNone,
+            style: AppTypography.bodyMedium,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            context.l10n.daySheetRehearsals0,
+            style: AppTypography.bodyMedium,
+          ),
+          const SizedBox(height: AppSpacing.lg),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(context.l10n.daySheetChangeAvailability),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(context.l10n.daySheetNewRehearsal),
