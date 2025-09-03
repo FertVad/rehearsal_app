@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rehearsal_app/core/design_system/app_colors.dart';
+import 'package:rehearsal_app/core/design_system/app_typography.dart';
 
 /// A simple widget showing a day number.
 class DayCell extends StatelessWidget {
@@ -13,10 +15,13 @@ class DayCell extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(color: AppColors.textTertiary),
         ),
         alignment: Alignment.center,
-        child: Text('${date.day}'),
+        child: Text(
+          '${date.day}',
+          style: AppTypography.calendarDay,
+        ),
       ),
     );
   }
