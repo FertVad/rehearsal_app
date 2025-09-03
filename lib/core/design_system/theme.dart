@@ -3,6 +3,8 @@ import 'app_colors.dart';
 import 'app_typography.dart';
 import 'app_spacing.dart';
 
+// TODO: добавить ThemeExtension для управления градиентами стекла.
+
 ThemeData buildAppTheme() {
   return ThemeData(
     useMaterial3: true,

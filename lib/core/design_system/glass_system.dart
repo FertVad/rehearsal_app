@@ -91,13 +91,13 @@ class AppGlass extends StatelessWidget {
     switch (style) {
       case GlassStyle.light:
         // Белое матовое стекло
-        return AppColors.white.withOpacity(0.22);
+        return AppColors.glassOverlayLight;
       case GlassStyle.dark:
         // Дымчатое стекло для дарка
-        return AppColors.black.withOpacity(0.32);
+        return AppColors.glassOverlayDark;
       case GlassStyle.accent:
         // Едва заметная подсветка акцентным
-        return AppColors.accentHotPink.withOpacity(0.10);
+        return AppColors.glassOverlayAccent;
     }
   }
 
@@ -110,12 +110,7 @@ class AppGlass extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           stops: const [0.0, 0.35, 0.65, 1.0],
-          colors: [
-            AppColors.white.withOpacity(0.20),
-            AppColors.white.withOpacity(0.06),
-            AppColors.white.withOpacity(0.04),
-            AppColors.white.withOpacity(0.14),
-          ],
+          colors: AppColors.glassStops(Brightness.light),
         );
       case GlassStyle.dark:
         // немного менее заметные хайлайты
@@ -123,21 +118,17 @@ class AppGlass extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           stops: const [0.0, 0.4, 1.0],
-          colors: [
-            AppColors.white.withOpacity(0.10),
-            AppColors.white.withOpacity(0.04),
-            AppColors.white.withOpacity(0.12),
-          ],
+          colors: AppColors.glassStops(Brightness.dark),
         );
       case GlassStyle.accent:
         // лёгкий диагональный «свет» в сторону акцентного
-        return LinearGradient(
+        return const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          stops: const [0.0, 1.0],
+          stops: [0.0, 1.0],
           colors: [
-            AppColors.accentHotPink.withOpacity(0.16),
-            AppColors.accentHotPink.withOpacity(0.04),
+            AppColors.glassAccentTop,
+            AppColors.glassAccentBottom,
           ],
         );
     }
@@ -146,13 +137,11 @@ class AppGlass extends StatelessWidget {
   // Обводка (тонкая, под тему)
   Color _getBorderColor(Brightness brightness) {
     switch (style) {
-      case GlassStyle.light:
-        return AppColors.white.withOpacity(0.28);
-      case GlassStyle.dark:
-        return AppColors.white.withOpacity(0.18);
       case GlassStyle.accent:
         // акцентная обводка чуть заметней
-        return AppColors.accentHotPink.withOpacity(0.30);
+        return AppColors.glassAccentStroke;
+      default:
+        return AppColors.glassStroke(brightness);
     }
   }
 }
@@ -308,30 +297,38 @@ class GlassPanel extends StatelessWidget {
   }
 }
 
+/// Фоновый градиент/«пятна» для экранов.
+/// TODO: можно вынести цвета в ThemeExtension, чтобы переопределять из темы.
 class GlassBackground extends StatelessWidget {
-  const GlassBackground({super.key, required this.child, this.padding});
+  const GlassBackground({
+    super.key,
+    required this.child,
+    this.padding,
+    this.gradient,
+  });
 
   final Widget child;
   final EdgeInsets? padding;
+  final Gradient? gradient;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: [
-        const DecoratedBox(
+        DecoratedBox(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              // TODO: extract to AppColors.bgGrad* tokens
-              colors: [
-                AppColors.primaryPurple,
-                AppColors.primaryPink,
-                AppColors.primaryCyan,
-              ],
-              stops: [0.0, 0.55, 1.0],
-            ),
+            gradient: gradient ??
+                const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppColors.bgGradTop,
+                    AppColors.bgGradMid,
+                    AppColors.bgGradBot,
+                  ],
+                  stops: [0.0, 0.55, 1.0],
+                ),
           ),
         ),
         IgnorePointer(child: CustomPaint(painter: _GlassBackgroundBlobPainter())),
@@ -351,8 +348,8 @@ class _GlassBackgroundBlobPainter extends CustomPainter {
 
     paint.shader = RadialGradient(
       colors: [
-        AppColors.white,
-        AppColors.white.withOpacity(0.0),
+        AppColors.bgBlobPrimary,
+        AppColors.bgBlobPrimary.withOpacity(0.0),
       ],
       stops: const [0.0, 1.0],
     ).createShader(
@@ -369,8 +366,8 @@ class _GlassBackgroundBlobPainter extends CustomPainter {
 
     paint.shader = RadialGradient(
       colors: [
-        AppColors.primaryCyan.withOpacity(0.8),
-        AppColors.primaryCyan.withOpacity(0.0),
+        AppColors.bgBlobSecondary.withOpacity(0.8),
+        AppColors.bgBlobSecondary.withOpacity(0.0),
       ],
       stops: const [0.0, 1.0],
     ).createShader(
