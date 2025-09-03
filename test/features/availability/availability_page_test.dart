@@ -95,7 +95,7 @@ void main() {
     expect(find.byType(AppBar), findsOneWidget);
   });
 
-  testWidgets('day_bottom_sheet uses GlassButton for status selection', (tester) async {
+  testWidgets('day_bottom_sheet uses GlassChip for status selection', (tester) async {
     // Arrange
     await tester.pumpWidget(
       MaterialApp(
@@ -122,7 +122,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Assert
-    expect(find.byType(GlassButton), findsNWidgets(3));
+    expect(find.byType(GlassChip), findsNWidgets(3));
     expect(find.byKey(const Key('status_free')), findsOneWidget);
     expect(find.byKey(const Key('status_busy')), findsOneWidget);
     expect(find.byKey(const Key('status_partial')), findsOneWidget);
@@ -156,11 +156,11 @@ void main() {
 
     // Assert initial state
     expect(
-      tester.widget<GlassButton>(find.byKey(const Key('status_free'))).selected,
+      tester.widget<GlassChip>(find.byKey(const Key('status_free'))).selected,
       isTrue,
     );
     expect(
-      tester.widget<GlassButton>(find.byKey(const Key('status_busy'))).selected,
+      tester.widget<GlassChip>(find.byKey(const Key('status_busy'))).selected,
       isFalse,
     );
 
@@ -170,11 +170,11 @@ void main() {
 
     // Assert updated state
     expect(
-      tester.widget<GlassButton>(find.byKey(const Key('status_busy'))).selected,
+      tester.widget<GlassChip>(find.byKey(const Key('status_busy'))).selected,
       isTrue,
     );
     expect(
-      tester.widget<GlassButton>(find.byKey(const Key('status_free'))).selected,
+      tester.widget<GlassChip>(find.byKey(const Key('status_free'))).selected,
       isFalse,
     );
   });
