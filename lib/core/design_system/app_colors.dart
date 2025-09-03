@@ -43,6 +43,22 @@ final class AppColors {
   static final Color glassDarkBottom = white.withValues(alpha: 0.18);
   static final Color glassDarkStroke = white.withValues(alpha: 0.18);
 
+  // === GLASS OVERLAYS & BACKGROUNDS ===
+  static final Color glassOverlayLight  = white.withValues(alpha: 0.22);
+  static final Color glassOverlayDark   = black.withValues(alpha: 0.32);
+  static final Color glassOverlayAccent = accentHotPink.withValues(alpha: 0.10);
+
+  static const Color bgGradTop = primaryPurple;
+  static const Color bgGradMid = primaryPink;
+  static const Color bgGradBot = primaryCyan;
+
+  static const Color bgBlobPrimary   = white;
+  static const Color bgBlobSecondary = primaryCyan;
+
+  static final Color glassAccentTop    = accentHotPink.withValues(alpha: 0.16);
+  static final Color glassAccentBottom = accentHotPink.withValues(alpha: 0.04);
+  static final Color glassAccentStroke = accentHotPink.withValues(alpha: 0.30);
+
   /// \u0423\u0442\u0438\u043b\u0438\u0442\u0430 \u0434\u043b\u044f \u0432\u044b\u0431\u043e\u0440\u0430 \u0446\u0432\u0435\u0442\u0430 \u0442\u0435\u043a\u0441\u0442\u0430 \u043f\u043e\u0432\u0435\u0440\u0445 \u0441\u0442\u0435\u043a\u043b\u0430.
   static Color onGlassText(Brightness b, {bool muted = false}) =>
       muted ? textOnGlassMuted : textOnGlassPrimary;
