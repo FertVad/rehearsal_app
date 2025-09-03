@@ -91,13 +91,13 @@ class AppGlass extends StatelessWidget {
     switch (style) {
       case GlassStyle.light:
         // Белое матовое стекло
-        return Colors.white.withValues(alpha: 0.22);
+        return AppColors.white.withOpacity(0.22);
       case GlassStyle.dark:
         // Дымчатое стекло для дарка
-        return const Color(0xFF0B0B0B).withValues(alpha: 0.32);
+        return AppColors.black.withOpacity(0.32);
       case GlassStyle.accent:
         // Едва заметная подсветка акцентным
-        return AppColors.accentHotPink.withValues(alpha: 0.10);
+        return AppColors.accentHotPink.withOpacity(0.10);
     }
   }
 
@@ -111,10 +111,10 @@ class AppGlass extends StatelessWidget {
           end: Alignment.bottomCenter,
           stops: const [0.0, 0.35, 0.65, 1.0],
           colors: [
-            Colors.white.withValues(alpha: 0.20),
-            Colors.white.withValues(alpha: 0.06),
-            Colors.white.withValues(alpha: 0.04),
-            Colors.white.withValues(alpha: 0.14),
+            AppColors.white.withOpacity(0.20),
+            AppColors.white.withOpacity(0.06),
+            AppColors.white.withOpacity(0.04),
+            AppColors.white.withOpacity(0.14),
           ],
         );
       case GlassStyle.dark:
@@ -124,9 +124,9 @@ class AppGlass extends StatelessWidget {
           end: Alignment.bottomCenter,
           stops: const [0.0, 0.4, 1.0],
           colors: [
-            Colors.white.withValues(alpha: 0.10),
-            Colors.white.withValues(alpha: 0.04),
-            Colors.white.withValues(alpha: 0.12),
+            AppColors.white.withOpacity(0.10),
+            AppColors.white.withOpacity(0.04),
+            AppColors.white.withOpacity(0.12),
           ],
         );
       case GlassStyle.accent:
@@ -136,8 +136,8 @@ class AppGlass extends StatelessWidget {
           end: Alignment.bottomRight,
           stops: const [0.0, 1.0],
           colors: [
-            AppColors.accentHotPink.withValues(alpha: 0.16),
-            AppColors.accentHotPink.withValues(alpha: 0.04),
+            AppColors.accentHotPink.withOpacity(0.16),
+            AppColors.accentHotPink.withOpacity(0.04),
           ],
         );
     }
@@ -147,12 +147,12 @@ class AppGlass extends StatelessWidget {
   Color _getBorderColor(Brightness brightness) {
     switch (style) {
       case GlassStyle.light:
-        return Colors.white.withValues(alpha: 0.28);
+        return AppColors.white.withOpacity(0.28);
       case GlassStyle.dark:
-        return Colors.white.withValues(alpha: 0.18);
+        return AppColors.white.withOpacity(0.18);
       case GlassStyle.accent:
         // акцентная обводка чуть заметней
-        return AppColors.accentHotPink.withValues(alpha: 0.30);
+        return AppColors.accentHotPink.withOpacity(0.30);
     }
   }
 }
@@ -219,8 +219,8 @@ class GlassButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark
-        ? Colors.white.withValues(alpha: 0.95)
-        : Colors.black.withValues(alpha: 0.85);
+        ? AppColors.white.withOpacity(0.95)
+        : AppColors.black.withOpacity(0.85);
     return AppGlass(
       style: selected ? GlassStyle.accent : GlassStyle.light,
       size: size,
@@ -251,10 +251,10 @@ class GlassChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = selected
-        ? (isDark ? Colors.white : Colors.white.withValues(alpha: 0.95))
+        ? (isDark ? AppColors.white : AppColors.white.withOpacity(0.95))
         : (isDark
-            ? Colors.white.withValues(alpha: 0.70)
-            : Colors.black.withValues(alpha: 0.60));
+            ? AppColors.white.withOpacity(0.70)
+            : AppColors.black.withOpacity(0.60));
 
     return SizedBox(
       height: 32, // Фиксированная высота для чипов
@@ -324,6 +324,7 @@ class GlassBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
+              // TODO: extract to AppColors.bgGrad* tokens
               colors: [
                 AppColors.primaryPurple,
                 AppColors.primaryPink,
@@ -351,7 +352,7 @@ class _GlassBackgroundBlobPainter extends CustomPainter {
     paint.shader = RadialGradient(
       colors: [
         AppColors.white,
-        AppColors.white.withValues(alpha: 0.0),
+        AppColors.white.withOpacity(0.0),
       ],
       stops: const [0.0, 1.0],
     ).createShader(
@@ -368,8 +369,8 @@ class _GlassBackgroundBlobPainter extends CustomPainter {
 
     paint.shader = RadialGradient(
       colors: [
-        AppColors.primaryCyan.withValues(alpha: 0.8),
-        AppColors.primaryCyan.withValues(alpha: 0.0),
+        AppColors.primaryCyan.withOpacity(0.8),
+        AppColors.primaryCyan.withOpacity(0.0),
       ],
       stops: const [0.0, 1.0],
     ).createShader(
