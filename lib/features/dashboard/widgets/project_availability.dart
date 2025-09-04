@@ -34,7 +34,6 @@ class ProjectAvailability extends StatelessWidget {
 class _AvailabilityChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: Implement availability visualization
     return Center(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -54,13 +53,13 @@ class _AvailabilityChart extends StatelessWidget {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      AppColors.statusFree.withOpacity(0.3),
+                      AppColors.statusFree.withValues(alpha: 0.3),
                       AppColors.statusFree,
                     ],
                     stops: [1 - availability, 1 - availability],
                   ),
                   border: Border.all(
-                    color: AppColors.glassBorder,
+                    color: AppColors.glassStroke(Theme.of(context).brightness),
                   ),
                 ),
               ),
