@@ -151,35 +151,23 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                   ),
                   child: Column(
                     children: [
-                      ListTile(
-                        title: const Text('English'),
-                        leading: Radio<Locale?>(
-                          value: const Locale('en'),
-                          groupValue: ref.watch(localeProvider),
-                          onChanged: (locale) {
-                            ref.read(localeProvider.notifier).state = locale;
-                          },
-                        ),
+                      _LanguageOption(
+                        title: 'English',
+                        value: const Locale('en'),
+                        currentValue: ref.watch(localeProvider),
+                        onChanged: (locale) => ref.read(localeProvider.notifier).state = locale,
                       ),
-                      ListTile(
-                        title: const Text('Русский'),
-                        leading: Radio<Locale?>(
-                          value: const Locale('ru'),
-                          groupValue: ref.watch(localeProvider),
-                          onChanged: (locale) {
-                            ref.read(localeProvider.notifier).state = locale;
-                          },
-                        ),
+                      _LanguageOption(
+                        title: 'Русский',
+                        value: const Locale('ru'),
+                        currentValue: ref.watch(localeProvider),
+                        onChanged: (locale) => ref.read(localeProvider.notifier).state = locale,
                       ),
-                      ListTile(
-                        title: const Text('System / Системный'),
-                        leading: Radio<Locale?>(
-                          value: null,
-                          groupValue: ref.watch(localeProvider),
-                          onChanged: (locale) {
-                            ref.read(localeProvider.notifier).state = locale;
-                          },
-                        ),
+                      _LanguageOption(
+                        title: 'System / Системный',
+                        value: null,
+                        currentValue: ref.watch(localeProvider),
+                        onChanged: (locale) => ref.read(localeProvider.notifier).state = locale,
                       ),
                     ],
                   ),
@@ -228,4 +216,54 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
           timezone: _timezoneController.text.trim().isEmpty ? null : _timezoneController.text.trim(),
         );
   }
+}
+
+class _LanguageOption extends StatelessWidget {
+  const _LanguageOption({
+    required this.title,
+    required this.value,
+    required this.currentValue,
+    required this.onChanged,
+  });
+
+  final String title;
+  final Locale? value;
+  final Locale? currentValue;
+  final ValueChanged<Locale?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(title),
+      leading: GestureDetector(
+        onTap: () => onChanged(value),
+        child: Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: AppColors.primaryPurple,
+              width: 2,
+            ),
+          ),
+          child: _isSelected 
+            ? Center(
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primaryPurple,
+                  ),
+                ),
+              )
+            : null,
+        ),
+      ),
+      onTap: () => onChanged(value),
+    );
+  }
+
+  bool get _isSelected => value == currentValue;
 }
