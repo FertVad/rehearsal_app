@@ -29,38 +29,34 @@ class SettingsPage extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.md),
               GlassCard(
-                child: Column(
-                  children: [
-                    _ThemeOption(
-                      title: 'System Default',
-                      subtitle: 'Follow system theme',
-                      value: ThemeMode.system,
-                      groupValue: themeMode,
-                      onChanged: (value) {
-                        ref.read(themeModeProvider.notifier).state = value!;
-                      },
-                    ),
-                    const Divider(),
-                    _ThemeOption(
-                      title: 'Light Theme',
-                      subtitle: 'Always use light theme',
-                      value: ThemeMode.light,
-                      groupValue: themeMode,
-                      onChanged: (value) {
-                        ref.read(themeModeProvider.notifier).state = value!;
-                      },
-                    ),
-                    const Divider(),
-                    _ThemeOption(
-                      title: 'Dark Theme',
-                      subtitle: 'Always use dark theme',
-                      value: ThemeMode.dark,
-                      groupValue: themeMode,
-                      onChanged: (value) {
-                        ref.read(themeModeProvider.notifier).state = value!;
-                      },
-                    ),
-                  ],
+                child: RadioGroup<ThemeMode>(
+                  value: themeMode,
+                  onChanged: (value) {
+                    if (value != null) {
+                      ref.read(themeModeProvider.notifier).state = value;
+                    }
+                  },
+                  child: Column(
+                    children: [
+                      _ThemeOption(
+                        title: 'System Default',
+                        subtitle: 'Follow system theme',
+                        value: ThemeMode.system,
+                      ),
+                      const Divider(),
+                      _ThemeOption(
+                        title: 'Light Theme',
+                        subtitle: 'Always use light theme',
+                        value: ThemeMode.light,
+                      ),
+                      const Divider(),
+                      _ThemeOption(
+                        title: 'Dark Theme',
+                        subtitle: 'Always use dark theme',
+                        value: ThemeMode.dark,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -76,15 +72,11 @@ class _ThemeOption extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.value,
-    required this.groupValue,
-    required this.onChanged,
   });
 
   final String title;
   final String subtitle;
   final ThemeMode value;
-  final ThemeMode groupValue;
-  final Function(ThemeMode?) onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -93,10 +85,8 @@ class _ThemeOption extends StatelessWidget {
       subtitle: Text(subtitle),
       leading: Radio<ThemeMode>(
         value: value,
-        groupValue: groupValue,
-        onChanged: onChanged,
       ),
-      onTap: () => onChanged(value),
+      onTap: () => RadioGroup.of<ThemeMode>(context)?.setValue(value),
     );
   }
 }
