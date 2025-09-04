@@ -104,7 +104,6 @@ class ProjectsPage extends ConsumerWidget {
   }
 
   void _openProject(BuildContext context, Project project) {
-    // TODO: Navigate to project details
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Opening ${project.title}...'),
