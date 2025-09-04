@@ -79,7 +79,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
 
   @override
-  String get navDashboard => 'Панель';
+  String get navDashboard => 'Главная';
 
   @override
   String get navCalendar => 'Календарь';
@@ -91,8 +91,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get navProjects => 'Проекты';
 
   @override
-  String get noProjectsTitle => 'Проектов пока нет';
+  String get noProjectsTitle => 'Нет проектов';
 
   @override
-  String get noProjectsDescription => 'У вас ещё нет проектов.';
+  String get noProjectsDescription => 'Присоединитесь к существующему проекту или создайте свой';
+
+  @override
+  String get createProject => 'Создать проект';
+
+  @override
+  String get joinProject => 'Присоединиться';
 }

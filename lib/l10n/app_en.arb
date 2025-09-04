@@ -27,5 +27,7 @@
   "navAvailability": "Availability",
   "navProjects": "Projects",
   "noProjectsTitle": "No projects yet",
-  "noProjectsDescription": "You don't have any projects yet."
+  "noProjectsDescription": "Join an existing project or create your own",
+  "createProject": "Create project",
+  "joinProject": "Join project"
 }

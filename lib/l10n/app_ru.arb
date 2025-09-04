@@ -22,10 +22,12 @@
   "daySheetRehearsals0": "Репетиции: 0",
   "daySheetChangeAvailability": "Изменить доступность",
   "daySheetNewRehearsal": "Новая репетиция",
-  "navDashboard": "Панель",
+  "navDashboard": "Главная",
   "navCalendar": "Календарь",
   "navAvailability": "Доступность",
   "navProjects": "Проекты",
-  "noProjectsTitle": "Проектов пока нет",
-  "noProjectsDescription": "У вас ещё нет проектов."
+  "noProjectsTitle": "Нет проектов",
+  "noProjectsDescription": "Присоединитесь к существующему проекту или создайте свой",
+  "createProject": "Создать проект",
+  "joinProject": "Присоединиться"
 }
