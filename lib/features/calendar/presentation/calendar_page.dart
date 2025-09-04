@@ -37,7 +37,6 @@ class CalendarPage extends ConsumerWidget {
         child: SafeArea(
           child: RefreshIndicator(
             onRefresh: () async {
-              // TODO: Refresh data
               await Future.delayed(const Duration(seconds: 1));
             },
             child: CustomScrollView(

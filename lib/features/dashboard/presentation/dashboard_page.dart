@@ -31,7 +31,6 @@ class _DashboardPageState extends State<DashboardPage> {
         child: SafeArea(
           child: RefreshIndicator(
             onRefresh: () async {
-              // TODO: Refresh data
               await Future.delayed(const Duration(seconds: 1));
             },
             child: CustomScrollView(
