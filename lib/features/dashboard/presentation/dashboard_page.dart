@@ -22,7 +22,6 @@ class _DashboardPageState extends State<DashboardPage> {
     setState(() {
       _selectedDate = date;
     });
-    // TODO: Load data for selected date
   }
 
   @override
