@@ -40,8 +40,8 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     if (user == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Profile')),
-        body: const Center(
-          child: Text('No user found'),
+        body: Center(
+          child: Text(context.l10n.noUserFound),
         ),
       );
     }
@@ -58,7 +58,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
         actions: [
           TextButton(
             onPressed: _saveProfile,
-            child: const Text('Save'),
+            child: Text(context.l10n.save),
           ),
         ],
       ),
@@ -108,7 +108,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
 
                 // Profile Form
                 Text(
-                  'Profile Settings',
+                  context.l10n.profileSettings,
                   style: AppTypography.headingMedium,
                 ),
                 const SizedBox(height: AppSpacing.lg),
@@ -116,8 +116,8 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                 // Name Field
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Name',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.name,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -126,10 +126,10 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                 // Timezone Field  
                 TextFormField(
                   controller: _timezoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Timezone',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.timezone,
                     border: OutlineInputBorder(),
-                    hintText: 'e.g., UTC, Europe/London, Asia/Jerusalem',
+                    hintText: context.l10n.timezoneHint,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xl),

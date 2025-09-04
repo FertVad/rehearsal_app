@@ -9,6 +9,7 @@ import 'package:rehearsal_app/core/widgets/loading_state.dart';
 import 'package:rehearsal_app/core/providers/repository_providers.dart';
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_create_page.dart';
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_details_page.dart';
+import 'package:rehearsal_app/core/utils/localization_helper.dart';
 
 class UpcomingRehearsals extends ConsumerWidget {
   const UpcomingRehearsals({super.key});
@@ -92,7 +93,7 @@ class UpcomingRehearsals extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${_formatDate(startTime)} at ${TimeOfDay.fromDateTime(startTime).format(context)}',
+                                '${_formatDate(context, startTime)} at ${TimeOfDay.fromDateTime(startTime).format(context)}',
                                 style: AppTypography.bodyMedium.copyWith(
                                   color: AppColors.textSecondary,
                                 ),
@@ -147,22 +148,8 @@ class UpcomingRehearsals extends ConsumerWidget {
     }
   }
 
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final targetDate = DateTime(date.year, date.month, date.day);
-    
-    if (targetDate == today) {
-      return 'Today';
-    } else if (targetDate == today.add(const Duration(days: 1))) {
-      return 'Tomorrow';
-    } else {
-      const months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-      ];
-      return '${date.day} ${months[date.month - 1]}';
-    }
+  String _formatDate(BuildContext context, DateTime date) {
+    return LocalizationHelper.formatRelativeDate(context, date);
   }
 
   Future<void> _createRehearsal(BuildContext context) async {

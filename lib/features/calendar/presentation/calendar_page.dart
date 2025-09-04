@@ -11,6 +11,7 @@ import 'package:rehearsal_app/features/dashboard/widgets/dash_background.dart';
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_create_page.dart';
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_details_page.dart';
 import 'package:rehearsal_app/core/providers/repository_providers.dart';
+import 'package:rehearsal_app/core/utils/localization_helper.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 final selectedCalendarDateProvider = StateProvider<DateTime?>((ref) => null);
@@ -191,7 +192,7 @@ class _DateDetails extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Selected: ${_formatDate(date)}',
+              'Selected: ${_formatDate(context, date)}',
               style: AppTypography.headingMedium,
             ),
             IconButton(
@@ -307,12 +308,8 @@ class _DateDetails extends ConsumerWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  String _formatDate(BuildContext context, DateTime date) {
+    return LocalizationHelper.formatDate(context, date);
   }
 
   Future<List<dynamic>> _loadRehearsals(WidgetRef ref, DateTime date) async {

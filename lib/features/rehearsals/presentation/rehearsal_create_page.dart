@@ -5,6 +5,8 @@ import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/features/dashboard/widgets/dash_background.dart';
 import 'package:rehearsal_app/core/providers/repository_providers.dart';
+import 'package:rehearsal_app/core/utils/localization_helper.dart';
+import 'package:rehearsal_app/l10n/app.dart';
 
 class RehearsalCreatePage extends ConsumerStatefulWidget {
   const RehearsalCreatePage({
@@ -49,7 +51,7 @@ class _RehearsalCreatePageState extends ConsumerState<RehearsalCreatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Rehearsal'),
+        title: Text(context.l10n.rehearsalCreate),
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _saveRehearsal,
@@ -59,7 +61,7 @@ class _RehearsalCreatePageState extends ConsumerState<RehearsalCreatePage> {
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Save'),
+              : Text(context.l10n.save),
           ),
         ],
       ),
@@ -74,7 +76,7 @@ class _RehearsalCreatePageState extends ConsumerState<RehearsalCreatePage> {
                 children: [
                   // Date Selection
                   Text(
-                    'Date & Time',
+                    context.l10n.dateTime,
                     style: AppTypography.headingMedium,
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -89,7 +91,7 @@ class _RehearsalCreatePageState extends ConsumerState<RehearsalCreatePage> {
                     child: ListTile(
                       leading: const Icon(Icons.calendar_today),
                       title: Text(_formatDate(_selectedDate)),
-                      subtitle: const Text('Rehearsal date'),
+                      subtitle: Text(context.l10n.rehearsalDate),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: _selectDate,
                     ),
@@ -110,7 +112,7 @@ class _RehearsalCreatePageState extends ConsumerState<RehearsalCreatePage> {
                           child: ListTile(
                             leading: const Icon(Icons.access_time),
                             title: Text(_startTime.format(context)),
-                            subtitle: const Text('Start time'),
+                            subtitle: Text(context.l10n.startTime),
                             onTap: () => _selectTime(isStart: true),
                           ),
                         ),
@@ -126,7 +128,7 @@ class _RehearsalCreatePageState extends ConsumerState<RehearsalCreatePage> {
                           child: ListTile(
                             leading: const Icon(Icons.access_time_filled),
                             title: Text(_endTime.format(context)),
-                            subtitle: const Text('End time'),
+                            subtitle: Text(context.l10n.endTime),
                             onTap: () => _selectTime(isStart: false),
                           ),
                         ),
@@ -138,21 +140,21 @@ class _RehearsalCreatePageState extends ConsumerState<RehearsalCreatePage> {
 
                   // Location
                   Text(
-                    'Location',
+                    context.l10n.location,
                     style: AppTypography.headingMedium,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   TextFormField(
                     controller: _placeController,
-                    decoration: const InputDecoration(
-                      labelText: 'Rehearsal location',
-                      hintText: 'e.g., Main studio, Room 101',
+                    decoration: InputDecoration(
+                      labelText: context.l10n.rehearsalLocation,
+                      hintText: context.l10n.locationHint,
                       prefixIcon: Icon(Icons.location_on),
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value?.trim().isEmpty ?? true) {
-                        return 'Please enter a location';
+                        return context.l10n.locationRequired;
                       }
                       return null;
                     },
@@ -162,16 +164,16 @@ class _RehearsalCreatePageState extends ConsumerState<RehearsalCreatePage> {
 
                   // Notes
                   Text(
-                    'Notes',
+                    context.l10n.notes,
                     style: AppTypography.headingMedium,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   TextFormField(
                     controller: _noteController,
                     maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'Additional notes',
-                      hintText: 'Optional notes about this rehearsal...',
+                    decoration: InputDecoration(
+                      labelText: context.l10n.additionalNotes,
+                      hintText: context.l10n.notesHint,
                       prefixIcon: Icon(Icons.note),
                       border: OutlineInputBorder(),
                     ),
@@ -218,11 +220,7 @@ class _RehearsalCreatePageState extends ConsumerState<RehearsalCreatePage> {
   }
 
   String _formatDate(DateTime date) {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
+    return LocalizationHelper.formatDate(context, date);
   }
 
   Future<void> _selectDate() async {
@@ -281,7 +279,7 @@ class _RehearsalCreatePageState extends ConsumerState<RehearsalCreatePage> {
 
     if (endDateTime.isBefore(startDateTime) || endDateTime.isAtSameMomentAs(startDateTime)) {
       setState(() {
-        _error = 'End time must be after start time';
+        _error = context.l10n.endTimeError;
       });
       return;
     }

@@ -103,4 +103,166 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get joinProject => 'Join project';
+
+  @override
+  String get rehearsalCreate => 'New Rehearsal';
+
+  @override
+  String get rehearsalEdit => 'Edit Rehearsal';
+
+  @override
+  String get rehearsalDetails => 'Rehearsal Details';
+
+  @override
+  String get rehearsalDelete => 'Delete Rehearsal';
+
+  @override
+  String get rehearsalDeleteConfirm => 'Are you sure you want to delete this rehearsal? This action cannot be undone.';
+
+  @override
+  String get rehearsalNotFound => 'Rehearsal not found';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get dateTime => 'Date & Time';
+
+  @override
+  String get rehearsalDate => 'Rehearsal date';
+
+  @override
+  String get startTime => 'Start time';
+
+  @override
+  String get endTime => 'End time';
+
+  @override
+  String get location => 'Location';
+
+  @override
+  String get rehearsalLocation => 'Rehearsal location';
+
+  @override
+  String get locationHint => 'e.g., Main studio, Room 101';
+
+  @override
+  String get locationRequired => 'Please enter a location';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get additionalNotes => 'Additional notes';
+
+  @override
+  String get notesHint => 'Optional notes about this rehearsal...';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get endTimeError => 'End time must be after start time';
+
+  @override
+  String get noUserFound => 'No user found';
+
+  @override
+  String get profileSettings => 'Profile Settings';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get timezone => 'Timezone';
+
+  @override
+  String get timezoneHint => 'e.g., UTC, Europe/London, Asia/Jerusalem';
+
+  @override
+  String get localUser => 'Local User';
+
+  @override
+  String get january => 'January';
+
+  @override
+  String get february => 'February';
+
+  @override
+  String get march => 'March';
+
+  @override
+  String get april => 'April';
+
+  @override
+  String get may => 'May';
+
+  @override
+  String get june => 'June';
+
+  @override
+  String get july => 'July';
+
+  @override
+  String get august => 'August';
+
+  @override
+  String get september => 'September';
+
+  @override
+  String get october => 'October';
+
+  @override
+  String get november => 'November';
+
+  @override
+  String get december => 'December';
+
+  @override
+  String get jan => 'Jan';
+
+  @override
+  String get feb => 'Feb';
+
+  @override
+  String get mar => 'Mar';
+
+  @override
+  String get apr => 'Apr';
+
+  @override
+  String get jun => 'Jun';
+
+  @override
+  String get jul => 'Jul';
+
+  @override
+  String get aug => 'Aug';
+
+  @override
+  String get sep => 'Sep';
+
+  @override
+  String get oct => 'Oct';
+
+  @override
+  String get nov => 'Nov';
+
+  @override
+  String get dec => 'Dec';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get tomorrow => 'Tomorrow';
 }

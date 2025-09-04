@@ -8,6 +8,8 @@ import 'package:rehearsal_app/core/widgets/loading_state.dart';
 import 'package:rehearsal_app/features/dashboard/widgets/dash_background.dart';
 import 'package:rehearsal_app/core/providers/repository_providers.dart';
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_edit_page.dart';
+import 'package:rehearsal_app/core/utils/localization_helper.dart';
+import 'package:rehearsal_app/l10n/app.dart';
 
 class RehearsalDetailsPage extends ConsumerStatefulWidget {
   const RehearsalDetailsPage({
@@ -64,7 +66,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
 
     if (_error != null || _rehearsal == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Rehearsal Details')),
+        appBar: AppBar(title: Text(context.l10n.rehearsalDetails)),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -76,14 +78,14 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
               ),
               const SizedBox(height: AppSpacing.lg),
               Text(
-                _error ?? 'Rehearsal not found',
+                _error ?? context.l10n.rehearsalNotFound,
                 style: AppTypography.bodyLarge,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.lg),
               ElevatedButton(
                 onPressed: _loadRehearsal,
-                child: const Text('Retry'),
+                child: Text(context.l10n.retry),
               ),
             ],
           ),
@@ -97,7 +99,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rehearsal Details'),
+        title: Text(context.l10n.rehearsalDetails),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -111,7 +113,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
                   children: [
                     Icon(Icons.delete, color: AppColors.statusBusy),
                     const SizedBox(width: AppSpacing.sm),
-                    const Text('Delete'),
+                    Text(context.l10n.delete),
                   ],
                 ),
               ),
@@ -191,7 +193,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
                 // Location
                 if (rehearsal.place != null && rehearsal.place!.isNotEmpty) ...[
                   Text(
-                    'Location',
+                    context.l10n.location,
                     style: AppTypography.headingMedium,
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -222,7 +224,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
                 // Notes
                 if (rehearsal.note != null && rehearsal.note!.isNotEmpty) ...[
                   Text(
-                    'Notes',
+                    context.l10n.notes,
                     style: AppTypography.headingMedium,
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -253,7 +255,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
 
                 // Metadata
                 Text(
-                  'Details',
+                  context.l10n.details,
                   style: AppTypography.headingMedium,
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -301,11 +303,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
   }
 
   String _formatDate(DateTime date) {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
+    return LocalizationHelper.formatDate(context, date);
   }
 
   String _formatTime(DateTime time) {
@@ -344,17 +342,17 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Rehearsal'),
-        content: const Text('Are you sure you want to delete this rehearsal? This action cannot be undone.'),
+        title: Text(context.l10n.rehearsalDelete),
+        content: Text(context.l10n.rehearsalDeleteConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: AppColors.statusBusy),
-            child: const Text('Delete'),
+            child: Text(context.l10n.delete),
           ),
         ],
       ),

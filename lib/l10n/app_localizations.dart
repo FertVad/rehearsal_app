@@ -286,6 +286,330 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join project'**
   String get joinProject;
+
+  /// No description provided for @rehearsalCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'New Rehearsal'**
+  String get rehearsalCreate;
+
+  /// No description provided for @rehearsalEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Rehearsal'**
+  String get rehearsalEdit;
+
+  /// No description provided for @rehearsalDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearsal Details'**
+  String get rehearsalDetails;
+
+  /// No description provided for @rehearsalDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Rehearsal'**
+  String get rehearsalDelete;
+
+  /// No description provided for @rehearsalDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this rehearsal? This action cannot be undone.'**
+  String get rehearsalDeleteConfirm;
+
+  /// No description provided for @rehearsalNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearsal not found'**
+  String get rehearsalNotFound;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @dateTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Date & Time'**
+  String get dateTime;
+
+  /// No description provided for @rehearsalDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearsal date'**
+  String get rehearsalDate;
+
+  /// No description provided for @startTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Start time'**
+  String get startTime;
+
+  /// No description provided for @endTime.
+  ///
+  /// In en, this message translates to:
+  /// **'End time'**
+  String get endTime;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// No description provided for @rehearsalLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearsal location'**
+  String get rehearsalLocation;
+
+  /// No description provided for @locationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Main studio, Room 101'**
+  String get locationHint;
+
+  /// No description provided for @locationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a location'**
+  String get locationRequired;
+
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @additionalNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional notes'**
+  String get additionalNotes;
+
+  /// No description provided for @notesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional notes about this rehearsal...'**
+  String get notesHint;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @endTimeError.
+  ///
+  /// In en, this message translates to:
+  /// **'End time must be after start time'**
+  String get endTimeError;
+
+  /// No description provided for @noUserFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No user found'**
+  String get noUserFound;
+
+  /// No description provided for @profileSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Settings'**
+  String get profileSettings;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @timezone.
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone'**
+  String get timezone;
+
+  /// No description provided for @timezoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., UTC, Europe/London, Asia/Jerusalem'**
+  String get timezoneHint;
+
+  /// No description provided for @localUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Local User'**
+  String get localUser;
+
+  /// No description provided for @january.
+  ///
+  /// In en, this message translates to:
+  /// **'January'**
+  String get january;
+
+  /// No description provided for @february.
+  ///
+  /// In en, this message translates to:
+  /// **'February'**
+  String get february;
+
+  /// No description provided for @march.
+  ///
+  /// In en, this message translates to:
+  /// **'March'**
+  String get march;
+
+  /// No description provided for @april.
+  ///
+  /// In en, this message translates to:
+  /// **'April'**
+  String get april;
+
+  /// No description provided for @may.
+  ///
+  /// In en, this message translates to:
+  /// **'May'**
+  String get may;
+
+  /// No description provided for @june.
+  ///
+  /// In en, this message translates to:
+  /// **'June'**
+  String get june;
+
+  /// No description provided for @july.
+  ///
+  /// In en, this message translates to:
+  /// **'July'**
+  String get july;
+
+  /// No description provided for @august.
+  ///
+  /// In en, this message translates to:
+  /// **'August'**
+  String get august;
+
+  /// No description provided for @september.
+  ///
+  /// In en, this message translates to:
+  /// **'September'**
+  String get september;
+
+  /// No description provided for @october.
+  ///
+  /// In en, this message translates to:
+  /// **'October'**
+  String get october;
+
+  /// No description provided for @november.
+  ///
+  /// In en, this message translates to:
+  /// **'November'**
+  String get november;
+
+  /// No description provided for @december.
+  ///
+  /// In en, this message translates to:
+  /// **'December'**
+  String get december;
+
+  /// No description provided for @jan.
+  ///
+  /// In en, this message translates to:
+  /// **'Jan'**
+  String get jan;
+
+  /// No description provided for @feb.
+  ///
+  /// In en, this message translates to:
+  /// **'Feb'**
+  String get feb;
+
+  /// No description provided for @mar.
+  ///
+  /// In en, this message translates to:
+  /// **'Mar'**
+  String get mar;
+
+  /// No description provided for @apr.
+  ///
+  /// In en, this message translates to:
+  /// **'Apr'**
+  String get apr;
+
+  /// No description provided for @jun.
+  ///
+  /// In en, this message translates to:
+  /// **'Jun'**
+  String get jun;
+
+  /// No description provided for @jul.
+  ///
+  /// In en, this message translates to:
+  /// **'Jul'**
+  String get jul;
+
+  /// No description provided for @aug.
+  ///
+  /// In en, this message translates to:
+  /// **'Aug'**
+  String get aug;
+
+  /// No description provided for @sep.
+  ///
+  /// In en, this message translates to:
+  /// **'Sep'**
+  String get sep;
+
+  /// No description provided for @oct.
+  ///
+  /// In en, this message translates to:
+  /// **'Oct'**
+  String get oct;
+
+  /// No description provided for @nov.
+  ///
+  /// In en, this message translates to:
+  /// **'Nov'**
+  String get nov;
+
+  /// No description provided for @dec.
+  ///
+  /// In en, this message translates to:
+  /// **'Dec'**
+  String get dec;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get tomorrow;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

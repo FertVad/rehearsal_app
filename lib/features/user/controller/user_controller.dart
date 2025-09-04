@@ -47,7 +47,7 @@ class UserController extends Notifier<UserState> {
     
     final user = await usersRepo.create(
       id: userId,
-      name: 'Local User',
+      name: 'Local User', // TODO: localize when context is available
       tz: 'UTC',
     );
 
