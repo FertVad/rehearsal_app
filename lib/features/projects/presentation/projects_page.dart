@@ -58,32 +58,38 @@ class ProjectsPage extends ConsumerWidget {
                       actionLabel: context.l10n.createProject,
                       onAction: () => _showCreateProjectDialog(context),
                     )
-                  : CustomScrollView(
-                      slivers: [
-                        SliverPadding(
-                          padding: AppSpacing.paddingLG,
-                          sliver: SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                                final project = projects[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: AppSpacing.md,
-                                  ),
-                                  child: ProjectCard(
-                                    title: project.title,
-                                    memberCount: project.memberCount,
-                                    description: project.description,
-                                    lastActivity: project.lastActivity,
-                                    onTap: () => _openProject(context, project),
-                                  ),
-                                );
-                              },
-                              childCount: projects.length,
+                  : RefreshIndicator(
+                      onRefresh: () async {
+                        // TODO: Refresh data
+                        await Future.delayed(const Duration(seconds: 1));
+                      },
+                      child: CustomScrollView(
+                        slivers: [
+                          SliverPadding(
+                            padding: AppSpacing.paddingLG,
+                            sliver: SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  final project = projects[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: AppSpacing.md,
+                                    ),
+                                    child: ProjectCard(
+                                      title: project.title,
+                                      memberCount: project.memberCount,
+                                      description: project.description,
+                                      lastActivity: project.lastActivity,
+                                      onTap: () => _openProject(context, project),
+                                    ),
+                                  );
+                                },
+                                childCount: projects.length,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
         ),
       ),
