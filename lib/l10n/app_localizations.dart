@@ -232,6 +232,31 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New rehearsal'**
   String get daySheetNewRehearsal;
+
+  /// No description provided for @navDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get navDashboard;
+
+  /// No description provided for @navCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get navCalendar;
+
+  /// No description provided for @navAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
+  String get navAvailability;
+
+  /// No description provided for @navProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Projects'**
+  String get navProjects;
+
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

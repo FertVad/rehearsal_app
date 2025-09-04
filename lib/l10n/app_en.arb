@@ -21,5 +21,9 @@
   "daySheetAvailabilityNone": "Availability: none",
   "daySheetRehearsals0": "Rehearsals: 0",
   "daySheetChangeAvailability": "Change availability",
-  "daySheetNewRehearsal": "New rehearsal"
+  "daySheetNewRehearsal": "New rehearsal",
+  "navDashboard": "Dashboard",
+  "navCalendar": "Calendar",
+  "navAvailability": "Availability",
+  "navProjects": "Projects"
 }

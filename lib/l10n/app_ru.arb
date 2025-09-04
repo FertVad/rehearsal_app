@@ -21,5 +21,9 @@
   "daySheetAvailabilityNone": "Доступность: нет",
   "daySheetRehearsals0": "Репетиции: 0",
   "daySheetChangeAvailability": "Изменить доступность",
-  "daySheetNewRehearsal": "Новая репетиция"
+  "daySheetNewRehearsal": "Новая репетиция",
+  "navDashboard": "Панель",
+  "navCalendar": "Календарь",
+  "navAvailability": "Доступность",
+  "navProjects": "Проекты"
 }
