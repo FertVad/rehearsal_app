@@ -9,33 +9,23 @@ class UpcomingRehearsals extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Подключить к реальным данным через Provider
-    final hasRehearsals = false;
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Upcoming Rehearsals',
-            style: AppTypography.headingMedium,
-          ),
+          Text('Upcoming Rehearsals', style: AppTypography.headingMedium),
           const SizedBox(height: AppSpacing.md),
           GlassCard(
             child: SizedBox(
               height: 200,
-              child: hasRehearsals
-                  ? _RehearsalsList()
-                  : EmptyState(
-                      icon: Icons.event_busy,
-                      title: 'No rehearsals scheduled',
-                      description: 'Schedule your first rehearsal',
-                      actionLabel: 'Create rehearsal',
-                      onAction: () {
-                        // TODO: Navigate to create rehearsal
-                      },
-                    ),
+              child: EmptyState(
+                icon: Icons.event_busy,
+                title: 'No rehearsals scheduled',
+                description: 'Schedule your first rehearsal',
+                actionLabel: 'Create rehearsal',
+                onAction: () {},
+              ),
             ),
           ),
         ],
@@ -43,14 +33,3 @@ class UpcomingRehearsals extends StatelessWidget {
     );
   }
 }
-
-class _RehearsalsList extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: Implement rehearsals list
-    return const Center(
-      child: Text('Rehearsals list'),
-    );
-  }
-}
-
