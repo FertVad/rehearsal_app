@@ -32,6 +32,8 @@ final class AppTypography {
     height: 1.2,
   );
 
+  static const TextStyle headingMedium = displaySmall;
+
   // === Заголовки поменьше ===
   static const TextStyle titleSm = TextStyle(
     fontFamily: _fontFamily,
