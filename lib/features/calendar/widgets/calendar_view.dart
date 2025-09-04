@@ -33,7 +33,7 @@ class CalendarView extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: AppSpacing.lg),
               child: Text(
                 _getMonthYearString(currentDate),
-                style: AppTypography.headingLarge,
+                style: AppTypography.headingMedium,
               ),
             ),
             // Weekday headers
