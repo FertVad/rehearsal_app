@@ -89,4 +89,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navProjects => 'Projects';
+
+  @override
+  String get noProjectsTitle => 'No projects yet';
+
+  @override
+  String get noProjectsDescription => 'You don\'t have any projects yet.';
 }

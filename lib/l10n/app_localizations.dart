@@ -257,6 +257,18 @@ abstract class AppLocalizations {
   /// **'Projects'**
   String get navProjects;
 
+  /// No description provided for @noProjectsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No projects yet'**
+  String get noProjectsTitle;
+
+  /// No description provided for @noProjectsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You don't have any projects yet.'**
+  String get noProjectsDescription;
+
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

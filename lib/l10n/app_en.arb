@@ -25,5 +25,7 @@
   "navDashboard": "Dashboard",
   "navCalendar": "Calendar",
   "navAvailability": "Availability",
-  "navProjects": "Projects"
+  "navProjects": "Projects",
+  "noProjectsTitle": "No projects yet",
+  "noProjectsDescription": "You don't have any projects yet."
 }
