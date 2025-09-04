@@ -10,12 +10,17 @@ import 'package:rehearsal_app/core/providers/repository_providers.dart';
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_create_page.dart';
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_details_page.dart';
 import 'package:rehearsal_app/core/utils/localization_helper.dart';
+import 'package:rehearsal_app/core/l10n/locale_provider.dart';
+import 'package:rehearsal_app/l10n/app.dart';
 
 class UpcomingRehearsals extends ConsumerWidget {
   const UpcomingRehearsals({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch locale changes to trigger rebuild
+    ref.watch(localeProvider);
+    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Column(
@@ -24,11 +29,11 @@ class UpcomingRehearsals extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Upcoming Rehearsals', style: AppTypography.headingMedium),
+              Text(context.l10n.upcomingRehearsals, style: AppTypography.headingMedium),
               IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () => _createRehearsal(context),
-                tooltip: 'Add rehearsal',
+                tooltip: context.l10n.addRehearsal,
               ),
             ],
           ),
@@ -37,6 +42,7 @@ class UpcomingRehearsals extends ConsumerWidget {
             child: SizedBox(
               height: 250,
               child: FutureBuilder(
+                key: ValueKey('upcoming_rehearsals_${ref.watch(localeProvider)}'),
                 future: _loadUpcomingRehearsals(ref),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -46,9 +52,9 @@ class UpcomingRehearsals extends ConsumerWidget {
                   if (snapshot.hasError) {
                     return EmptyState(
                       icon: Icons.error_outline,
-                      title: 'Error',
-                      description: 'Failed to load rehearsals',
-                      actionLabel: 'Retry',
+                      title: context.l10n.error,
+                      description: context.l10n.failedToLoad,
+                      actionLabel: context.l10n.retry,
                       onAction: () {
                         // Trigger rebuild
                       },
@@ -60,9 +66,9 @@ class UpcomingRehearsals extends ConsumerWidget {
                   if (rehearsals.isEmpty) {
                     return EmptyState(
                       icon: Icons.event_busy,
-                      title: 'No rehearsals scheduled',
-                      description: 'Schedule your first rehearsal',
-                      actionLabel: 'Create rehearsal',
+                      title: context.l10n.noRehearsalsScheduled,
+                      description: context.l10n.scheduleFirst,
+                      actionLabel: context.l10n.createRehearsal,
                       onAction: () => _createRehearsal(context),
                     );
                   }
@@ -86,7 +92,7 @@ class UpcomingRehearsals extends ConsumerWidget {
                             color: AppColors.primaryPurple,
                           ),
                           title: Text(
-                            rehearsal.place ?? 'Rehearsal',
+                            rehearsal.place ?? context.l10n.rehearsal,
                             style: AppTypography.bodyLarge,
                           ),
                           subtitle: Column(

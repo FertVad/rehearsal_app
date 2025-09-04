@@ -265,4 +265,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tomorrow => 'Tomorrow';
+
+  @override
+  String get upcomingRehearsals => 'Upcoming Rehearsals';
+
+  @override
+  String get addRehearsal => 'Add rehearsal';
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get failedToLoad => 'Failed to load rehearsals';
+
+  @override
+  String get noRehearsalsScheduled => 'No rehearsals scheduled';
+
+  @override
+  String get scheduleFirst => 'Schedule your first rehearsal';
+
+  @override
+  String get createRehearsal => 'Create rehearsal';
+
+  @override
+  String get rehearsal => 'Rehearsal';
+
+  @override
+  String get errorLoadingCalendar => 'Error loading calendar';
+
+  @override
+  String get noRehearsalsScheduledDay => 'No rehearsals scheduled';
+
+  @override
+  String get addRehearsalButton => 'Add Rehearsal';
 }

@@ -610,6 +610,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tomorrow'**
   String get tomorrow;
+
+  /// No description provided for @upcomingRehearsals.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Rehearsals'**
+  String get upcomingRehearsals;
+
+  /// No description provided for @addRehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Add rehearsal'**
+  String get addRehearsal;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @failedToLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load rehearsals'**
+  String get failedToLoad;
+
+  /// No description provided for @noRehearsalsScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'No rehearsals scheduled'**
+  String get noRehearsalsScheduled;
+
+  /// No description provided for @scheduleFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule your first rehearsal'**
+  String get scheduleFirst;
+
+  /// No description provided for @createRehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Create rehearsal'**
+  String get createRehearsal;
+
+  /// No description provided for @rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearsal'**
+  String get rehearsal;
+
+  /// No description provided for @errorLoadingCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading calendar'**
+  String get errorLoadingCalendar;
+
+  /// No description provided for @noRehearsalsScheduledDay.
+  ///
+  /// In en, this message translates to:
+  /// **'No rehearsals scheduled'**
+  String get noRehearsalsScheduledDay;
+
+  /// No description provided for @addRehearsalButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Rehearsal'**
+  String get addRehearsalButton;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -265,4 +265,37 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get tomorrow => 'Завтра';
+
+  @override
+  String get upcomingRehearsals => 'Предстоящие репетиции';
+
+  @override
+  String get addRehearsal => 'Добавить репетицию';
+
+  @override
+  String get error => 'Ошибка';
+
+  @override
+  String get failedToLoad => 'Не удалось загрузить репетиции';
+
+  @override
+  String get noRehearsalsScheduled => 'Репетиции не запланированы';
+
+  @override
+  String get scheduleFirst => 'Запланируйте первую репетицию';
+
+  @override
+  String get createRehearsal => 'Создать репетицию';
+
+  @override
+  String get rehearsal => 'Репетиция';
+
+  @override
+  String get errorLoadingCalendar => 'Ошибка загрузки календаря';
+
+  @override
+  String get noRehearsalsScheduledDay => 'Репетиции не запланированы';
+
+  @override
+  String get addRehearsalButton => 'Добавить репетицию';
 }

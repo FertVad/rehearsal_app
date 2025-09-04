@@ -12,6 +12,7 @@ import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_create_
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_details_page.dart';
 import 'package:rehearsal_app/core/providers/repository_providers.dart';
 import 'package:rehearsal_app/core/utils/localization_helper.dart';
+import 'package:rehearsal_app/core/l10n/locale_provider.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 final selectedCalendarDateProvider = StateProvider<DateTime?>((ref) => null);
@@ -90,7 +91,7 @@ class CalendarPage extends ConsumerWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: AppSpacing.paddingLG,
-                  child: _buildCalendar(currentMonth, selectedDate, ref),
+                  child: _buildCalendar(currentMonth, selectedDate, ref, context),
                 ),
               ),
 
@@ -128,7 +129,7 @@ class CalendarPage extends ConsumerWidget {
     return '${months[date.month - 1]} ${date.year}';
   }
 
-  Widget _buildCalendar(DateTime currentMonth, DateTime? selectedDate, WidgetRef ref) {
+  Widget _buildCalendar(DateTime currentMonth, DateTime? selectedDate, WidgetRef ref, BuildContext context) {
     final eventDatesAsync = ref.watch(eventDatesProvider(currentMonth));
     final availabilityMapAsync = ref.watch(availabilityMapProvider(currentMonth));
 
@@ -141,9 +142,9 @@ class CalendarPage extends ConsumerWidget {
         height: 300,
         child: EmptyState(
           icon: Icons.error_outline,
-          title: 'Error loading calendar',
+          title: context.l10n.errorLoadingCalendar,
           description: 'Failed to load calendar data: $error',
-          actionLabel: 'Retry',
+          actionLabel: context.l10n.retry,
           onAction: () {
             ref.invalidate(eventDatesProvider(currentMonth));
             ref.invalidate(availabilityMapProvider(currentMonth));
@@ -185,6 +186,9 @@ class _DateDetails extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch locale changes to trigger rebuild
+    ref.watch(localeProvider);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -198,7 +202,7 @@ class _DateDetails extends ConsumerWidget {
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () => _createRehearsal(context, date),
-              tooltip: 'Add rehearsal',
+              tooltip: context.l10n.addRehearsal,
             ),
           ],
         ),
@@ -206,6 +210,7 @@ class _DateDetails extends ConsumerWidget {
         
         // Rehearsals for this date
         FutureBuilder(
+          key: ValueKey('rehearsals_${date.toIso8601String()}_${ref.watch(localeProvider)}'),
           future: _loadRehearsals(ref, date),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -252,7 +257,7 @@ class _DateDetails extends ConsumerWidget {
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
-                      'No rehearsals scheduled',
+                      context.l10n.noRehearsalsScheduledDay,
                       style: AppTypography.bodyLarge.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -261,7 +266,7 @@ class _DateDetails extends ConsumerWidget {
                     ElevatedButton.icon(
                       onPressed: () => _createRehearsal(context, date),
                       icon: const Icon(Icons.add),
-                      label: const Text('Add Rehearsal'),
+                      label: Text(context.l10n.addRehearsalButton),
                     ),
                   ],
                 ),
@@ -287,7 +292,7 @@ class _DateDetails extends ConsumerWidget {
                       color: AppColors.primaryPurple,
                     ),
                     title: Text(
-                      rehearsal.place ?? 'Rehearsal',
+                      rehearsal.place ?? context.l10n.rehearsal,
                       style: AppTypography.bodyLarge,
                     ),
                     subtitle: Text(

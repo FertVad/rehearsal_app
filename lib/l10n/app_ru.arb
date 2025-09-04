@@ -90,5 +90,18 @@
   "dec": "Дек",
   
   "today": "Сегодня",
-  "tomorrow": "Завтра"
+  "tomorrow": "Завтра",
+  
+  "upcomingRehearsals": "Предстоящие репетиции",
+  "addRehearsal": "Добавить репетицию",
+  "error": "Ошибка",
+  "failedToLoad": "Не удалось загрузить репетиции",
+  "noRehearsalsScheduled": "Репетиции не запланированы",
+  "scheduleFirst": "Запланируйте первую репетицию",
+  "createRehearsal": "Создать репетицию",
+  "rehearsal": "Репетиция",
+  
+  "errorLoadingCalendar": "Ошибка загрузки календаря",
+  "noRehearsalsScheduledDay": "Репетиции не запланированы",
+  "addRehearsalButton": "Добавить репетицию"
 }

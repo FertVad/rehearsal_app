@@ -90,5 +90,18 @@
   "dec": "Dec",
   
   "today": "Today",
-  "tomorrow": "Tomorrow"
+  "tomorrow": "Tomorrow",
+  
+  "upcomingRehearsals": "Upcoming Rehearsals",
+  "addRehearsal": "Add rehearsal",
+  "error": "Error",
+  "failedToLoad": "Failed to load rehearsals",
+  "noRehearsalsScheduled": "No rehearsals scheduled",
+  "scheduleFirst": "Schedule your first rehearsal",
+  "createRehearsal": "Create rehearsal",
+  "rehearsal": "Rehearsal",
+  
+  "errorLoadingCalendar": "Error loading calendar",
+  "noRehearsalsScheduledDay": "No rehearsals scheduled",
+  "addRehearsalButton": "Add Rehearsal"
 }
