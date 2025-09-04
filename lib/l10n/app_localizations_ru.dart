@@ -89,4 +89,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get navProjects => 'Проекты';
+
+  @override
+  String get noProjectsTitle => 'Проектов пока нет';
+
+  @override
+  String get noProjectsDescription => 'У вас ещё нет проектов.';
 }

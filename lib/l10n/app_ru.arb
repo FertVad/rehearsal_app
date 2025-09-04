@@ -25,5 +25,7 @@
   "navDashboard": "Панель",
   "navCalendar": "Календарь",
   "navAvailability": "Доступность",
-  "navProjects": "Проекты"
+  "navProjects": "Проекты",
+  "noProjectsTitle": "Проектов пока нет",
+  "noProjectsDescription": "У вас ещё нет проектов."
 }
