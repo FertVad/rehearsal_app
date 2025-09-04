@@ -35,8 +35,13 @@ class CalendarPage extends ConsumerWidget {
       ),
       body: DashBackground(
         child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
+          child: RefreshIndicator(
+            onRefresh: () async {
+              // TODO: Refresh data
+              await Future.delayed(const Duration(seconds: 1));
+            },
+            child: CustomScrollView(
+              slivers: [
               // Month navigation
               SliverToBoxAdapter(
                 child: Padding(
@@ -102,7 +107,8 @@ class CalendarPage extends ConsumerWidget {
                     child: _DateDetails(date: selectedDate),
                   ),
                 ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

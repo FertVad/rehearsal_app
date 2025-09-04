@@ -29,8 +29,13 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       body: DashBackground(
         child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
+          child: RefreshIndicator(
+            onRefresh: () async {
+              // TODO: Refresh data
+              await Future.delayed(const Duration(seconds: 1));
+            },
+            child: CustomScrollView(
+              slivers: [
               // Header with greeting
               const SliverToBoxAdapter(
                 child: DashboardHeader(),
@@ -76,10 +81,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: QuickActions(),
               ),
 
-              const SliverToBoxAdapter(
-                child: SizedBox(height: AppSpacing.xl),
-              ),
-            ],
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: AppSpacing.xl),
+                ),
+              ],
+            ),
           ),
         ),
       ),
