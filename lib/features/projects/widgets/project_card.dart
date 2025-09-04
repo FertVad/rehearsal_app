@@ -80,7 +80,7 @@ class ProjectCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(
+                Icon(
                   Icons.chevron_right,
                   color: AppColors.textTertiary,
                 ),
