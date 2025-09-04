@@ -1,24 +1,40 @@
 import 'package:go_router/go_router.dart';
+import 'package:rehearsal_app/core/navigation/app_shell.dart';
 import 'package:rehearsal_app/features/about/presentation/about_page.dart';
-import 'package:rehearsal_app/features/home/presentation/home_page.dart';
-import 'package:rehearsal_app/features/dashboard/presentation/dashboard_page.dart';
-import 'package:rehearsal_app/features/availability/presentation/availability_page.dart';
 
 class AppRouter {
   AppRouter();
 
   final GoRouter router = GoRouter(
     routes: <RouteBase>[
-      GoRoute(path: '/', builder: (context, state) => const HomePage()),
-      GoRoute(path: '/about', builder: (context, state) => const AboutPage()),
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const AppShell(), // ИЗМЕНЕНО с HomePage
+        routes: [
+          GoRoute(
+            path: 'about',
+            builder: (context, state) => const AboutPage(),
+          ),
+        ],
+      ),
+      // Редиректы для обратной совместимости
+      GoRoute(
+        path: '/dashboard',
+        redirect: (_, __) => '/',
+      ),
       GoRoute(
         path: '/calendar',
-        builder: (context, state) => const DashboardPage(),
+        redirect: (_, __) => '/',
       ),
       GoRoute(
         path: '/availability',
-        builder: (context, state) => const AvailabilityPage(),
+        redirect: (_, __) => '/',
+      ),
+      GoRoute(
+        path: '/projects',
+        redirect: (_, __) => '/',
       ),
     ],
   );
 }
+
