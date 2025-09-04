@@ -5,6 +5,7 @@ import 'package:rehearsal_app/features/dashboard/presentation/dashboard_page.dar
 import 'package:rehearsal_app/features/calendar/presentation/calendar_page.dart';
 import 'package:rehearsal_app/features/availability/presentation/availability_page.dart';
 import 'package:rehearsal_app/features/projects/presentation/projects_page.dart';
+import 'package:rehearsal_app/features/user/presentation/user_profile_page.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 // Провайдер для текущего индекса навигации
@@ -25,6 +26,7 @@ class AppShell extends ConsumerWidget {
           CalendarPage(),
           AvailabilityPage(),
           ProjectsPage(),
+          UserProfilePage(),
         ],
       ),
       bottomNavigationBar: NavigationBar(
@@ -53,6 +55,11 @@ class AppShell extends ConsumerWidget {
             icon: const Icon(Icons.folder_outlined),
             selectedIcon: const Icon(Icons.folder),
             label: context.l10n.navProjects,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.person_outlined),
+            selectedIcon: const Icon(Icons.person),
+            label: context.l10n.navProfile,
           ),
         ],
       ),

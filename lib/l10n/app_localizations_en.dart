@@ -77,7 +77,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get daySheetNewRehearsal => 'New rehearsal';
 
-
   @override
   String get navDashboard => 'Dashboard';
 
@@ -89,6 +88,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navProjects => 'Projects';
+
+  @override
+  String get navProfile => 'Profile';
 
   @override
   String get noProjectsTitle => 'No projects yet';

@@ -68,6 +68,29 @@ class LocalRehearsalsRepository implements RehearsalsRepository {
   }
 
   @override
+  Future<List<Rehearsal>> listForUserInRange({
+    required String userId,
+    required int fromUtc,
+    required int toUtc,
+  }) async {
+    final joins = await (db.select(db.rehearsalAttendees).join([
+      innerJoin(
+        db.rehearsals,
+        db.rehearsals.id.equalsExp(db.rehearsalAttendees.rehearsalId),
+      ),
+    ])
+          ..where(db.rehearsalAttendees.userId.equals(userId))
+          ..where(db.rehearsalAttendees.deletedAtUtc.isNull())
+          ..where(db.rehearsals.deletedAtUtc.isNull())
+          ..where(db.rehearsals.startsAtUtc.isBiggerOrEqualValue(fromUtc))
+          ..where(db.rehearsals.startsAtUtc.isSmallerThanValue(toUtc))
+          ..orderBy([OrderingTerm.asc(db.rehearsals.startsAtUtc)]))
+        .get();
+
+    return joins.map((row) => row.readTable(db.rehearsals)).toList();
+  }
+
+  @override
   Future<void> update({
     required String id,
     int? startsAtUtc,

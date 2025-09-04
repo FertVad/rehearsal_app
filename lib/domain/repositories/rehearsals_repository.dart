@@ -18,6 +18,12 @@ abstract class RehearsalsRepository {
     required int dateUtc00,
   });
 
+  Future<List<Rehearsal>> listForUserInRange({
+    required String userId,
+    required int fromUtc,
+    required int toUtc,
+  });
+
   Future<void> update({
     required String id,
     int? startsAtUtc,

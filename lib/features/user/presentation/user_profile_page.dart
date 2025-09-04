@@ -1,0 +1,178 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rehearsal_app/core/design_system/app_colors.dart';
+import 'package:rehearsal_app/core/design_system/app_spacing.dart';
+import 'package:rehearsal_app/core/design_system/app_typography.dart';
+import 'package:rehearsal_app/core/widgets/loading_state.dart';
+import 'package:rehearsal_app/features/dashboard/widgets/dash_background.dart';
+import 'package:rehearsal_app/features/user/controller/user_provider.dart';
+import 'package:rehearsal_app/l10n/app.dart';
+
+class UserProfilePage extends ConsumerStatefulWidget {
+  const UserProfilePage({super.key});
+
+  @override
+  ConsumerState<UserProfilePage> createState() => _UserProfilePageState();
+}
+
+class _UserProfilePageState extends ConsumerState<UserProfilePage> {
+  final _nameController = TextEditingController();
+  final _timezoneController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _timezoneController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userState = ref.watch(userControllerProvider);
+    
+    if (userState.isLoading) {
+      return const Scaffold(
+        body: LoadingState(),
+      );
+    }
+
+    final user = userState.currentUser;
+    if (user == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Profile')),
+        body: const Center(
+          child: Text('No user found'),
+        ),
+      );
+    }
+
+    // Update controllers when user data changes
+    if (_nameController.text.isEmpty) {
+      _nameController.text = user.name ?? '';
+      _timezoneController.text = user.tz;
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(context.l10n.navProfile),
+        actions: [
+          TextButton(
+            onPressed: _saveProfile,
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+      body: DashBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: AppSpacing.paddingLG,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // User Info Card
+                Container(
+                  width: double.infinity,
+                  padding: AppSpacing.paddingLG,
+                  decoration: BoxDecoration(
+                    color: AppColors.glassLightBase,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
+                    border: Border.all(
+                      color: AppColors.glassLightStroke,
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundColor: AppColors.primaryPurple,
+                        child: Text(
+                          (user.name ?? 'U').substring(0, 1).toUpperCase(),
+                          style: AppTypography.headingMedium.copyWith(
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        'User ID: ${user.id}',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                // Profile Form
+                Text(
+                  'Profile Settings',
+                  style: AppTypography.headingMedium,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+
+                // Name Field
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+
+                // Timezone Field  
+                TextFormField(
+                  controller: _timezoneController,
+                  decoration: const InputDecoration(
+                    labelText: 'Timezone',
+                    border: OutlineInputBorder(),
+                    hintText: 'e.g., UTC, Europe/London, Asia/Jerusalem',
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+
+                // Error Display
+                if (userState.error != null)
+                  Container(
+                    padding: AppSpacing.paddingMD,
+                    decoration: BoxDecoration(
+                      color: AppColors.statusBusy.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.error_outline, color: AppColors.statusBusy),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            userState.error!,
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: AppColors.statusBusy,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => ref.read(userControllerProvider.notifier).clearError(),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _saveProfile() {
+    ref.read(userControllerProvider.notifier).updateProfile(
+          name: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
+          timezone: _timezoneController.text.trim().isEmpty ? null : _timezoneController.text.trim(),
+        );
+  }
+}

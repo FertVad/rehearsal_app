@@ -257,6 +257,12 @@ abstract class AppLocalizations {
   /// **'Projects'**
   String get navProjects;
 
+  /// No description provided for @navProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get navProfile;
+
   /// No description provided for @noProjectsTitle.
   ///
   /// In en, this message translates to:
@@ -280,7 +286,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join project'**
   String get joinProject;
-
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

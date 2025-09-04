@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rehearsal_app/core/providers/repository_providers.dart';
 import 'package:rehearsal_app/core/utils/time.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 
 import 'availability_state.dart';
-import 'availability_provider.dart';
 
 class AvailabilityController extends Notifier<AvailabilityState> {
   late final AvailabilityRepository _repo;

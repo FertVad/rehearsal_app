@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rehearsal_app/core/db/app_database.dart';
 import 'package:rehearsal_app/core/utils/time.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
+import 'package:rehearsal_app/core/providers/repository_providers.dart';
 import 'package:rehearsal_app/features/availability/controller/availability_provider.dart';
 import 'package:rehearsal_app/features/availability/controller/availability_state.dart';
 import 'package:timezone/data/latest.dart' as tzdata;

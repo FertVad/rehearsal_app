@@ -26,6 +26,7 @@
   "navCalendar": "Calendar",
   "navAvailability": "Availability",
   "navProjects": "Projects",
+  "navProfile": "Profile",
   "noProjectsTitle": "No projects yet",
   "noProjectsDescription": "Join an existing project or create your own",
   "createProject": "Create project",
