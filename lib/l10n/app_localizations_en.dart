@@ -76,4 +76,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get daySheetNewRehearsal => 'New rehearsal';
+
+
+  @override
+  String get navDashboard => 'Dashboard';
+
+  @override
+  String get navCalendar => 'Calendar';
+
+  @override
+  String get navAvailability => 'Availability';
+
+  @override
+  String get navProjects => 'Projects';
 }

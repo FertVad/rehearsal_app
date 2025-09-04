@@ -76,4 +76,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get daySheetNewRehearsal => 'Новая репетиция';
+
+
+  @override
+  String get navDashboard => 'Панель';
+
+  @override
+  String get navCalendar => 'Календарь';
+
+  @override
+  String get navAvailability => 'Доступность';
+
+  @override
+  String get navProjects => 'Проекты';
 }
