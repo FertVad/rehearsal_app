@@ -57,7 +57,7 @@ class CalendarPage extends ConsumerWidget {
                       ),
                       Text(
                         _getMonthYearString(currentMonth),
-                        style: AppTypography.headingLarge,
+                        style: AppTypography.headingMedium,
                       ),
                       IconButton(
                         icon: const Icon(Icons.chevron_right),
@@ -85,12 +85,11 @@ class CalendarPage extends ConsumerWidget {
                     onDateSelected: (date) {
                       ref.read(selectedCalendarDateProvider.notifier).state =
                           date;
-                      // TODO: Show day details or navigate to day view
                     },
                     eventDates:
-                        _getMockEventDates(), // TODO: Replace with real data
+                        _getMockEventDates(),
                     availabilityMap:
-                        _getMockAvailabilityMap(), // TODO: Replace with real data
+                        _getMockAvailabilityMap(),
                   ),
                 ),
               ),
@@ -100,7 +99,7 @@ class CalendarPage extends ConsumerWidget {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: AppSpacing.paddingLG,
-                    child: _DateDetails(date: selectedDate!),
+                    child: _DateDetails(date: selectedDate),
                   ),
                 ),
             ],
@@ -129,7 +128,6 @@ class CalendarPage extends ConsumerWidget {
   }
 
   List<DateTime> _getMockEventDates() {
-    // TODO: Replace with real data from provider
     final today = DateTime.now();
     return [
       today,
@@ -140,7 +138,6 @@ class CalendarPage extends ConsumerWidget {
   }
 
   Map<DateTime, AvailabilityStatus> _getMockAvailabilityMap() {
-    // TODO: Replace with real data from provider
     final today = DateTime.now();
     return {
       DateTime(today.year, today.month, today.day): AvailabilityStatus.free,
@@ -167,11 +164,10 @@ class _DateDetails extends StatelessWidget {
           style: AppTypography.headingMedium,
         ),
         const SizedBox(height: AppSpacing.md),
-        // TODO: Show events, availability, etc. for selected date
         Container(
           padding: AppSpacing.paddingLG,
           decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
           ),
           child: const Text('Details for this day will be shown here'),
