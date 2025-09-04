@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:rehearsal_app/core/constants/time_constants.dart';
 import 'package:rehearsal_app/core/db/app_database.dart';
 import 'package:rehearsal_app/domain/repositories/rehearsals_repository.dart';
 
@@ -46,7 +47,7 @@ class LocalRehearsalsRepository implements RehearsalsRepository {
     required String userId,
     required int dateUtc00,
   }) async {
-    final msPerDay = 86400000;
+    final msPerDay = TimeConstants.millisecondsPerDay;
     final dayEnd = dateUtc00 + msPerDay;
 
     final joins = await (db.select(db.rehearsalAttendees).join([

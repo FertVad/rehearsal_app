@@ -21,32 +21,34 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: AppSpacing.paddingXL,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 64, color: AppColors.textTertiary),
-            const SizedBox(height: AppSpacing.lg),
-            Text(
-              title,
-              style: AppTypography.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              description,
-              style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+    return SingleChildScrollView(
+      child: Center(
+        child: Padding(
+          padding: AppSpacing.paddingLG,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 48, color: AppColors.textTertiary),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                title,
+                style: AppTypography.bodyMedium,
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: AppSpacing.xl),
-              ElevatedButton(onPressed: onAction, child: Text(actionLabel!)),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                description,
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              if (actionLabel != null && onAction != null) ...[
+                const SizedBox(height: AppSpacing.lg),
+                ElevatedButton(onPressed: onAction, child: Text(actionLabel!)),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

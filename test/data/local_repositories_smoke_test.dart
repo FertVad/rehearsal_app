@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rehearsal_app/core/constants/time_constants.dart';
 import 'package:rehearsal_app/core/db/connection_test.dart';
 import 'package:rehearsal_app/core/db/app_database.dart';
 import 'package:rehearsal_app/data/repositories/local_users_repository.dart';
@@ -18,7 +19,7 @@ void main() {
     expect(user.id, 'u1');
 
     final day = DateTime.utc(2025, 1, 2).millisecondsSinceEpoch;
-    final day00 = day - day % 86400000;
+    final day00 = day - day % TimeConstants.millisecondsPerDay;
 
     await availability.upsertForUserOnDateUtc(
       userId: user.id,

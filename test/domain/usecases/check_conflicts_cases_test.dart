@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rehearsal_app/core/constants/time_constants.dart';
 import 'package:rehearsal_app/core/db/app_database.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 import 'package:rehearsal_app/domain/repositories/rehearsals_repository.dart';
@@ -28,7 +29,7 @@ void main() {
     );
   });
 
-  int dateUtc00(int msUtc) => msUtc - msUtc % 86400000;
+  int dateUtc00(int msUtc) => msUtc - msUtc % TimeConstants.millisecondsPerDay;
 
   test('busy -> ConflictType.busy', () async {
     final date = dateUtc00(base.startsAtUtc);

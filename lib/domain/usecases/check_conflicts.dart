@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:rehearsal_app/core/constants/time_constants.dart';
 import 'package:rehearsal_app/core/db/app_database.dart';
 
 import '../repositories/availability_repository.dart';
@@ -93,7 +94,7 @@ class Conflict {
   final String? details;
 }
 
-const _msPerDay = 86400000;
+const _msPerDay = TimeConstants.millisecondsPerDay;
 
 int _dateUtc00(int msUtc) => msUtc - msUtc % _msPerDay;
 

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rehearsal_app/core/constants/time_constants.dart';
 import 'package:rehearsal_app/core/db/app_database.dart';
 import 'package:rehearsal_app/core/db/connection_test.dart';
 import 'package:rehearsal_app/data/repositories/local_availability_repository.dart';
@@ -25,7 +26,7 @@ void main() {
     test('insert sets updatedAtUtc and lastWriter', () async {
       await users.create(id: 'u1', tz: 'UTC');
       final day = DateTime.utc(2024, 1, 1).millisecondsSinceEpoch;
-      final day00 = day - day % 86400000;
+      final day00 = day - day % TimeConstants.millisecondsPerDay;
 
       await repo.upsertForUserOnDateUtc(
         userId: 'u1',
@@ -46,7 +47,7 @@ void main() {
     test('update refreshes updatedAtUtc and lastWriter', () async {
       await users.create(id: 'u1', tz: 'UTC');
       final day = DateTime.utc(2024, 1, 1).millisecondsSinceEpoch;
-      final day00 = day - day % 86400000;
+      final day00 = day - day % TimeConstants.millisecondsPerDay;
 
       await repo.upsertForUserOnDateUtc(
         userId: 'u1',

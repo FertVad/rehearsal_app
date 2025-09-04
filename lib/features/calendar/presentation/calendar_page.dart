@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rehearsal_app/core/design_system/app_colors.dart';
 import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/design_system/calendar_components.dart';
@@ -172,7 +173,7 @@ class _DateDetails extends StatelessWidget {
         Container(
           padding: AppSpacing.paddingLG,
           decoration: BoxDecoration(
-            color: Colors.grey.withValues(alpha: 0.1),
+            color: AppColors.textTertiary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(AppSpacing.radiusLG),
           ),
           child: const Text('Details for this day will be shown here'),
