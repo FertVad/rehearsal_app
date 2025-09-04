@@ -33,7 +33,7 @@ class UserController extends Notifier<UserState> {
   Future<void> _loadUser(String userId) async {
     final usersRepo = ref.read(usersRepositoryProvider);
     final user = await usersRepo.getById(userId);
-    
+
     if (user != null) {
       state = state.copyWith(currentUser: user, isLoading: false);
     } else {
@@ -44,10 +44,10 @@ class UserController extends Notifier<UserState> {
   Future<void> _createDefaultUser() async {
     final usersRepo = ref.read(usersRepositoryProvider);
     final userId = 'user_${DateTime.now().millisecondsSinceEpoch}';
-    
+
     final user = await usersRepo.create(
       id: userId,
-      name: 'Local User', // TODO: localize when context is available
+      name: 'Local User',
       tz: 'UTC',
     );
 

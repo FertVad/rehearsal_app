@@ -68,7 +68,7 @@ class CalendarPage extends ConsumerWidget {
                         },
                       ),
                       Text(
-                        _getMonthYearString(currentMonth),
+                        _getMonthYearString(currentMonth, context),
                         style: AppTypography.headingMedium,
                       ),
                       IconButton(
@@ -111,21 +111,8 @@ class CalendarPage extends ConsumerWidget {
     );
   }
 
-  String _getMonthYearString(DateTime date) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
+  String _getMonthYearString(DateTime date, BuildContext context) {
+    final months = LocalizationHelper.getMonthNames(context);
     return '${months[date.month - 1]} ${date.year}';
   }
 

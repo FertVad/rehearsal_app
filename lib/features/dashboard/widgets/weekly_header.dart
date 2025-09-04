@@ -4,6 +4,7 @@ import 'package:rehearsal_app/core/design_system/glass_system.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/design_system/app_colors.dart';
 import 'package:rehearsal_app/core/design_system/app_spacing.dart';
+import 'package:rehearsal_app/core/utils/localization_helper.dart';
 
 /// Небольшой стеклянный хедер недели.
 /// Рисует названия дней и числа в одной строке.
@@ -14,12 +15,11 @@ class WeeklyHeader extends StatelessWidget {
   /// Первый день недели (например, понедельник).
   final DateTime start;
 
-  static const _weekdayShortRu = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-
   @override
   Widget build(BuildContext context) {
     final labelColor = AppColors.textSecondary;
     final valueColor = AppColors.textPrimary;
+    final weekdayNames = LocalizationHelper.getWeekdayNamesShort(context);
 
     final days = List<DateTime>.generate(
       7,
@@ -38,7 +38,7 @@ class WeeklyHeader extends StatelessWidget {
           children: [
             for (var i = 0; i < 7; i++)
               _DayCell(
-                label: _weekdayShortRu[i],
+                label: weekdayNames[i],
                 value: days[i].day.toString(),
                 labelColor: labelColor,
                 valueColor: valueColor,

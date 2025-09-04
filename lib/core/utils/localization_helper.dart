@@ -24,6 +24,20 @@ class LocalizationHelper {
     ];
   }
 
+  /// Get localized weekday names (short) - starting from Monday
+  static List<String> getWeekdayNamesShort(BuildContext context) {
+    final l10n = context.l10n;
+    return [
+      l10n.mondayShort,
+      l10n.tuesdayShort,
+      l10n.wednesdayShort,
+      l10n.thursdayShort,
+      l10n.fridayShort,
+      l10n.saturdayShort,
+      l10n.sundayShort,
+    ];
+  }
+
   /// Get localized month names (short)
   static List<String> getMonthNamesShort(BuildContext context) {
     final l10n = context.l10n;

@@ -13,8 +13,11 @@ class App extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(localeProvider);
+    
     return MaterialApp.router(
-      locale: ref.watch(localeProvider),
+      key: ValueKey('app_${locale?.languageCode ?? 'system'}'),
+      locale: locale,
       onGenerateTitle: (context) => context.l10n.appTitle,
       theme: buildAppTheme(),
       darkTheme: buildAppDarkTheme(),

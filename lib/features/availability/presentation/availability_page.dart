@@ -5,6 +5,7 @@ import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/design_system/calendar_components.dart' as calendar;
 import 'package:rehearsal_app/core/widgets/loading_state.dart';
 import 'package:rehearsal_app/core/widgets/empty_state.dart';
+import 'package:rehearsal_app/core/utils/localization_helper.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 import '../controller/availability_provider.dart';
 import '../controller/availability_state.dart';
@@ -168,10 +169,7 @@ class _AvailabilityPageState extends ConsumerState<AvailabilityPage> {
   }
 
   String _getMonthYearString(DateTime date) {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
-    ];
+    final months = LocalizationHelper.getMonthNames(context);
     return '${months[date.month - 1]} ${date.year}';
   }
 }

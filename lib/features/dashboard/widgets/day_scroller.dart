@@ -7,6 +7,7 @@ import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/design_system/haptics.dart';
 import 'package:rehearsal_app/core/design_system/calendar_components.dart';
+import 'package:rehearsal_app/core/utils/localization_helper.dart';
 
 /// A glassy, horizontally scrollable strip of days with:
 ///  • centered month label (updates as you scroll)
@@ -57,21 +58,18 @@ class DayScroller extends StatefulWidget {
 }
 
 class _DayScrollerState extends State<DayScroller> {
-  static const int _anchor =
-      10000; // large center to allow scrolling in both directions
+  static const int _anchor = 10000; // large center to allow scrolling in both directions
   late PageController _controller;
-  late int _currentIndex; // absolute page index
-
-  // cache of currently selected date (normalized to date-only)
-  late DateTime _selected;
+  late DateTime _baseDate; // reference date for index 0
+  late DateTime _selectedDate; // currently selected/centered date
 
   @override
   void initState() {
     super.initState();
-    _selected = _stripTime(widget.initialDate ?? DateTime.now());
-    _currentIndex = _anchor;
+    _selectedDate = _stripTime(widget.initialDate ?? DateTime.now());
+    _baseDate = _selectedDate.subtract(Duration(days: _anchor));
     _controller = PageController(
-      initialPage: _currentIndex,
+      initialPage: _anchor,
       viewportFraction: _viewportFractionFor(widget.width, widget.visibleItems),
     );
   }
@@ -82,7 +80,7 @@ class _DayScrollerState extends State<DayScroller> {
     // If size or visibleItems change, we need to rebuild controller to keep snapping crisp
     if (oldWidget.width != widget.width ||
         oldWidget.visibleItems != widget.visibleItems) {
-      final oldPage = _controller.page ?? _currentIndex.toDouble();
+      final oldPage = _controller.page ?? _anchor.toDouble();
       _controller.dispose();
       _controller = PageController(
         initialPage: oldPage.round(),
@@ -101,9 +99,10 @@ class _DayScrollerState extends State<DayScroller> {
     super.dispose();
   }
 
-  // maps an absolute page index to a calendar date, with _anchor == _selected
-  DateTime _dateForIndex(int index) =>
-      _selected.add(Duration(days: index - _currentIndex));
+  // maps page index to calendar date
+  DateTime _dateForIndex(int index) {
+    return _baseDate.add(Duration(days: index));
+  }
 
   static DateTime _stripTime(DateTime dt) =>
       DateTime(dt.year, dt.month, dt.day);
@@ -116,22 +115,8 @@ class _DayScrollerState extends State<DayScroller> {
     return itemWidth / width;
   }
 
-  String _monthTitle(DateTime d) {
-    // Use built-in month names (en) to avoid intl dependency for now.
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
+  String _monthTitle(DateTime d, BuildContext context) {
+    final months = LocalizationHelper.getMonthNames(context);
     return months[d.month - 1];
   }
 
@@ -178,8 +163,8 @@ class _DayScrollerState extends State<DayScroller> {
                     transitionBuilder: (child, animation) =>
                         FadeTransition(opacity: animation, child: child),
                     child: _MonthText(
-                      key: ValueKey(_monthTitle(_selected)),
-                      title: _monthTitle(_selected),
+                      key: ValueKey(_monthTitle(_selectedDate, context)),
+                      title: _monthTitle(_selectedDate, context),
                       color: textColor,
                     ),
                   ),
@@ -198,17 +183,17 @@ class _DayScrollerState extends State<DayScroller> {
                       onPageChanged: (index) {
                         final newDate = _dateForIndex(index);
                         // Fire haptics once per day change
-                        if (_selected != newDate) {
+                        if (_selectedDate != newDate) {
                           AppHaptics.selection();
                           widget.onHaptic?.call();
                         }
-                        setState(() => _selected = newDate);
+                        setState(() => _selectedDate = newDate);
                         widget.onDateChanged?.call(newDate);
                       },
                       itemBuilder: (context, index) {
                         final date = _dateForIndex(index);
                         final bool isSelected =
-                            _stripTime(date) == _stripTime(_selected);
+                            _stripTime(date) == _stripTime(_selectedDate);
                         final bool hasEvent =
                             widget.eventPredicate?.call(date) ?? false;
                         return Center(

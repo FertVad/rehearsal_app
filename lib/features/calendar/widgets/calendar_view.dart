@@ -4,6 +4,7 @@ import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/design_system/calendar_components.dart';
 import 'package:rehearsal_app/features/calendar/widgets/improved_day_cell.dart';
+import 'package:rehearsal_app/core/utils/localization_helper.dart';
 
 class CalendarView extends StatelessWidget {
   const CalendarView({
@@ -32,7 +33,7 @@ class CalendarView extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.lg),
               child: Text(
-                _getMonthYearString(currentDate),
+                _getMonthYearString(currentDate, context),
                 style: AppTypography.headingMedium,
               ),
             ),
@@ -115,21 +116,8 @@ class CalendarView extends StatelessWidget {
     return weeks;
   }
 
-  String _getMonthYearString(DateTime date) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
+  String _getMonthYearString(DateTime date, BuildContext context) {
+    final months = LocalizationHelper.getMonthNames(context);
     return '${months[date.month - 1]} ${date.year}';
   }
 

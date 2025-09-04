@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rehearsal_app/core/design_system/glass_system.dart' as ds;
 
-/// Dashboard-specific background using the app's glass design system.
+/// Dashboard-specific background with solid graphite color.
 class DashBackground extends StatelessWidget {
   const DashBackground({super.key, required this.child});
 
@@ -9,7 +8,12 @@ class DashBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ds.GlassBackground(child: child);
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFF2C2C2E), // Graphite color
+      ),
+      child: child,
+    );
   }
 }
 

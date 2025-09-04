@@ -5,6 +5,7 @@ import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/design_system/haptics.dart';
 import 'package:rehearsal_app/core/navigation/app_shell.dart';
+import 'package:rehearsal_app/l10n/app.dart';
 
 class QuickActions extends ConsumerWidget {
   const QuickActions({super.key});
@@ -17,7 +18,7 @@ class QuickActions extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Quick Actions',
+            context.l10n.quickActions,
             style: AppTypography.headingMedium,
           ),
           const SizedBox(height: AppSpacing.md),
@@ -26,7 +27,7 @@ class QuickActions extends ConsumerWidget {
               Expanded(
                 child: _ActionButton(
                   icon: Icons.add_circle_outline,
-                  label: 'New Rehearsal',
+                  label: context.l10n.newRehearsal,
                   onTap: () {
                     Haptics.light();
                   },
@@ -36,7 +37,7 @@ class QuickActions extends ConsumerWidget {
               Expanded(
                 child: _ActionButton(
                   icon: Icons.access_time,
-                  label: 'Set Availability',
+                  label: context.l10n.setAvailability,
                   onTap: () {
                     Haptics.light();
                     ref.read(navigationIndexProvider.notifier).state = 2;

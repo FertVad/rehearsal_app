@@ -103,5 +103,22 @@
   
   "errorLoadingCalendar": "Error loading calendar",
   "noRehearsalsScheduledDay": "No rehearsals scheduled",
-  "addRehearsalButton": "Add Rehearsal"
+  "addRehearsalButton": "Add Rehearsal",
+  
+  "goodMorning": "Good morning",
+  "goodAfternoon": "Good afternoon",
+  "goodEvening": "Good evening",
+  "readyForRehearsal": "Ready for rehearsal?",
+  "projectAvailabilityTitle": "Project Availability This Week",
+  "quickActions": "Quick Actions",
+  "newRehearsal": "New Rehearsal",
+  "setAvailability": "Set Availability",
+  
+  "mondayShort": "Mon",
+  "tuesdayShort": "Tue", 
+  "wednesdayShort": "Wed",
+  "thursdayShort": "Thu",
+  "fridayShort": "Fri",
+  "saturdayShort": "Sat",
+  "sundayShort": "Sun"
 }

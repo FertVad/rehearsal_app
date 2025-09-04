@@ -298,4 +298,49 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get addRehearsalButton => 'Добавить репетицию';
+
+  @override
+  String get goodMorning => 'Доброе утро';
+
+  @override
+  String get goodAfternoon => 'Добрый день';
+
+  @override
+  String get goodEvening => 'Добрый вечер';
+
+  @override
+  String get readyForRehearsal => 'Готовы к репетиции?';
+
+  @override
+  String get projectAvailabilityTitle => 'Доступность проекта на этой неделе';
+
+  @override
+  String get quickActions => 'Быстрые действия';
+
+  @override
+  String get newRehearsal => 'Новая репетиция';
+
+  @override
+  String get setAvailability => 'Установить доступность';
+
+  @override
+  String get mondayShort => 'Пн';
+
+  @override
+  String get tuesdayShort => 'Вт';
+
+  @override
+  String get wednesdayShort => 'Ср';
+
+  @override
+  String get thursdayShort => 'Чт';
+
+  @override
+  String get fridayShort => 'Пт';
+
+  @override
+  String get saturdayShort => 'Сб';
+
+  @override
+  String get sundayShort => 'Вс';
 }

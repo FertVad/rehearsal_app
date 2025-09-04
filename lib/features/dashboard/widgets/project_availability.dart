@@ -3,6 +3,8 @@ import 'package:rehearsal_app/core/design_system/glass_system.dart';
 import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/design_system/app_colors.dart';
+import 'package:rehearsal_app/core/utils/localization_helper.dart';
+import 'package:rehearsal_app/l10n/app.dart';
 
 class ProjectAvailability extends StatelessWidget {
   const ProjectAvailability({super.key});
@@ -15,7 +17,7 @@ class ProjectAvailability extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Project Availability This Week',
+            context.l10n.projectAvailabilityTitle,
             style: AppTypography.headingMedium,
           ),
           const SizedBox(height: AppSpacing.md),
@@ -38,7 +40,8 @@ class _AvailabilityChart extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: List.generate(7, (index) {
-          final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+          final weekdayNames = LocalizationHelper.getWeekdayNamesShort(context);
+          final days = weekdayNames.map((day) => day.substring(0, 1)).toList();
           final availability = [0.8, 0.6, 0.9, 0.4, 0.7, 0.3, 0.5][index];
           
           return Column(

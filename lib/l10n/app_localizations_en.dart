@@ -298,4 +298,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addRehearsalButton => 'Add Rehearsal';
+
+  @override
+  String get goodMorning => 'Good morning';
+
+  @override
+  String get goodAfternoon => 'Good afternoon';
+
+  @override
+  String get goodEvening => 'Good evening';
+
+  @override
+  String get readyForRehearsal => 'Ready for rehearsal?';
+
+  @override
+  String get projectAvailabilityTitle => 'Project Availability This Week';
+
+  @override
+  String get quickActions => 'Quick Actions';
+
+  @override
+  String get newRehearsal => 'New Rehearsal';
+
+  @override
+  String get setAvailability => 'Set Availability';
+
+  @override
+  String get mondayShort => 'Mon';
+
+  @override
+  String get tuesdayShort => 'Tue';
+
+  @override
+  String get wednesdayShort => 'Wed';
+
+  @override
+  String get thursdayShort => 'Thu';
+
+  @override
+  String get fridayShort => 'Fri';
+
+  @override
+  String get saturdayShort => 'Sat';
+
+  @override
+  String get sundayShort => 'Sun';
 }
