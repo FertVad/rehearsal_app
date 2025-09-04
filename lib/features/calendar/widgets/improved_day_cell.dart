@@ -101,10 +101,10 @@ class ImprovedDayCell extends StatelessWidget {
 
   Color _getBackgroundColor() {
     if (isSelected) {
-      return AppColors.primaryPurple.withOpacity(0.2);
+      return AppColors.primaryPurple.withValues(alpha: 0.2);
     }
     if (isToday) {
-      return AppColors.primaryPurple.withOpacity(0.1);
+      return AppColors.primaryPurple.withValues(alpha: 0.1);
     }
     return Colors.transparent;
   }
@@ -118,7 +118,7 @@ class ImprovedDayCell extends StatelessWidget {
     }
     if (isToday) {
       return Border.all(
-        color: AppColors.primaryPurple.withOpacity(0.5),
+        color: AppColors.primaryPurple.withValues(alpha: 0.5),
         width: 1,
       );
     }
