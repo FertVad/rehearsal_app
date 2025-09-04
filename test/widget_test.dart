@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rehearsal_app/core/l10n/locale_provider.dart';import 'package:rehearsal_app/app.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rehearsal_app/core/l10n/locale_provider.dart';
+import 'package:rehearsal_app/app.dart';
 import 'package:rehearsal_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('shows welcome text and about button', (
+  testWidgets('app starts with bottom navigation', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(ProviderScope(overrides:[localeProvider.overrideWith((ref)=> const Locale('en'))], child: App()));
@@ -12,8 +14,10 @@ void main() {
 
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
 
-    expect(find.text(l10n.homeWelcome), findsOneWidget);
-    expect(find.text(l10n.homeAboutButton), findsOneWidget);
-    expect(find.text(l10n.homeCalendarButton), findsOneWidget);
+    // Check that the app shows navigation items
+    expect(find.text(l10n.navDashboard), findsOneWidget);
+    expect(find.text(l10n.navCalendar), findsOneWidget);
+    expect(find.text(l10n.navAvailability), findsOneWidget);
+    expect(find.text(l10n.navProjects), findsOneWidget);
   });
 }
