@@ -266,8 +266,20 @@ abstract class AppLocalizations {
   /// No description provided for @noProjectsDescription.
   ///
   /// In en, this message translates to:
-  /// **'You don't have any projects yet.'**
+  /// **'Join an existing project or create your own'**
   String get noProjectsDescription;
+
+  /// No description provided for @createProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Create project'**
+  String get createProject;
+
+  /// No description provided for @joinProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Join project'**
+  String get joinProject;
 
 }
 
