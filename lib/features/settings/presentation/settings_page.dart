@@ -88,12 +88,15 @@ class _ThemeOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RadioListTile<ThemeMode>(
+    return ListTile(
       title: Text(title),
       subtitle: Text(subtitle),
-      value: value,
-      groupValue: groupValue,
-      onChanged: onChanged,
+      leading: Radio<ThemeMode>(
+        value: value,
+        groupValue: groupValue,
+        onChanged: onChanged,
+      ),
+      onTap: () => onChanged(value),
     );
   }
 }
