@@ -1,33 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:rehearsal_app/features/calendar/presentation/calendar_page.dart';
+import 'package:rehearsal_app/features/calendar/widgets/calendar_view.dart';
 import 'package:rehearsal_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('calendar page shows title and tabs', (tester) async {
+  testWidgets('calendar page shows title and navigation buttons',
+      (tester) async {
     // Load English strings for stable assertions
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
 
-    // Pump CalendarPage directly with proper localization context
+    // Pump CalendarPage with ProviderScope for Riverpod
     await tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('en'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: const CalendarPage(),
+      ProviderScope(
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const CalendarPage(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
 
-    // Title and tabs
-    expect(find.text(l10n.calendarTitle), findsOneWidget);
-    expect(find.text(l10n.calendarTabMonth), findsOneWidget);
-    expect(find.text(l10n.calendarTabWeek), findsOneWidget);
-    expect(find.byType(TabBar), findsOneWidget);
-
-    // Navigation buttons exist
+    // Title and main UI components
+    expect(find.text(l10n.navCalendar), findsOneWidget);
+    expect(find.byIcon(Icons.today), findsOneWidget);
     expect(find.byIcon(Icons.chevron_left), findsOneWidget);
     expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+    expect(find.byType(CalendarView), findsOneWidget);
   });
 }
