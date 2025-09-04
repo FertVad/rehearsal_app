@@ -30,7 +30,7 @@ class SettingsPage extends ConsumerWidget {
               const SizedBox(height: AppSpacing.md),
               GlassCard(
                 child: RadioGroup<ThemeMode>(
-                  value: themeMode,
+                  groupValue: themeMode,
                   onChanged: (value) {
                     if (value != null) {
                       ref.read(themeModeProvider.notifier).state = value;
@@ -86,7 +86,6 @@ class _ThemeOption extends StatelessWidget {
       leading: Radio<ThemeMode>(
         value: value,
       ),
-      onTap: () => RadioGroup.of<ThemeMode>(context)?.setValue(value),
     );
   }
 }
