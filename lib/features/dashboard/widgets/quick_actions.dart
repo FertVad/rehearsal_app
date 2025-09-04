@@ -29,7 +29,6 @@ class QuickActions extends ConsumerWidget {
                   label: 'New Rehearsal',
                   onTap: () {
                     Haptics.light();
-                    // TODO: Open create rehearsal dialog
                   },
                 ),
               ),
@@ -76,7 +75,7 @@ class _ActionButton extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             Text(
               label,
-              style: AppTypography.labelMedium,
+              style: AppTypography.label,
               textAlign: TextAlign.center,
             ),
           ],
