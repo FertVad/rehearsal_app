@@ -6,6 +6,7 @@ import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/widgets/loading_state.dart';
 import 'package:rehearsal_app/features/dashboard/widgets/dash_background.dart';
 import 'package:rehearsal_app/features/user/controller/user_provider.dart';
+import 'package:rehearsal_app/core/l10n/locale_provider.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 class UserProfilePage extends ConsumerStatefulWidget {
@@ -132,6 +133,58 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                     hintText: context.l10n.timezoneHint,
                   ),
                 ),
+                const SizedBox(height: AppSpacing.xl),
+
+                // Language Selector
+                Text(
+                  'Language / Язык',
+                  style: AppTypography.headingMedium,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                
+                Container(
+                  padding: AppSpacing.paddingMD,
+                  decoration: BoxDecoration(
+                    color: AppColors.glassLightBase,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+                    border: Border.all(color: AppColors.glassLightStroke),
+                  ),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: const Text('English'),
+                        leading: Radio<Locale?>(
+                          value: const Locale('en'),
+                          groupValue: ref.watch(localeProvider),
+                          onChanged: (locale) {
+                            ref.read(localeProvider.notifier).state = locale;
+                          },
+                        ),
+                      ),
+                      ListTile(
+                        title: const Text('Русский'),
+                        leading: Radio<Locale?>(
+                          value: const Locale('ru'),
+                          groupValue: ref.watch(localeProvider),
+                          onChanged: (locale) {
+                            ref.read(localeProvider.notifier).state = locale;
+                          },
+                        ),
+                      ),
+                      ListTile(
+                        title: const Text('System / Системный'),
+                        leading: Radio<Locale?>(
+                          value: null,
+                          groupValue: ref.watch(localeProvider),
+                          onChanged: (locale) {
+                            ref.read(localeProvider.notifier).state = locale;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
                 const SizedBox(height: AppSpacing.xl),
 
                 // Error Display
