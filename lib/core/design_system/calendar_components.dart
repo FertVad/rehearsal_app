@@ -76,6 +76,7 @@ class CalendarDayButton extends StatelessWidget {
     required this.isSelected,
     this.hasEvent = false,
     this.onTap,
+    this.onLongPress,
     this.size = 36, // диаметр «капли»
   });
 
@@ -83,14 +84,14 @@ class CalendarDayButton extends StatelessWidget {
   final bool isSelected;
   final bool hasEvent;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final double size;
 
   @override
   Widget build(BuildContext context) {
-    final b = Theme.of(context).brightness;
-    final Color textSecondary = b == Brightness.dark
-        ? Colors.white.withValues(alpha: 0.70)
-        : AppColors.textSecondary;
+    // Проверка на сегодняшний день
+    final today = DateTime.now();
+    final isToday = day.year == today.year && day.month == today.month && day.day == today.day;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -98,7 +99,7 @@ class CalendarDayButton extends StatelessWidget {
         // Weekday кратко (Mon/Tue/…)
         Text(
           _weekdayShort(day),
-          style: AppTypography.calendarWeekday.copyWith(color: textSecondary),
+          style: AppTypography.calendarWeekday.copyWith(color: Colors.white.withValues(alpha: 0.85)),
         ),
         const SizedBox(height: AppSpacing.xs),
 
@@ -110,28 +111,30 @@ class CalendarDayButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(size / 2),
             child: _DropletSurface(
               selected: isSelected,
-              child: GlassButton(
-                size: GlassSize.small,
-                selected: isSelected,
-                onTap: () {
-                  // тактильная отдача с троттлингом
+              isToday: isToday,
+              child: GestureDetector(
+                onTap: onTap != null ? () {
                   AppHaptics.selection();
-                  onTap?.call();
-                },
-                // центрируем цифру
-                child: SizedBox(
-                  width: size,
-                  height: size,
-                  child: Center(
-                    child: Text(
-                      '${day.day}',
-                      style: AppTypography.calendarDay.copyWith(
-                        // более контрастный текст для выбранного
-                        color: isSelected
-                            ? (b == Brightness.dark
-                                  ? Colors.white.withValues(alpha: 0.95)
-                                  : AppColors.textPrimary)
-                            : textSecondary,
+                  onTap!();
+                } : null,
+                onLongPress: onLongPress != null ? () {
+                  AppHaptics.light();
+                  onLongPress!();
+                } : null,
+                child: AppGlass(
+                  size: GlassSize.small,
+                  style: GlassStyle.light,
+                  // центрируем цифру
+                  child: SizedBox(
+                    width: size,
+                    height: size,
+                    child: Center(
+                      child: Text(
+                        '${day.day}',
+                        style: AppTypography.calendarDay.copyWith(
+                          // белый текст для всех дней
+                          color: Colors.white.withValues(alpha: 0.95),
+                        ),
                       ),
                     ),
                   ),
@@ -157,27 +160,57 @@ class CalendarDayButton extends StatelessWidget {
 /// Тонкая подложка-обводка для «капли», чтобы даже без акцента
 /// было ощущение стеклянного объёма.
 class _DropletSurface extends StatelessWidget {
-  const _DropletSurface({required this.child, required this.selected});
+  const _DropletSurface({
+    required this.child, 
+    required this.selected, 
+    this.isToday = false,
+  });
 
   final Widget child;
   final bool selected;
+  final bool isToday;
 
   @override
   Widget build(BuildContext context) {
-    final b = Theme.of(context).brightness;
-    final Color borderBase = b == Brightness.dark
-        ? Colors.white.withValues(alpha: 0.18)
-        : Colors.white.withValues(alpha: 0.28);
+    final Color borderBase = Colors.white.withValues(alpha: 0.18);
+    
+    // Определяем стиль в зависимости от состояния
+    Color borderColor = borderBase;
+    double borderWidth = 0.8;
+    List<BoxShadow>? boxShadow;
+    
+    if (selected) {
+      // Выбранный день: свечение (без бордера)
+      borderColor = borderBase;
+      borderWidth = 0.8;
+      boxShadow = [
+        BoxShadow(
+          color: AppColors.accentHotPink.withValues(alpha: 0.4),
+          blurRadius: 8,
+          spreadRadius: 2,
+        ),
+      ];
+    } else if (isToday) {
+      // Сегодняшний день: яркий бордер и легкое свечение
+      borderColor = AppColors.primaryPurple.withValues(alpha: 1.0);
+      borderWidth = 2.0;
+      boxShadow = [
+        BoxShadow(
+          color: AppColors.primaryPurple.withValues(alpha: 0.3),
+          blurRadius: 6,
+          spreadRadius: 1,
+        ),
+      ];
+    }
 
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: selected
-              ? AppColors.accentHotPink.withValues(alpha: 0.30)
-              : borderBase,
-          width: selected ? 1.0 : 0.8,
+          color: borderColor,
+          width: borderWidth,
         ),
+        boxShadow: boxShadow,
       ),
       child: child,
     );

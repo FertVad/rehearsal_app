@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:rehearsal_app/core/design_system/app_colors.dart';
 import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
-import 'package:rehearsal_app/core/design_system/haptics.dart';
 import 'package:rehearsal_app/core/design_system/calendar_components.dart';
 import 'package:rehearsal_app/core/utils/localization_helper.dart';
 
@@ -20,7 +19,10 @@ class DayScroller extends StatefulWidget {
   const DayScroller({
     super.key,
     this.initialDate,
+    this.selectedDate,
     this.onDateChanged,
+    this.onDayTap,
+    this.onDayLongPress,
     this.eventPredicate,
     this.onHaptic,
     this.width = 388,
@@ -33,8 +35,18 @@ class DayScroller extends StatefulWidget {
   /// If null, defaults to DateTime.now().
   final DateTime? initialDate;
 
+  /// Externally controlled selected date. If null, no day is selected.
+  final DateTime? selectedDate;
+
   /// Called when the centered day changes after a snap.
+  /// NOTE: Currently not used, selection only happens on explicit taps.
   final ValueChanged<DateTime>? onDateChanged;
+  
+  /// Called when a day is tapped.
+  final ValueChanged<DateTime>? onDayTap;
+  
+  /// Called when a day is long pressed.
+  final ValueChanged<DateTime>? onDayLongPress;
 
   /// Return true if a small event dot should be shown for the date.
   final bool Function(DateTime date)? eventPredicate;
@@ -182,18 +194,14 @@ class _DayScrollerState extends State<DayScroller> {
                       padEnds: false,
                       onPageChanged: (index) {
                         final newDate = _dateForIndex(index);
-                        // Fire haptics once per day change
-                        if (_selectedDate != newDate) {
-                          AppHaptics.selection();
-                          widget.onHaptic?.call();
-                        }
+                        // Обновляем только внутреннее состояние для центрирования
+                        // НЕ вызываем onDateChanged автоматически при скролле
                         setState(() => _selectedDate = newDate);
-                        widget.onDateChanged?.call(newDate);
                       },
                       itemBuilder: (context, index) {
                         final date = _dateForIndex(index);
-                        final bool isSelected =
-                            _stripTime(date) == _stripTime(_selectedDate);
+                        final bool isSelected = widget.selectedDate != null && 
+                            _stripTime(date) == _stripTime(widget.selectedDate!);
                         final bool hasEvent =
                             widget.eventPredicate?.call(date) ?? false;
                         return Center(
@@ -204,7 +212,8 @@ class _DayScrollerState extends State<DayScroller> {
                               isSelected: isSelected,
                               hasEvent: hasEvent,
                               size: 36,
-                              onTap: null,
+                              onTap: widget.onDayTap != null ? () => widget.onDayTap!(date) : null,
+                              onLongPress: widget.onDayLongPress != null ? () => widget.onDayLongPress!(date) : null,
                             ),
                           ),
                         );

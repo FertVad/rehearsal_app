@@ -1,5 +1,6 @@
 /// Example of how to properly use the centralized provider index
 /// This demonstrates best practices for importing and using providers
+library;
 
 // ✅ CORRECT: Import from central index
 import 'package:flutter/material.dart';
@@ -15,16 +16,17 @@ class ProperProviderUsageExample extends ConsumerWidget {
     // ✅ GOOD: Clear distinction between different user providers
     final authUser = ref.watch(currentUserProvider);              // StreamProvider<User?> from auth
     final userId = ref.watch(currentUserIdProvider);              // Provider<String?> from user state
-    final userState = ref.watch(authAwareUserControllerProvider); // Provider<UserState> auth-aware
+    // Example variables (commenting to avoid unused warnings)
+    // final userState = ref.watch(authAwareUserControllerProvider); // Provider<UserState> auth-aware
     
     // ✅ GOOD: Settings providers with clear purposes
     final themeMode = ref.watch(themeProvider);                   // Provider<ThemeMode> read-only
     final locale = ref.watch(localeProvider);                     // NotifierProvider<LocaleNotifier, Locale?> 
-    final settings = ref.watch(settingsProvider);                 // StateNotifierProvider for full settings
+    // final settings = ref.watch(settingsProvider);                 // StateNotifierProvider for full settings
     
     // ✅ GOOD: Repository providers for data access
-    final usersRepo = ref.watch(usersRepositoryProvider);         // Provider<UsersRepository>
-    final availabilityRepo = ref.watch(availabilityRepositoryProvider); // Provider<AvailabilityRepository>
+    // final usersRepo = ref.watch(usersRepositoryProvider);         // Provider<UsersRepository>
+    // final availabilityRepo = ref.watch(availabilityRepositoryProvider); // Provider<AvailabilityRepository>
     
     return Scaffold(
       appBar: AppBar(

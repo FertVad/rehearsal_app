@@ -11,9 +11,15 @@ import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_create_
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_details_page.dart';
 import 'package:rehearsal_app/core/utils/localization_helper.dart';
 import 'package:rehearsal_app/l10n/app.dart';
+import 'package:rehearsal_app/features/dashboard/widgets/dashboard_header.dart' show selectedProjectsFilterProvider;
 
 class UpcomingRehearsals extends ConsumerWidget {
-  const UpcomingRehearsals({super.key});
+  const UpcomingRehearsals({
+    super.key,
+    this.selectedDate,
+  });
+  
+  final DateTime? selectedDate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,7 +34,12 @@ class UpcomingRehearsals extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(context.l10n.upcomingRehearsals, style: AppTypography.headingMedium),
+              Text(
+                selectedDate != null 
+                  ? _getSelectedDateTitle(context, selectedDate!)
+                  : context.l10n.upcomingRehearsals, 
+                style: AppTypography.headingMedium
+              ),
               IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () => _createRehearsal(context),
@@ -41,8 +52,8 @@ class UpcomingRehearsals extends ConsumerWidget {
             child: SizedBox(
               height: 250,
               child: FutureBuilder(
-                key: ValueKey('upcoming_rehearsals_${ref.watch(localeProvider)}'),
-                future: _loadUpcomingRehearsals(ref),
+                key: ValueKey('upcoming_rehearsals_${ref.watch(localeProvider)}_${selectedDate?.millisecondsSinceEpoch}_${ref.watch(selectedProjectsFilterProvider).join(',')}'),
+                future: _loadRehearsalsForDate(ref, selectedDate),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const LoadingState();
@@ -129,27 +140,63 @@ class UpcomingRehearsals extends ConsumerWidget {
     );
   }
 
-  Future<List<dynamic>> _loadUpcomingRehearsals(WidgetRef ref) async {
+  Future<List<dynamic>> _loadRehearsalsForDate(WidgetRef ref, DateTime? selectedDate) async {
     try {
       final rehearsalsRepo = ref.read(rehearsalsRepositoryProvider);
       final userId = ref.read(currentUserIdProvider) ?? 'anonymous';
+      final selectedProjectIds = ref.read(selectedProjectsFilterProvider);
       
-      final now = DateTime.now().toUtc();
-      final nextWeek = now.add(const Duration(days: 7));
+      List<dynamic> rehearsals;
       
-      final rehearsals = await rehearsalsRepo.listForUserInRange(
-        userId: userId,
-        fromUtc: now.millisecondsSinceEpoch,
-        toUtc: nextWeek.millisecondsSinceEpoch,
-      );
+      if (selectedDate != null) {
+        // Load rehearsals for specific date
+        final startOfDay = DateTime(selectedDate.year, selectedDate.month, selectedDate.day).toUtc();
+        rehearsals = await rehearsalsRepo.listForUserOnDateUtc(
+          userId: userId,
+          dateUtc00: startOfDay.millisecondsSinceEpoch,
+        );
+      } else {
+        // Load upcoming rehearsals (next 7 days)
+        final now = DateTime.now().toUtc();
+        final nextWeek = now.add(const Duration(days: 7));
+        
+        rehearsals = await rehearsalsRepo.listForUserInRange(
+          userId: userId,
+          fromUtc: now.millisecondsSinceEpoch,
+          toUtc: nextWeek.millisecondsSinceEpoch,
+        );
+      }
+      
+      // Apply project filter
+      final filteredRehearsals = selectedProjectIds.isEmpty 
+          ? rehearsals 
+          : rehearsals.where((r) => selectedProjectIds.contains(r.projectId)).toList();
       
       // Sort by start time
-      rehearsals.sort((a, b) => a.startsAtUtc.compareTo(b.startsAtUtc));
+      filteredRehearsals.sort((a, b) => a.startsAtUtc.compareTo(b.startsAtUtc));
       
-      // Limit to 5 most recent
-      return rehearsals.take(5).toList();
+      // Limit to 5 most recent for upcoming rehearsals
+      if (selectedDate == null) {
+        return filteredRehearsals.take(5).toList();
+      }
+      
+      return filteredRehearsals;
     } catch (e) {
       throw Exception('Failed to load rehearsals: $e');
+    }
+  }
+  
+  String _getSelectedDateTitle(BuildContext context, DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final selectedDay = DateTime(date.year, date.month, date.day);
+    
+    if (selectedDay == today) {
+      return 'Today\'s Schedule';
+    } else if (selectedDay == today.add(const Duration(days: 1))) {
+      return 'Tomorrow\'s Schedule';
+    } else {
+      return LocalizationHelper.formatRelativeDate(context, date);
     }
   }
 

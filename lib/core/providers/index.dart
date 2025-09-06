@@ -8,6 +8,7 @@
 /// - Provider: for read-only computed values (e.g., themeProvider)
 /// - NotifierProvider: for complex state management (e.g., userControllerProvider)
 /// - StreamProvider: for reactive data streams (e.g., currentUserProvider)
+library;
 /// - FutureProvider: for async computations (e.g., userProfileProvider)
 
 // =============================================================================
@@ -120,9 +121,3 @@ const Map<String, String> providerRegistry = {
   'selectedCalendarDateProvider': 'StateProvider<DateTime?>',
 };
 
-/// Checks for provider naming conflicts at compile time
-/// This will cause compilation errors if there are duplicate names
-void _checkProviderNamingConflicts() {
-  // This function intentionally left empty
-  // The imports above will cause compilation errors if there are naming conflicts
-}
