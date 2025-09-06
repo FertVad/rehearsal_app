@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:rehearsal_app/core/constants/time_constants.dart';
-import 'package:rehearsal_app/core/db/app_database.dart';
+import 'package:rehearsal_app/domain/models/user.dart';
+import 'package:rehearsal_app/domain/models/rehearsal.dart';
 
 import '../repositories/availability_repository.dart';
 import '../repositories/rehearsals_repository.dart';

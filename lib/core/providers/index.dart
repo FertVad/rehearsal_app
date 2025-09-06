@@ -43,7 +43,6 @@ export 'package:rehearsal_app/core/settings/settings_provider.dart' show
 
 /// Repository providers for data access
 export 'package:rehearsal_app/core/providers/repository_providers.dart' show
-  appDatabaseProvider,          // Provider<AppDatabase> - Local database instance
   availabilityRepositoryProvider, // Provider<AvailabilityRepository> - Availability data access
   rehearsalsRepositoryProvider,  // Provider<RehearsalsRepository> - Rehearsals data access
   usersRepositoryProvider,      // Provider<UsersRepository> - Users data access
@@ -105,7 +104,6 @@ const Map<String, String> providerRegistry = {
   'localeProvider': 'NotifierProvider<LocaleNotifier, Locale?>',
   
   // Repositories
-  'appDatabaseProvider': 'Provider<AppDatabase>',
   'availabilityRepositoryProvider': 'Provider<AvailabilityRepository>',
   'rehearsalsRepositoryProvider': 'Provider<RehearsalsRepository>',
   'usersRepositoryProvider': 'Provider<UsersRepository>',

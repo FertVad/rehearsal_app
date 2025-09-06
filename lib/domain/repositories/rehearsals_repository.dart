@@ -1,9 +1,9 @@
-import 'package:rehearsal_app/core/db/app_database.dart';
+import 'package:rehearsal_app/domain/models/rehearsal.dart';
 
 abstract class RehearsalsRepository {
   Future<Rehearsal> create({
     required String id,
-    String? troupeId,
+    String? projectId,
     required int startsAtUtc,
     required int endsAtUtc,
     String? place,

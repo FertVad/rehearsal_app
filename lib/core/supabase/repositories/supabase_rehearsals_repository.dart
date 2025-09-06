@@ -1,6 +1,6 @@
 import 'package:rehearsal_app/domain/repositories/rehearsals_repository.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
-import 'package:rehearsal_app/core/db/app_database.dart';
+import 'package:rehearsal_app/domain/models/rehearsal.dart';
 
 class SupabaseRehearsalsRepository implements RehearsalsRepository {
   static const String _tableName = 'rehearsals';
@@ -8,7 +8,7 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
   @override
   Future<Rehearsal> create({
     required String id,
-    String? troupeId,
+    String? projectId,
     required int startsAtUtc,
     required int endsAtUtc,
     String? place,
@@ -26,7 +26,7 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
         'location': place,
         'start_time': startTime.toIso8601String(),
         'end_time': endTime.toIso8601String(),
-        'project_id': troupeId, // Map troupeId to project_id
+        'project_id': projectId, // Map projectId to project_id
         'is_mandatory': true, // Default to mandatory
       };
 
@@ -50,7 +50,7 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
         updatedAtUtc: updatedAt.millisecondsSinceEpoch,
         deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
         lastWriter: lastWriter,
-        troupeId: response['project_id'], // Map project_id back to troupeId
+        projectId: response['project_id'], // Map project_id back to troupeId
         startsAtUtc: startDateTime.millisecondsSinceEpoch,
         endsAtUtc: endDateTime.millisecondsSinceEpoch,
         place: response['location'],
@@ -85,7 +85,7 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
         updatedAtUtc: updatedAt.millisecondsSinceEpoch,
         deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
         lastWriter: 'supabase:user',
-        troupeId: response['project_id'],
+        projectId: response['project_id'],
         startsAtUtc: startDateTime.millisecondsSinceEpoch,
         endsAtUtc: endDateTime.millisecondsSinceEpoch,
         place: response['location'],
@@ -129,7 +129,7 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
           updatedAtUtc: updatedAt.millisecondsSinceEpoch,
           deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
           lastWriter: 'supabase:user',
-          troupeId: json['project_id'],
+          projectId: json['project_id'],
           startsAtUtc: startDateTime.millisecondsSinceEpoch,
           endsAtUtc: endDateTime.millisecondsSinceEpoch,
           place: json['location'],
@@ -175,7 +175,7 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
           updatedAtUtc: updatedAt.millisecondsSinceEpoch,
           deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
           lastWriter: 'supabase:user',
-          troupeId: json['project_id'],
+          projectId: json['project_id'],
           startsAtUtc: startDateTime.millisecondsSinceEpoch,
           endsAtUtc: endDateTime.millisecondsSinceEpoch,
           place: json['location'],

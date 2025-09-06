@@ -1,6 +1,6 @@
 import 'package:rehearsal_app/domain/repositories/users_repository.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
-import 'package:rehearsal_app/core/db/app_database.dart';
+import 'package:rehearsal_app/domain/models/user.dart';
 
 class SupabaseProfilesRepository implements UsersRepository {
   static const String _tableName = 'profiles';

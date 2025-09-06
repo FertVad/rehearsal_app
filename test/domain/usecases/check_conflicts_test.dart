@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rehearsal_app/core/db/app_database.dart';
+import 'package:rehearsal_app/domain/models/user.dart';
+import 'package:rehearsal_app/domain/models/rehearsal.dart';
+import 'package:rehearsal_app/domain/models/availability.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 import 'package:rehearsal_app/domain/repositories/rehearsals_repository.dart';
 import 'package:rehearsal_app/domain/usecases/check_conflicts.dart';
@@ -15,6 +17,7 @@ void main() {
       createdAtUtc: 0,
       updatedAtUtc: 0,
       lastWriter: 'system',
+      projectId: 'project1',
       startsAtUtc: 0,
       endsAtUtc: 1,
     );

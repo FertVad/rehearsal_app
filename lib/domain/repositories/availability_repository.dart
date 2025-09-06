@@ -1,4 +1,4 @@
-import 'package:rehearsal_app/core/db/app_database.dart';
+import 'package:rehearsal_app/domain/models/availability.dart';
 
 abstract class AvailabilityRepository {
   Future<Availability?> getForUserOnDateUtc({

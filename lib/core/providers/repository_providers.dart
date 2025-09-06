@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rehearsal_app/core/db/app_database.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 import 'package:rehearsal_app/domain/repositories/rehearsals_repository.dart';
 import 'package:rehearsal_app/domain/repositories/users_repository.dart';
@@ -9,12 +8,9 @@ import 'package:rehearsal_app/core/supabase/repositories/supabase_profiles_repos
 import 'package:rehearsal_app/features/user/controller/user_provider.dart' show currentUserIdProvider;
 
 /// Centralized repository providers for the application.
-/// All data access goes through these providers.
+/// All data access goes through Supabase providers.
 
-// Database provider (kept for migration period)
-final appDatabaseProvider = Provider<AppDatabase>((ref) => AppDatabase());
-
-// Repository providers - now using Supabase
+// Repository providers - using Supabase only
 final availabilityRepositoryProvider = Provider<AvailabilityRepository>((ref) {
   return SupabaseAvailabilityRepository();
 });

@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rehearsal_app/core/constants/time_constants.dart';
-import 'package:rehearsal_app/core/db/app_database.dart';
+import 'package:rehearsal_app/domain/models/user.dart';
+import 'package:rehearsal_app/domain/models/rehearsal.dart';
+import 'package:rehearsal_app/domain/models/availability.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 import 'package:rehearsal_app/domain/repositories/rehearsals_repository.dart';
 import 'package:rehearsal_app/domain/usecases/check_conflicts.dart';
@@ -24,6 +26,7 @@ void main() {
       createdAtUtc: 0,
       updatedAtUtc: 0,
       lastWriter: 't',
+      projectId: 'project1',
       startsAtUtc: 1711929600000,
       endsAtUtc: 1711933200000,
     );
@@ -100,6 +103,7 @@ void main() {
       createdAtUtc: 0,
       updatedAtUtc: 0,
       lastWriter: 't',
+      projectId: 'project1',
       startsAtUtc: base.startsAtUtc + 600000,
       endsAtUtc: base.endsAtUtc + 600000,
     );
@@ -126,6 +130,7 @@ void main() {
       createdAtUtc: 0,
       updatedAtUtc: 0,
       lastWriter: 't',
+      projectId: 'project1',
       startsAtUtc: 1711666800000, // 2024-03-28 23:00 UTC
       endsAtUtc: 1711674000000, // 2024-03-29 01:00 UTC
     );
@@ -134,6 +139,7 @@ void main() {
       createdAtUtc: 0,
       updatedAtUtc: 0,
       lastWriter: 't',
+      projectId: 'project1',
       startsAtUtc: 1711668600000, // 2024-03-28 23:30 UTC
       endsAtUtc: 1711672200000, // 2024-03-29 00:30 UTC
     );

@@ -1,6 +1,6 @@
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
-import 'package:rehearsal_app/core/db/app_database.dart';
+import 'package:rehearsal_app/domain/models/availability.dart';
 
 class SupabaseAvailabilityRepository implements AvailabilityRepository {
   static const String _tableName = 'availabilities';

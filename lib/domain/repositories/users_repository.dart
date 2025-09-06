@@ -1,11 +1,11 @@
-import 'package:rehearsal_app/core/db/app_database.dart';
+import 'package:rehearsal_app/domain/models/user.dart';
 
 abstract class UsersRepository {
   Future<User> create({
     required String id,
     String? name,
     String? avatarUrl,
-    required String tz,
+    String tz = 'UTC',
     String lastWriter = 'device:local',
   });
 

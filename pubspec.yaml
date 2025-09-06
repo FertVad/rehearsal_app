@@ -36,12 +36,7 @@ dependencies:
 
   go_router: ^16.2.1
   supabase_flutter: ^2.9.0
-  # Keep drift for migration period - used by local repositories during transition to Supabase
-  drift: 2.28.1
-  sqlite3_flutter_libs: ^0.5.24
-  sqlite3: 2.9.0
-  path: ^1.9.0
-  path_provider: ^2.1.3
+  # Removed Drift dependencies - now using Supabase only
   timezone: ^0.10.1
   flutter_riverpod: ^2.5.1
   intl: ^0.20.2
@@ -53,9 +48,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  drift_dev: 2.28.1
   build_runner: ^2.7.1
-  source_gen: 3.1.0
   freezed: ^3.2.0
   json_serializable: ^6.7.1
 
@@ -70,9 +63,7 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-  assets:
-    - web/sqlite3.wasm
-    - web/drift_worker.js
+  # No web assets needed for Supabase-only app
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
