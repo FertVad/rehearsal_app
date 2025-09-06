@@ -36,7 +36,7 @@ dependencies:
 
   go_router: ^16.2.1
   supabase_flutter: ^2.9.0
-  # Keep drift for migration period
+  # Keep drift for migration period - used by local repositories during transition to Supabase
   drift: 2.28.1
   sqlite3_flutter_libs: ^0.5.24
   sqlite3: 2.9.0

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rehearsal_app/core/design_system/theme.dart';
-import 'package:rehearsal_app/core/settings/settings_provider.dart';
+import 'package:rehearsal_app/core/providers/index.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 import 'package:rehearsal_app/l10n/app_localizations.dart';
-import 'package:rehearsal_app/core/router/auth_router.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});
