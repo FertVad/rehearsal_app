@@ -5,7 +5,7 @@ import 'package:rehearsal_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rehearsal_app/core/db/app_database.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
-import 'package:rehearsal_app/core/providers/repository_providers.dart';
+import 'package:rehearsal_app/core/providers/index.dart';
 import 'package:rehearsal_app/features/availability/presentation/availability_page.dart';
 import 'package:rehearsal_app/features/availability/presentation/day_bottom_sheet.dart';
 import 'package:rehearsal_app/core/design_system/glass_system.dart';

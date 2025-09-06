@@ -5,8 +5,7 @@ import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/widgets/loading_state.dart';
 import 'package:rehearsal_app/features/dashboard/widgets/dash_background.dart';
-import 'package:rehearsal_app/features/user/controller/user_provider.dart';
-import 'package:rehearsal_app/core/l10n/locale_provider.dart';
+import 'package:rehearsal_app/core/providers/index.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 class UserProfilePage extends ConsumerStatefulWidget {
@@ -29,7 +28,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(userControllerProvider);
+    final userState = ref.watch(authAwareUserControllerProvider);
     
     if (userState.isLoading) {
       return const Scaffold(
@@ -155,24 +154,40 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                         title: 'English',
                         value: const Locale('en'),
                         currentValue: ref.watch(localeProvider),
-                        onChanged: (locale) => ref.read(localeProvider.notifier).state = locale,
+                        onChanged: (locale) => ref.read(localeProvider.notifier).changeLocale(locale),
                       ),
                       _LanguageOption(
                         title: 'Русский',
                         value: const Locale('ru'),
                         currentValue: ref.watch(localeProvider),
-                        onChanged: (locale) => ref.read(localeProvider.notifier).state = locale,
+                        onChanged: (locale) => ref.read(localeProvider.notifier).changeLocale(locale),
                       ),
                       _LanguageOption(
                         title: 'System / Системный',
                         value: null,
                         currentValue: ref.watch(localeProvider),
-                        onChanged: (locale) => ref.read(localeProvider.notifier).state = locale,
+                        onChanged: (locale) => ref.read(localeProvider.notifier).changeLocale(locale),
                       ),
                     ],
                   ),
                 ),
                 
+                const SizedBox(height: AppSpacing.xl),
+
+                // Sign Out Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _signOut(context),
+                    icon: const Icon(Icons.logout),
+                    label: Text(context.l10n.signOut),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.statusBusy,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+
                 const SizedBox(height: AppSpacing.xl),
 
                 // Error Display
@@ -215,6 +230,50 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
           name: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
           timezone: _timezoneController.text.trim().isEmpty ? null : _timezoneController.text.trim(),
         );
+  }
+
+
+  void _signOut(BuildContext context) async {
+    // Show confirmation dialog
+    final shouldSignOut = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.signOut),
+        content: Text(context.l10n.signOutConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(context.l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.statusBusy,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(context.l10n.signOut),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldSignOut == true && mounted) {
+      // ignore: use_build_context_synchronously
+      final messenger = ScaffoldMessenger.of(context);
+      try {
+        await ref.read(authNotifierProvider.notifier).signOut();
+        // Navigation will be handled by the router automatically
+      } catch (e) {
+        if (mounted) {
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text('Sign out failed: $e'),
+              backgroundColor: AppColors.statusBusy,
+            ),
+          );
+        }
+      }
+    }
   }
 }
 

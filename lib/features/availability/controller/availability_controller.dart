@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rehearsal_app/core/providers/repository_providers.dart';
+import 'package:rehearsal_app/core/providers/index.dart';
 import 'package:rehearsal_app/core/utils/time.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 
@@ -10,12 +10,12 @@ import 'availability_state.dart';
 
 class AvailabilityController extends Notifier<AvailabilityState> {
   late final AvailabilityRepository _repo;
-  late final String _userId; // temporary — local user
+  late final String _userId;
 
   @override
   AvailabilityState build() {
     _repo = ref.read(availabilityRepositoryProvider);
-    _userId = ref.read(currentUserIdProvider); // provider stub should return a string
+    _userId = ref.read(currentUserIdProvider) ?? 'anonymous'; // provider stub should return a string
     return AvailabilityState.initial();
   }
 

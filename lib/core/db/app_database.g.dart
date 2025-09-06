@@ -90,6 +90,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _metadataMeta = const VerificationMeta(
+    'metadata',
+  );
+  @override
+  late final GeneratedColumn<String> metadata = GeneratedColumn<String>(
+    'metadata',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -100,6 +111,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     name,
     avatarUrl,
     tz,
+    metadata,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -174,6 +186,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_tzMeta);
     }
+    if (data.containsKey('metadata')) {
+      context.handle(
+        _metadataMeta,
+        metadata.isAcceptableOrUnknown(data['metadata']!, _metadataMeta),
+      );
+    }
     return context;
   }
 
@@ -215,6 +233,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.string,
         data['${effectivePrefix}tz'],
       )!,
+      metadata: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}metadata'],
+      ),
     );
   }
 
@@ -233,6 +255,7 @@ class User extends DataClass implements Insertable<User> {
   final String? name;
   final String? avatarUrl;
   final String tz;
+  final String? metadata;
   const User({
     required this.id,
     required this.createdAtUtc,
@@ -242,6 +265,7 @@ class User extends DataClass implements Insertable<User> {
     this.name,
     this.avatarUrl,
     required this.tz,
+    this.metadata,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -260,6 +284,9 @@ class User extends DataClass implements Insertable<User> {
       map['avatar_url'] = Variable<String>(avatarUrl);
     }
     map['tz'] = Variable<String>(tz);
+    if (!nullToAbsent || metadata != null) {
+      map['metadata'] = Variable<String>(metadata);
+    }
     return map;
   }
 
@@ -277,6 +304,9 @@ class User extends DataClass implements Insertable<User> {
           ? const Value.absent()
           : Value(avatarUrl),
       tz: Value(tz),
+      metadata: metadata == null && nullToAbsent
+          ? const Value.absent()
+          : Value(metadata),
     );
   }
 
@@ -294,6 +324,7 @@ class User extends DataClass implements Insertable<User> {
       name: serializer.fromJson<String?>(json['name']),
       avatarUrl: serializer.fromJson<String?>(json['avatarUrl']),
       tz: serializer.fromJson<String>(json['tz']),
+      metadata: serializer.fromJson<String?>(json['metadata']),
     );
   }
   @override
@@ -308,6 +339,7 @@ class User extends DataClass implements Insertable<User> {
       'name': serializer.toJson<String?>(name),
       'avatarUrl': serializer.toJson<String?>(avatarUrl),
       'tz': serializer.toJson<String>(tz),
+      'metadata': serializer.toJson<String?>(metadata),
     };
   }
 
@@ -320,6 +352,7 @@ class User extends DataClass implements Insertable<User> {
     Value<String?> name = const Value.absent(),
     Value<String?> avatarUrl = const Value.absent(),
     String? tz,
+    Value<String?> metadata = const Value.absent(),
   }) => User(
     id: id ?? this.id,
     createdAtUtc: createdAtUtc ?? this.createdAtUtc,
@@ -329,6 +362,7 @@ class User extends DataClass implements Insertable<User> {
     name: name.present ? name.value : this.name,
     avatarUrl: avatarUrl.present ? avatarUrl.value : this.avatarUrl,
     tz: tz ?? this.tz,
+    metadata: metadata.present ? metadata.value : this.metadata,
   );
   User copyWithCompanion(UsersCompanion data) {
     return User(
@@ -348,6 +382,7 @@ class User extends DataClass implements Insertable<User> {
       name: data.name.present ? data.name.value : this.name,
       avatarUrl: data.avatarUrl.present ? data.avatarUrl.value : this.avatarUrl,
       tz: data.tz.present ? data.tz.value : this.tz,
+      metadata: data.metadata.present ? data.metadata.value : this.metadata,
     );
   }
 
@@ -361,7 +396,8 @@ class User extends DataClass implements Insertable<User> {
           ..write('lastWriter: $lastWriter, ')
           ..write('name: $name, ')
           ..write('avatarUrl: $avatarUrl, ')
-          ..write('tz: $tz')
+          ..write('tz: $tz, ')
+          ..write('metadata: $metadata')
           ..write(')'))
         .toString();
   }
@@ -376,6 +412,7 @@ class User extends DataClass implements Insertable<User> {
     name,
     avatarUrl,
     tz,
+    metadata,
   );
   @override
   bool operator ==(Object other) =>
@@ -388,7 +425,8 @@ class User extends DataClass implements Insertable<User> {
           other.lastWriter == this.lastWriter &&
           other.name == this.name &&
           other.avatarUrl == this.avatarUrl &&
-          other.tz == this.tz);
+          other.tz == this.tz &&
+          other.metadata == this.metadata);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
@@ -400,6 +438,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String?> name;
   final Value<String?> avatarUrl;
   final Value<String> tz;
+  final Value<String?> metadata;
   final Value<int> rowid;
   const UsersCompanion({
     this.id = const Value.absent(),
@@ -410,6 +449,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.name = const Value.absent(),
     this.avatarUrl = const Value.absent(),
     this.tz = const Value.absent(),
+    this.metadata = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -421,6 +461,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.name = const Value.absent(),
     this.avatarUrl = const Value.absent(),
     required String tz,
+    this.metadata = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAtUtc = Value(createdAtUtc),
@@ -436,6 +477,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? name,
     Expression<String>? avatarUrl,
     Expression<String>? tz,
+    Expression<String>? metadata,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -447,6 +489,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (name != null) 'name': name,
       if (avatarUrl != null) 'avatar_url': avatarUrl,
       if (tz != null) 'tz': tz,
+      if (metadata != null) 'metadata': metadata,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -460,6 +503,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<String?>? name,
     Value<String?>? avatarUrl,
     Value<String>? tz,
+    Value<String?>? metadata,
     Value<int>? rowid,
   }) {
     return UsersCompanion(
@@ -471,6 +515,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       name: name ?? this.name,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       tz: tz ?? this.tz,
+      metadata: metadata ?? this.metadata,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -502,6 +547,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (tz.present) {
       map['tz'] = Variable<String>(tz.value);
     }
+    if (metadata.present) {
+      map['metadata'] = Variable<String>(metadata.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -519,6 +567,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('name: $name, ')
           ..write('avatarUrl: $avatarUrl, ')
           ..write('tz: $tz, ')
+          ..write('metadata: $metadata, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3610,6 +3659,7 @@ typedef $$UsersTableCreateCompanionBuilder =
       Value<String?> name,
       Value<String?> avatarUrl,
       required String tz,
+      Value<String?> metadata,
       Value<int> rowid,
     });
 typedef $$UsersTableUpdateCompanionBuilder =
@@ -3622,6 +3672,7 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<String?> name,
       Value<String?> avatarUrl,
       Value<String> tz,
+      Value<String?> metadata,
       Value<int> rowid,
     });
 
@@ -3670,6 +3721,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<String> get tz => $composableBuilder(
     column: $table.tz,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get metadata => $composableBuilder(
+    column: $table.metadata,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3722,6 +3778,11 @@ class $$UsersTableOrderingComposer
     column: $table.tz,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get metadata => $composableBuilder(
+    column: $table.metadata,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UsersTableAnnotationComposer
@@ -3764,6 +3825,9 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<String> get tz =>
       $composableBuilder(column: $table.tz, builder: (column) => column);
+
+  GeneratedColumn<String> get metadata =>
+      $composableBuilder(column: $table.metadata, builder: (column) => column);
 }
 
 class $$UsersTableTableManager
@@ -3802,6 +3866,7 @@ class $$UsersTableTableManager
                 Value<String?> name = const Value.absent(),
                 Value<String?> avatarUrl = const Value.absent(),
                 Value<String> tz = const Value.absent(),
+                Value<String?> metadata = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion(
                 id: id,
@@ -3812,6 +3877,7 @@ class $$UsersTableTableManager
                 name: name,
                 avatarUrl: avatarUrl,
                 tz: tz,
+                metadata: metadata,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3824,6 +3890,7 @@ class $$UsersTableTableManager
                 Value<String?> name = const Value.absent(),
                 Value<String?> avatarUrl = const Value.absent(),
                 required String tz,
+                Value<String?> metadata = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion.insert(
                 id: id,
@@ -3834,6 +3901,7 @@ class $$UsersTableTableManager
                 name: name,
                 avatarUrl: avatarUrl,
                 tz: tz,
+                metadata: metadata,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

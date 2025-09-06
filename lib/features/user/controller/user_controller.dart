@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rehearsal_app/core/providers/repository_providers.dart';
+import 'package:rehearsal_app/core/auth/auth_provider.dart';
 import 'user_state.dart';
 
 class UserController extends Notifier<UserState> {
@@ -14,12 +15,15 @@ class UserController extends Notifier<UserState> {
 
   Future<void> _initializeUser() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final savedUserId = prefs.getString(_currentUserIdKey);
-
-      if (savedUserId != null) {
-        await _loadUser(savedUserId);
+      // Check if user is authenticated via Supabase
+      final authService = ref.read(authServiceProvider);
+      final supabaseUser = authService.currentUser;
+      
+      if (supabaseUser != null) {
+        // User is authenticated, load their profile
+        await _loadUser(supabaseUser.id);
       } else {
+        // Not authenticated, create local user (fallback)
         await _createDefaultUser();
       }
     } catch (e) {
@@ -32,12 +36,36 @@ class UserController extends Notifier<UserState> {
 
   Future<void> _loadUser(String userId) async {
     final usersRepo = ref.read(usersRepositoryProvider);
-    final user = await usersRepo.getById(userId);
+    
+    try {
+      final user = await usersRepo.getById(userId);
 
-    if (user != null) {
-      state = state.copyWith(currentUser: user, isLoading: false);
-    } else {
-      await _createDefaultUser();
+      if (user != null) {
+        state = state.copyWith(currentUser: user, isLoading: false);
+      } else {
+        // User doesn't have profile in our system
+        // This might be a timing issue - let's wait a bit and retry
+        await Future.delayed(const Duration(seconds: 1));
+        
+        final retryUser = await usersRepo.getById(userId);
+        if (retryUser != null) {
+          state = state.copyWith(currentUser: retryUser, isLoading: false);
+        } else {
+          final authService = ref.read(authServiceProvider);
+          final supabaseUser = authService.currentUser;
+          
+          if (supabaseUser != null) {
+            await _createProfileForAuthenticatedUser(supabaseUser.id, supabaseUser.email ?? 'Unknown');
+          } else {
+            await _createDefaultUser();
+          }
+        }
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to load user: $e',
+      );
     }
   }
 
@@ -55,6 +83,24 @@ class UserController extends Notifier<UserState> {
     await prefs.setString(_currentUserIdKey, userId);
 
     state = state.copyWith(currentUser: user, isLoading: false);
+  }
+
+  Future<void> _createProfileForAuthenticatedUser(String userId, String email) async {
+    try {
+      final usersRepo = ref.read(usersRepositoryProvider);
+      final user = await usersRepo.create(
+        id: userId,
+        name: email.split('@')[0], // Use email prefix as default name
+        tz: 'UTC',
+      );
+
+      state = state.copyWith(currentUser: user, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to create profile: $e',
+      );
+    }
   }
 
   Future<void> updateProfile({

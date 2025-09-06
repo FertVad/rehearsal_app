@@ -120,5 +120,25 @@
   "thursdayShort": "Чт",
   "fridayShort": "Пт",
   "saturdayShort": "Сб",
-  "sundayShort": "Вс"
+  "sundayShort": "Вс",
+  
+  "signIn": "Войти",
+  "signUp": "Регистрация",
+  "email": "Email",
+  "password": "Пароль",
+  "confirmPassword": "Подтвердите пароль",
+  "displayName": "Отображаемое имя",
+  "forgotPassword": "Забыли пароль?",
+  "or": "ИЛИ",
+  "continueWithGoogle": "Продолжить с Google",
+  "pleaseEnterEmail": "Пожалуйста, введите ваш email",
+  "pleaseEnterValidEmail": "Пожалуйста, введите корректный email",
+  "pleaseEnterPassword": "Пожалуйста, введите пароль",
+  "pleaseEnterDisplayName": "Пожалуйста, введите отображаемое имя",
+  "passwordTooShort": "Пароль должен содержать не менее 6 символов",
+  "passwordsDoNotMatch": "Пароли не совпадают",
+  "pleaseEnterEmailForReset": "Введите email для восстановления пароля",
+  "passwordResetEmailSent": "Письмо для сброса пароля отправлено! Проверьте почту.",
+  "signOut": "Выйти",
+  "signOutConfirmation": "Вы уверены, что хотите выйти?"
 }

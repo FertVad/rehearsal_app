@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rehearsal_app/core/design_system/calendar_components.dart';
-import 'package:rehearsal_app/core/providers/repository_providers.dart';
+import 'package:rehearsal_app/core/providers/index.dart';
 import 'package:rehearsal_app/core/utils/time.dart';
 
 /// Calendar data providers that fetch real rehearsal data
@@ -8,7 +8,7 @@ import 'package:rehearsal_app/core/utils/time.dart';
 /// Provider for rehearsal event dates in a given month
 final eventDatesProvider = FutureProvider.family<List<DateTime>, DateTime>((ref, month) async {
   final rehearsalsRepo = ref.read(rehearsalsRepositoryProvider);
-  final userId = ref.read(currentUserIdProvider);
+  final userId = ref.read(currentUserIdProvider) ?? 'anonymous';
   
   // Get first and last day of the month in UTC
   final firstDay = DateTime(month.year, month.month, 1);
@@ -41,7 +41,7 @@ final eventDatesProvider = FutureProvider.family<List<DateTime>, DateTime>((ref,
 /// Provider for availability map in a given month
 final availabilityMapProvider = FutureProvider.family<Map<DateTime, AvailabilityStatus>, DateTime>((ref, month) async {
   final availabilityRepo = ref.read(availabilityRepositoryProvider);
-  final userId = ref.read(currentUserIdProvider);
+  final userId = ref.read(currentUserIdProvider) ?? 'anonymous';
   
   // Get first and last day of the month in UTC
   final firstDay = DateTime(month.year, month.month, 1);

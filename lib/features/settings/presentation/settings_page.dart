@@ -3,15 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rehearsal_app/core/design_system/glass_system.dart';
 import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
-
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
+import 'package:rehearsal_app/core/providers/index.dart';
+import 'package:rehearsal_app/core/settings/user_settings.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
+    final themeMode = ref.watch(themeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +33,12 @@ class SettingsPage extends ConsumerWidget {
                   groupValue: themeMode,
                   onChanged: (value) {
                     if (value != null) {
-                      ref.read(themeModeProvider.notifier).state = value;
+                      final appTheme = switch (value) {
+                        ThemeMode.light => AppTheme.light,
+                        ThemeMode.dark => AppTheme.dark,
+                        ThemeMode.system => AppTheme.system,
+                      };
+                      ref.read(settingsProvider.notifier).updateTheme(appTheme);
                     }
                   },
                   child: Column(

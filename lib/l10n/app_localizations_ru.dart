@@ -343,4 +343,61 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sundayShort => 'Вс';
+
+  @override
+  String get signIn => 'Войти';
+
+  @override
+  String get signUp => 'Регистрация';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Пароль';
+
+  @override
+  String get confirmPassword => 'Подтвердите пароль';
+
+  @override
+  String get displayName => 'Отображаемое имя';
+
+  @override
+  String get forgotPassword => 'Забыли пароль?';
+
+  @override
+  String get or => 'ИЛИ';
+
+  @override
+  String get continueWithGoogle => 'Продолжить с Google';
+
+  @override
+  String get pleaseEnterEmail => 'Пожалуйста, введите ваш email';
+
+  @override
+  String get pleaseEnterValidEmail => 'Пожалуйста, введите корректный email';
+
+  @override
+  String get pleaseEnterPassword => 'Пожалуйста, введите пароль';
+
+  @override
+  String get pleaseEnterDisplayName => 'Пожалуйста, введите отображаемое имя';
+
+  @override
+  String get passwordTooShort => 'Пароль должен содержать не менее 6 символов';
+
+  @override
+  String get passwordsDoNotMatch => 'Пароли не совпадают';
+
+  @override
+  String get pleaseEnterEmailForReset => 'Введите email для восстановления пароля';
+
+  @override
+  String get passwordResetEmailSent => 'Письмо для сброса пароля отправлено! Проверьте почту.';
+
+  @override
+  String get signOut => 'Выйти';
+
+  @override
+  String get signOutConfirmation => 'Вы уверены, что хотите выйти?';
 }

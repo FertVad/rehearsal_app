@@ -16,21 +16,18 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
     String lastWriter = 'device:local',
   }) async {
     try {
-      // Convert UTC timestamps to ISO strings
-      final startTime = DateTime.fromMillisecondsSinceEpoch(startsAtUtc, isUtc: true);
-      final endTime = DateTime.fromMillisecondsSinceEpoch(endsAtUtc, isUtc: true);
+      // Convert milliseconds to DateTime for Supabase
+      final startTime = DateTime.fromMillisecondsSinceEpoch(startsAtUtc).toUtc();
+      final endTime = DateTime.fromMillisecondsSinceEpoch(endsAtUtc).toUtc();
       
       final data = {
-        'id': id,
-        'project_id': troupeId, // Changed from troupe_id to project_id
-        'title': note ?? 'Rehearsal', // Use note as title or default
+        'title': note ?? 'Rehearsal', // Use note as title, fallback to 'Rehearsal'
         'description': note,
         'location': place,
         'start_time': startTime.toIso8601String(),
         'end_time': endTime.toIso8601String(),
-        'is_mandatory': false,
-        'created_by': null, // Will be set based on auth context
-        'metadata': <String, dynamic>{},
+        'project_id': troupeId, // Map troupeId to project_id
+        'is_mandatory': true, // Default to mandatory
       };
 
       final response = await SupabaseConfig.client
@@ -39,12 +36,13 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
           .select()
           .single();
 
-      // Convert back to Drift format for compatibility
-      final responseStartTime = DateTime.parse(response['start_time']);
-      final responseEndTime = DateTime.parse(response['end_time']);
+      // Convert Supabase response back to Drift format
       final createdAt = DateTime.parse(response['created_at']);
       final updatedAt = DateTime.parse(response['updated_at']);
       final deletedAt = response['deleted_at'] != null ? DateTime.parse(response['deleted_at']) : null;
+      
+      final startDateTime = DateTime.parse(response['start_time']);
+      final endDateTime = DateTime.parse(response['end_time']);
 
       return Rehearsal(
         id: response['id'],
@@ -52,9 +50,9 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
         updatedAtUtc: updatedAt.millisecondsSinceEpoch,
         deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
         lastWriter: lastWriter,
-        troupeId: response['project_id'], // Map back to troupeId for compatibility
-        startsAtUtc: responseStartTime.millisecondsSinceEpoch,
-        endsAtUtc: responseEndTime.millisecondsSinceEpoch,
+        troupeId: response['project_id'], // Map project_id back to troupeId
+        startsAtUtc: startDateTime.millisecondsSinceEpoch,
+        endsAtUtc: endDateTime.millisecondsSinceEpoch,
         place: response['location'],
         note: response['description'],
       );
@@ -74,11 +72,12 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
 
       if (response == null) return null;
 
-      final startTime = DateTime.parse(response['start_time']);
-      final endTime = DateTime.parse(response['end_time']);
       final createdAt = DateTime.parse(response['created_at']);
       final updatedAt = DateTime.parse(response['updated_at']);
       final deletedAt = response['deleted_at'] != null ? DateTime.parse(response['deleted_at']) : null;
+      
+      final startDateTime = DateTime.parse(response['start_time']);
+      final endDateTime = DateTime.parse(response['end_time']);
       
       return Rehearsal(
         id: response['id'],
@@ -87,8 +86,8 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
         deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
         lastWriter: 'supabase:user',
         troupeId: response['project_id'],
-        startsAtUtc: startTime.millisecondsSinceEpoch,
-        endsAtUtc: endTime.millisecondsSinceEpoch,
+        startsAtUtc: startDateTime.millisecondsSinceEpoch,
+        endsAtUtc: endDateTime.millisecondsSinceEpoch,
         place: response['location'],
         note: response['description'],
       );
@@ -103,24 +102,26 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
     required int dateUtc00,
   }) async {
     try {
-      // Convert UTC timestamp to date and time range
-      final dateTime = DateTime.fromMillisecondsSinceEpoch(dateUtc00, isUtc: true);
-      final startOfDay = DateTime(dateTime.year, dateTime.month, dateTime.day).toIso8601String();
-      final endOfDay = DateTime(dateTime.year, dateTime.month, dateTime.day, 23, 59, 59).toIso8601String();
+      // Convert milliseconds to DateTime for Supabase query
+      final startOfDay = DateTime.fromMillisecondsSinceEpoch(dateUtc00).toUtc();
+      final endOfDay = startOfDay.add(const Duration(days: 1));
 
+      // Query rehearsals where user is a participant
       final response = await SupabaseConfig.client
           .from(_tableName)
-          .select()
-          .gte('start_time', startOfDay)
-          .lte('start_time', endOfDay)
+          .select('*, rehearsal_participants!inner(profile_id)')
+          .eq('rehearsal_participants.profile_id', userId)
+          .gte('start_time', startOfDay.toIso8601String())
+          .lt('start_time', endOfDay.toIso8601String())
           .order('start_time', ascending: true);
 
       return response.map<Rehearsal>((json) {
-        final startTime = DateTime.parse(json['start_time']);
-        final endTime = DateTime.parse(json['end_time']);
         final createdAt = DateTime.parse(json['created_at']);
         final updatedAt = DateTime.parse(json['updated_at']);
         final deletedAt = json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null;
+        
+        final startDateTime = DateTime.parse(json['start_time']);
+        final endDateTime = DateTime.parse(json['end_time']);
         
         return Rehearsal(
           id: json['id'],
@@ -129,8 +130,8 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
           deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
           lastWriter: 'supabase:user',
           troupeId: json['project_id'],
-          startsAtUtc: startTime.millisecondsSinceEpoch,
-          endsAtUtc: endTime.millisecondsSinceEpoch,
+          startsAtUtc: startDateTime.millisecondsSinceEpoch,
+          endsAtUtc: endDateTime.millisecondsSinceEpoch,
           place: json['location'],
           note: json['description'],
         );
@@ -147,23 +148,26 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
     required int toUtc,
   }) async {
     try {
-      // Convert UTC timestamps to ISO strings
-      final fromDateTime = DateTime.fromMillisecondsSinceEpoch(fromUtc, isUtc: true);
-      final toDateTime = DateTime.fromMillisecondsSinceEpoch(toUtc, isUtc: true);
-      
+      // Convert milliseconds to DateTime for Supabase query
+      final fromDateTime = DateTime.fromMillisecondsSinceEpoch(fromUtc).toUtc();
+      final toDateTime = DateTime.fromMillisecondsSinceEpoch(toUtc).toUtc();
+
+      // Query rehearsals where user is a participant
       final response = await SupabaseConfig.client
           .from(_tableName)
-          .select()
+          .select('*, rehearsal_participants!inner(profile_id)')
+          .eq('rehearsal_participants.profile_id', userId)
           .gte('start_time', fromDateTime.toIso8601String())
           .lte('start_time', toDateTime.toIso8601String())
           .order('start_time', ascending: true);
 
       return response.map<Rehearsal>((json) {
-        final startTime = DateTime.parse(json['start_time']);
-        final endTime = DateTime.parse(json['end_time']);
         final createdAt = DateTime.parse(json['created_at']);
         final updatedAt = DateTime.parse(json['updated_at']);
         final deletedAt = json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null;
+        
+        final startDateTime = DateTime.parse(json['start_time']);
+        final endDateTime = DateTime.parse(json['end_time']);
         
         return Rehearsal(
           id: json['id'],
@@ -172,8 +176,8 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
           deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
           lastWriter: 'supabase:user',
           troupeId: json['project_id'],
-          startsAtUtc: startTime.millisecondsSinceEpoch,
-          endsAtUtc: endTime.millisecondsSinceEpoch,
+          startsAtUtc: startDateTime.millisecondsSinceEpoch,
+          endsAtUtc: endDateTime.millisecondsSinceEpoch,
           place: json['location'],
           note: json['description'],
         );
@@ -196,11 +200,11 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
       final updateData = <String, dynamic>{};
 
       if (startsAtUtc != null) {
-        final startTime = DateTime.fromMillisecondsSinceEpoch(startsAtUtc, isUtc: true);
+        final startTime = DateTime.fromMillisecondsSinceEpoch(startsAtUtc).toUtc();
         updateData['start_time'] = startTime.toIso8601String();
       }
       if (endsAtUtc != null) {
-        final endTime = DateTime.fromMillisecondsSinceEpoch(endsAtUtc, isUtc: true);
+        final endTime = DateTime.fromMillisecondsSinceEpoch(endsAtUtc).toUtc();
         updateData['end_time'] = endTime.toIso8601String();
       }
       if (place != null) updateData['location'] = place;

@@ -120,5 +120,25 @@
   "thursdayShort": "Thu",
   "fridayShort": "Fri",
   "saturdayShort": "Sat",
-  "sundayShort": "Sun"
+  "sundayShort": "Sun",
+  
+  "signIn": "Sign In",
+  "signUp": "Sign Up",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "displayName": "Display Name",
+  "forgotPassword": "Forgot Password?",
+  "or": "OR",
+  "continueWithGoogle": "Continue with Google",
+  "pleaseEnterEmail": "Please enter your email",
+  "pleaseEnterValidEmail": "Please enter a valid email",
+  "pleaseEnterPassword": "Please enter your password",
+  "pleaseEnterDisplayName": "Please enter your display name",
+  "passwordTooShort": "Password must be at least 6 characters",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "pleaseEnterEmailForReset": "Please enter your email to reset password",
+  "passwordResetEmailSent": "Password reset email sent! Check your inbox.",
+  "signOut": "Sign Out",
+  "signOutConfirmation": "Are you sure you want to sign out?"
 }

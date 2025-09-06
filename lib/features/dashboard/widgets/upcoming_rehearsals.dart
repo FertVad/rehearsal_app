@@ -6,11 +6,10 @@ import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/widgets/empty_state.dart';
 import 'package:rehearsal_app/core/widgets/loading_state.dart';
-import 'package:rehearsal_app/core/providers/repository_providers.dart';
+import 'package:rehearsal_app/core/providers/index.dart';
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_create_page.dart';
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_details_page.dart';
 import 'package:rehearsal_app/core/utils/localization_helper.dart';
-import 'package:rehearsal_app/core/l10n/locale_provider.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 class UpcomingRehearsals extends ConsumerWidget {
@@ -133,7 +132,7 @@ class UpcomingRehearsals extends ConsumerWidget {
   Future<List<dynamic>> _loadUpcomingRehearsals(WidgetRef ref) async {
     try {
       final rehearsalsRepo = ref.read(rehearsalsRepositoryProvider);
-      final userId = ref.read(currentUserIdProvider);
+      final userId = ref.read(currentUserIdProvider) ?? 'anonymous';
       
       final now = DateTime.now().toUtc();
       final nextWeek = now.add(const Duration(days: 7));

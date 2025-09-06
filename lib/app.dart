@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rehearsal_app/core/design_system/theme.dart';
-import 'core/l10n/locale_provider.dart';
+import 'package:rehearsal_app/core/settings/settings_provider.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 import 'package:rehearsal_app/l10n/app_localizations.dart';
-import 'core/router/app_router.dart';
+import 'package:rehearsal_app/core/router/auth_router.dart';
 
 class App extends ConsumerWidget {
-  App({super.key});
-
-  final _appRouter = AppRouter();
+  const App({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(localeProvider);
+    final themeMode = ref.watch(themeProvider);
+    final router = ref.watch(routerProvider);
     
     return MaterialApp.router(
-      key: ValueKey('app_${locale?.languageCode ?? 'system'}'),
+      key: ValueKey('app_${locale?.languageCode ?? 'system'}_${themeMode.name}'),
       locale: locale,
       onGenerateTitle: (context) => context.l10n.appTitle,
       theme: buildAppTheme(),
       darkTheme: buildAppDarkTheme(),
-      themeMode: ThemeMode.system,
-      routerConfig: _appRouter.router,
+      themeMode: themeMode, // Now using settings-based theme
+      routerConfig: router,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
     );

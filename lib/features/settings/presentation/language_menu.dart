@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rehearsal_app/core/l10n/locale_provider.dart';
+import 'package:rehearsal_app/core/providers/index.dart';
 
 class LanguageMenu extends ConsumerWidget {
   const LanguageMenu({super.key});
@@ -27,7 +27,7 @@ class LanguageMenu extends ConsumerWidget {
     return PopupMenuButton<Locale?>(
       icon: const Icon(Icons.language),
       tooltip: 'Language',
-      onSelected: (value) => ref.read(localeProvider.notifier).state = value,
+      onSelected: (value) => ref.read(localeProvider.notifier).changeLocale(value),
       itemBuilder: (context) => [
         item('System', null),
         item('English', const Locale('en')),

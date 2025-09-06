@@ -18,6 +18,7 @@ class Users extends Table {
   TextColumn get name => text().nullable()();
   TextColumn get avatarUrl => text().nullable()();
   TextColumn get tz => text()();
+  TextColumn get metadata => text().nullable()(); // JSON metadata for settings
 
   @override
   Set<Column> get primaryKey => {id};
