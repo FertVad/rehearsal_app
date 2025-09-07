@@ -28,7 +28,7 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
         'end_time': endTime.toIso8601String(),
         'project_id': projectId, // Map projectId to project_id
         'is_mandatory': true, // Default to mandatory
-        'created_by': projectId, // TODO: Should be current user ID
+        'created_by': _getCurrentUserId(), // Get current authenticated user ID
       };
 
       final response = await SupabaseConfig.client
@@ -235,5 +235,10 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
     } catch (e) {
       throw Exception('Failed to delete rehearsal: $e');
     }
+  }
+
+  /// Get current authenticated user ID
+  String? _getCurrentUserId() {
+    return SupabaseConfig.client.auth.currentUser?.id;
   }
 }

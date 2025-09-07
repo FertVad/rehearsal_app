@@ -119,7 +119,7 @@ class SupabaseProfilesRepository implements UsersRepository {
           lastWriter: 'supabase:user',
           name: json['display_name']?.toString() ?? 'Unknown User',
           avatarUrl: json['avatar_url'],
-          tz: response['timezone']?.toString() ?? 'UTC', // Use timezone from fix_db schema
+          tz: json['timezone']?.toString() ?? 'UTC', // Use timezone from fix_db schema
           metadata: json['bio']?.toString() ?? '',
         );
       }).toList();
