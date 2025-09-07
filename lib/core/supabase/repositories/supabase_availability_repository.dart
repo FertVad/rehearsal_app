@@ -3,7 +3,7 @@ import 'package:rehearsal_app/core/supabase/supabase_config.dart';
 import 'package:rehearsal_app/domain/models/availability.dart';
 
 class SupabaseAvailabilityRepository implements AvailabilityRepository {
-  static const String _tableName = 'availability';
+  static const String _tableName = 'availabilities';
 
   @override
   Future<Availability?> getForUserOnDateUtc({
@@ -15,7 +15,7 @@ class SupabaseAvailabilityRepository implements AvailabilityRepository {
           .from(_tableName)
           .select()
           .eq('user_id', userId)
-          .eq('date', DateTime.fromMillisecondsSinceEpoch(dateUtc00).toIso8601String().split('T')[0])
+          .eq('date_utc', dateUtc00)
           .maybeSingle();
 
       if (response == null) return null;

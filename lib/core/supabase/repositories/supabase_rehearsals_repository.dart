@@ -23,11 +23,12 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
       final data = {
         'title': note ?? 'Rehearsal', // Use note as title, fallback to 'Rehearsal'
         'description': note,
-        'venue': place,
+        'location': place,
         'start_time': startTime.toIso8601String(),
         'end_time': endTime.toIso8601String(),
         'project_id': projectId, // Map projectId to project_id
         'is_mandatory': true, // Default to mandatory
+        'created_by': projectId, // TODO: Should be current user ID
       };
 
       final response = await SupabaseConfig.client
@@ -53,7 +54,7 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
         projectId: response['project_id'], // Map project_id back to troupeId
         startsAtUtc: startDateTime.millisecondsSinceEpoch,
         endsAtUtc: endDateTime.millisecondsSinceEpoch,
-        place: response['venue'],
+        place: response['location'],
         note: response['description'],
       );
     } catch (e) {
@@ -88,7 +89,7 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
         projectId: response['project_id'],
         startsAtUtc: startDateTime.millisecondsSinceEpoch,
         endsAtUtc: endDateTime.millisecondsSinceEpoch,
-        place: response['venue'],
+        place: response['location'],
         note: response['description'],
       );
     } catch (e) {
@@ -109,8 +110,8 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
       // Query rehearsals where user is a participant
       final response = await SupabaseConfig.client
           .from(_tableName)
-          .select('*, rehearsal_participants!inner(user_id)')
-          .eq('rehearsal_participants.user_id', userId)
+          .select('*, rehearsal_participants!inner(profile_id)')
+          .eq('rehearsal_participants.profile_id', userId)
           .gte('start_time', startOfDay.toIso8601String())
           .lt('start_time', endOfDay.toIso8601String())
           .order('start_time', ascending: true);
@@ -155,8 +156,8 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
       // Query rehearsals where user is a participant
       final response = await SupabaseConfig.client
           .from(_tableName)
-          .select('*, rehearsal_participants!inner(user_id)')
-          .eq('rehearsal_participants.user_id', userId)
+          .select('*, rehearsal_participants!inner(profile_id)')
+          .eq('rehearsal_participants.profile_id', userId)
           .gte('start_time', fromDateTime.toIso8601String())
           .lte('start_time', toDateTime.toIso8601String())
           .order('start_time', ascending: true);
@@ -207,7 +208,7 @@ class SupabaseRehearsalsRepository implements RehearsalsRepository {
         final endTime = DateTime.fromMillisecondsSinceEpoch(endsAtUtc).toUtc();
         updateData['end_time'] = endTime.toIso8601String();
       }
-      if (place != null) updateData['venue'] = place;
+      if (place != null) updateData['location'] = place;
       if (note != null) {
         updateData['description'] = note;
         updateData['title'] = note; // Update title as well

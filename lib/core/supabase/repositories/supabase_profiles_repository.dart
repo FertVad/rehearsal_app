@@ -15,17 +15,21 @@ class SupabaseProfilesRepository implements UsersRepository {
     String lastWriter = 'device:local',
   }) async {
     try {
-      // Use actual schema fields for profiles table
+      // Use fix_db schema fields for profiles table
       final data = <String, dynamic>{
-        'id': id, // profiles.id links to auth.users.id (UUID)
+        'id': id, // profiles.id (UUID primary key)
+        'user_id': id, // profiles.user_id → auth.users.id
       };
       
-      // Add available fields based on real schema
+      // Add available fields based on fix_db schema
       if (name != null && name.isNotEmpty) {
         data['display_name'] = name;
       }
       if (avatarUrl != null && avatarUrl.isNotEmpty) {
         data['avatar_url'] = avatarUrl;
+      }
+      if (tz != 'UTC') {
+        data['timezone'] = tz; // Use actual timezone field
       }
 
       final response = await SupabaseConfig.client
@@ -47,7 +51,7 @@ class SupabaseProfilesRepository implements UsersRepository {
         lastWriter: lastWriter,
         name: response['display_name']?.toString() ?? response['username']?.toString() ?? 'Unknown User',
         avatarUrl: response['avatar_url'],
-        tz: 'UTC', // Default timezone since schema doesn't have timezone field
+        tz: response['timezone']?.toString() ?? 'UTC', // Use timezone from fix_db schema
         metadata: response['bio']?.toString() ?? '',
       );
     } catch (e) {
@@ -86,7 +90,7 @@ class SupabaseProfilesRepository implements UsersRepository {
         lastWriter: 'supabase:user',
         name: response['display_name']?.toString() ?? 'Unknown User',
         avatarUrl: response['avatar_url'],
-        tz: 'UTC', // Default timezone since schema doesn't have timezone field
+        tz: response['timezone']?.toString() ?? 'UTC', // Use timezone from fix_db schema
         metadata: response['bio']?.toString() ?? '',
       );
     } catch (e) {
@@ -115,7 +119,7 @@ class SupabaseProfilesRepository implements UsersRepository {
           lastWriter: 'supabase:user',
           name: json['display_name']?.toString() ?? 'Unknown User',
           avatarUrl: json['avatar_url'],
-          tz: 'UTC', // Default timezone since schema doesn't have timezone field
+          tz: response['timezone']?.toString() ?? 'UTC', // Use timezone from fix_db schema
           metadata: json['bio']?.toString() ?? '',
         );
       }).toList();
@@ -137,6 +141,7 @@ class SupabaseProfilesRepository implements UsersRepository {
 
       if (name != null) updateData['display_name'] = name;
       if (avatarUrl != null) updateData['avatar_url'] = avatarUrl;
+      if (tz != null) updateData['timezone'] = tz;
 
       await SupabaseConfig.client
           .from(_tableName)

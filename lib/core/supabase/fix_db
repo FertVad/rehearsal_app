@@ -1,0 +1,239 @@
+# 🎯 ЗАДАЧА: Исправить все Supabase репозитории согласно реальной схеме БД
+
+## 📋 КОНТЕКСТ ПРОЕКТА
+
+Rehearsal App - Flutter приложение для управления репетициями театральных трупп.
+Используется Clean Architecture с Supabase как backend.
+
+**ПРОБЛЕМА:** Supabase репозитории не соответствуют реальной схеме БД, что приводит к ошибкам выполнения.
+
+## 🗄️ СХЕМЫ ТАБЛИЦ (GROUND TRUTH)
+
+### 📊 availabilities
+```
+id             | uuid
+created_at     | timestamp with time zone  
+updated_at     | timestamp with time zone
+deleted_at     | timestamp with time zone
+user_id        | uuid
+date_utc       | bigint
+status         | text
+intervals_json | text  
+note           | text
+```
+
+### 👥 profiles  
+```
+id           | uuid
+user_id      | uuid (ссылка на auth.users)
+display_name | text
+avatar_url   | text
+timezone     | text
+bio          | text
+phone        | text
+metadata     | jsonb
+created_at   | timestamp with time zone
+updated_at   | timestamp with time zone
+deleted_at   | timestamp with time zone
+```
+
+### 🎭 rehearsals
+```
+id           | uuid
+project_id   | uuid
+title        | text
+description  | text
+location     | text
+start_time   | timestamp with time zone
+end_time     | timestamp with time zone
+is_mandatory | boolean
+created_by   | uuid
+metadata     | jsonb
+created_at   | timestamp with time zone
+updated_at   | timestamp with time zone
+deleted_at   | timestamp with time zone
+```
+
+### 🎪 rehearsal_participants
+```
+id            | uuid
+rehearsal_id  | uuid → rehearsals(id)
+profile_id    | uuid → profiles(id)
+rsvp          | USER-DEFINED (enum)
+response_time | timestamp with time zone
+notes         | text
+metadata      | jsonb
+created_at    | timestamp with time zone
+updated_at    | timestamp with time zone
+deleted_at    | timestamp with time zone
+```
+
+### 📊 project_members
+```
+id         | uuid
+project_id | uuid → projects(id) 
+profile_id | uuid → profiles(id)
+role       | USER-DEFINED (enum)
+joined_at  | timestamp with time zone
+is_active  | boolean
+metadata   | jsonb
+created_at | timestamp with time zone
+updated_at | timestamp with time zone
+deleted_at | timestamp with time zone
+```
+
+### 🎨 projects
+```
+id          | uuid
+name        | text
+description | text
+start_date  | date
+end_date    | date
+venue       | text
+director_id | uuid
+invite_code | text
+is_active   | boolean
+metadata    | jsonb
+created_at  | timestamp with time zone
+updated_at  | timestamp with time zone
+deleted_at  | timestamp with time zone
+```
+
+**Ключевые особенности:**
+- `start_date`, `end_date` - тип `date` (не timestamp!)
+- `director_id` - ссылка на profiles(id)
+- `invite_code` - уникальный код для приглашений
+- `is_active` - флаг активности проекта
+
+## 🚨 КРИТИЧЕСКИЕ ПРОБЛЕМЫ В КОДЕ
+
+### ❌ SupabaseAvailabilityRepository
+1. **Неправильное название таблицы:** `'availability'` → должно быть `'availabilities'`
+2. **Смешанные форматы дат:** 
+   - В `getForUserOnDateUtc()`: конвертирует в ISO string
+   - В `upsertForUserOnDateUtc()`: передает int 
+   - В `listForUserRange()`: ожидает int в БД
+3. **Неправильные поля:** 
+   - Использует `date_utc` vs `date` в разных методах
+   - Правильно: везде использовать `date_utc` (bigint)
+
+### ❌ SupabaseRehearsalsRepository  
+1. **Поля location vs venue:** код смешивает эти названия
+2. **Foreign key:** должен быть `profile_id` в rehearsal_participants, не `user_id`
+3. **Queries с участниками:** работают, но нужно использовать правильные поля
+
+### ❌ SupabaseProfilesRepository
+1. **Путаница с полями:** есть и `id` и `user_id` - нужно правильно использовать
+2. **Отсутствующие поля:** не использует `timezone`, `phone` из схемы
+3. **Hardcoded значения:** `tz: 'UTC'` вместо чтения из БД
+
+### ❌ Общие проблемы
+1. **Дублирование кода:** каждый репозиторий повторяет логику конвертации дат
+2. **Inconsistent naming:** некоторые поля называются по-разному в коде и БД  
+3. **Отсутствие BaseRepository:** нет общей базы для shared логики
+
+## ✅ ПЛАН ИСПРАВЛЕНИЯ
+
+### Этап 1: Создать BaseSupabaseRepository
+```dart
+// lib/core/supabase/base_repository.dart
+abstract class BaseSupabaseRepository {
+  // Общая логика timestamps  
+  Map<String, int> extractTimestamps(Map<String, dynamic> response);
+  
+  // Общая логика soft delete
+  Future<void> performSoftDelete(String tableName, String id);
+  
+  // Общая логика фильтрации deleted_at
+  // Utility методы для работы с датами
+}
+```
+
+### Этап 2: Исправить каждый репозиторий
+1. **Наследовать от BaseSupabaseRepository**
+2. **Использовать правильные названия таблиц и полей**
+3. **Унифицировать форматы дат**
+4. **Добавить недостающие поля**
+5. **Исправить foreign key references**
+
+### Этап 3: Обновить модели (при необходимости)
+Проверить соответствие моделей в `lib/core/supabase/models.dart` реальной схеме.
+
+## 🔥 ДОПОЛНИТЕЛЬНЫЕ КРИТИЧЕСКИЕ ИСПРАВЛЕНИЯ
+
+### Логика владения проектами
+**ПРОБЛЕМА:** Код использует несуществующее поле `owner_id` для определения владельца проекта.
+
+**РЕШЕНИЕ:** 
+- Владелец определяется через `director_id` (прямая ссылка)
+- ИЛИ через таблицу `project_members` с ролью 'admin'/'director'
+- Метод `listForUser()` должен работать через JOIN с `project_members`
+
+### Правильная архитектура queries
+```sql
+-- НЕПРАВИЛЬНО (текущий код):
+SELECT * FROM projects WHERE owner_id = ?
+
+-- ПРАВИЛЬНО (нужно исправить):
+SELECT p.* FROM projects p 
+JOIN project_members pm ON p.id = pm.project_id 
+WHERE pm.profile_id = ? AND pm.is_active = true
+
+-- ИЛИ для директоров:
+SELECT * FROM projects WHERE director_id = ?
+```
+
+### 1. SupabaseAvailabilityRepository
+- [ ] Исправить название таблицы: `'availabilities'`
+- [ ] Унифицировать работу с `date_utc` как bigint везде  
+- [ ] Исправить `user_id` references
+- [ ] Добавить в BaseRepository
+
+### 2. SupabaseRehearsalsRepository  
+- [ ] Унифицировать `location` (не `venue`)
+- [ ] Исправить foreign key: `profile_id` в rehearsal_participants
+- [ ] Добавить поля `created_by`, обязательные `metadata`
+- [ ] Добавить в BaseRepository
+
+### 3. SupabaseProfilesRepository
+- [ ] Правильно использовать `id` vs `user_id` 
+- [ ] Добавить поддержку `timezone`, `phone`, `bio`
+- [ ] Убрать hardcoded значения
+- [ ] Добавить в BaseRepository
+
+### 4. SupabaseProjectsRepository (после получения схемы)
+- [ ] Исправить согласно реальной схеме projects
+- [ ] Добавить связи с project_members
+- [ ] Добавить в BaseRepository
+
+## 🧪 ТЕСТИРОВАНИЕ
+
+После каждого исправленного репозитория:
+1. **Компиляция:** `flutter analyze`
+2. **Unit тесты:** запустить существующие тесты
+3. **Integration тесты:** проверить основные сценарии
+
+## 📝 CHECKLIST ВЫПОЛНЕНИЯ
+
+- [ ] Создан BaseSupabaseRepository
+- [ ] Исправлен AvailabilityRepository  
+- [ ] Исправлен RehearsalsRepository
+- [ ] Исправлен ProfilesRepository
+- [ ] Исправлен ProjectsRepository
+- [ ] Проверены связующие таблицы (project_members, rehearsal_participants)
+- [ ] Все тесты проходят
+- [ ] Нет ошибок анализа кода
+- [ ] Документация обновлена
+
+## 🎪 ДОПОЛНИТЕЛЬНЫЕ ТРЕБОВАНИЯ
+
+1. **Сохранить обратную совместимость** с Domain layer
+2. **Не изменять public API** репозиториев
+3. **Добавить документацию** к новым методам
+4. **Следовать Dart conventions** для naming
+5. **Использовать правильные типы** (UUID, DateTime, etc.)
+
+---
+
+**ВАЖНО:** Это критичные исправления для работоспособности приложения. 
+Все изменения должны быть тщательно протестированы!

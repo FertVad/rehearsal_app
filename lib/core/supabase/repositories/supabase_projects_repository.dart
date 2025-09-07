@@ -27,13 +27,15 @@ class SupabaseProjectsRepository implements ProjectsRepository {
         'updated_at': now.toIso8601String(),
       };
       
-      // Only add fields that have values
+      // Only add fields that have values (fix_db schema)
       if (description != null && description.isNotEmpty) data['description'] = description;
-      if (startDate != null) data['start_date'] = startDate.toIso8601String();
-      if (endDate != null) data['end_date'] = endDate.toIso8601String();
+      if (startDate != null) data['start_date'] = startDate.toIso8601String().split('T')[0]; // DATE format
+      if (endDate != null) data['end_date'] = endDate.toIso8601String().split('T')[0]; // DATE format
       if (venue != null && venue.isNotEmpty) data['venue'] = venue;
       if (directorId != null && directorId.isNotEmpty) data['director_id'] = directorId;
-      if (ownerId != null && ownerId.isNotEmpty) data['owner_id'] = ownerId;
+      // Note: owner_id doesn't exist in fix_db schema - use director_id
+      data['is_active'] = true; // Default to active
+      data['invite_code'] = _generateInviteCode(); // Generate unique invite code
 
       final response = await SupabaseConfig.client
           .from(_tableName)
@@ -184,8 +186,15 @@ class SupabaseProjectsRepository implements ProjectsRepository {
       createdAtUtc: createdAt.millisecondsSinceEpoch,
       updatedAtUtc: updatedAt.millisecondsSinceEpoch,
       deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
-      ownerId: data['owner_id'],
+      ownerId: data['director_id'], // Use director_id as owner in fix_db schema
       memberCount: data['member_count'] ?? 1,
     );
+  }
+
+  /// Generate a unique invite code for the project
+  String _generateInviteCode() {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final random = (now % 10000).toString().padLeft(4, '0');
+    return 'INV$random';
   }
 }
