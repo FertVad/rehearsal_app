@@ -45,7 +45,7 @@ class SupabaseProfilesRepository implements UsersRepository {
         updatedAtUtc: updatedAt.millisecondsSinceEpoch,
         deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
         lastWriter: lastWriter,
-        name: response['full_name'] ?? response['username'] ?? 'Unknown User',
+        name: response['display_name']?.toString() ?? response['username']?.toString() ?? 'Unknown User',
         avatarUrl: response['avatar_url'],
         tz: 'UTC', // Default timezone since schema doesn't have timezone field
         metadata: response['bio']?.toString() ?? '',
@@ -64,6 +64,7 @@ class SupabaseProfilesRepository implements UsersRepository {
           .from(_tableName)
           .select()
           .eq('id', id)
+          .isFilter('deleted_at', null)
           .maybeSingle();
 
       if (kDebugMode) print('SupabaseProfilesRepository.getById: Response: $response');
