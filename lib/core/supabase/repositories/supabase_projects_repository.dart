@@ -1,8 +1,9 @@
 import 'package:rehearsal_app/domain/repositories/projects_repository.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
+import 'package:rehearsal_app/core/supabase/base_repository.dart';
 import 'package:rehearsal_app/domain/models/project.dart';
 
-class SupabaseProjectsRepository implements ProjectsRepository {
+class SupabaseProjectsRepository extends BaseSupabaseRepository implements ProjectsRepository {
   static const String _tableName = 'projects';
 
   @override
@@ -169,11 +170,8 @@ class SupabaseProjectsRepository implements ProjectsRepository {
   }
 
   Project _mapToProject(Map<String, dynamic> data) {
-    final createdAt = DateTime.parse(data['created_at']);
-    final updatedAt = DateTime.parse(data['updated_at']);
-    final deletedAt = data['deleted_at'] != null 
-        ? DateTime.parse(data['deleted_at']) 
-        : null;
+    // Use base repository method for timestamp extraction
+    final timestamps = extractTimestamps(data);
 
     return Project(
       id: data['id'],
@@ -183,9 +181,9 @@ class SupabaseProjectsRepository implements ProjectsRepository {
       endDate: data['end_date'] != null ? DateTime.parse(data['end_date']) : null,
       venue: data['venue'],
       directorId: data['director_id'],
-      createdAtUtc: createdAt.millisecondsSinceEpoch,
-      updatedAtUtc: updatedAt.millisecondsSinceEpoch,
-      deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
+      createdAtUtc: timestamps['createdAtUtc']!,
+      updatedAtUtc: timestamps['updatedAtUtc']!,
+      deletedAtUtc: timestamps['deletedAtUtc'],
       ownerId: data['director_id'], // Use director_id as owner in fix_db schema
       memberCount: data['member_count'] ?? 1,
     );

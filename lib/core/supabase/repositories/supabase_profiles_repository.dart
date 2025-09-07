@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:rehearsal_app/domain/repositories/users_repository.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
+import 'package:rehearsal_app/core/supabase/base_repository.dart';
 import 'package:rehearsal_app/domain/models/user.dart';
 
-class SupabaseProfilesRepository implements UsersRepository {
+class SupabaseProfilesRepository extends BaseSupabaseRepository implements UsersRepository {
   static const String _tableName = 'profiles';
 
   @override
@@ -14,118 +15,114 @@ class SupabaseProfilesRepository implements UsersRepository {
     String tz = 'UTC',
     String lastWriter = 'device:local',
   }) async {
-    try {
-      // Use fix_db schema fields for profiles table
-      final data = <String, dynamic>{
-        'id': id, // profiles.id (UUID primary key)
-        'user_id': id, // profiles.user_id → auth.users.id
-      };
-      
-      // Add available fields based on fix_db schema
-      if (name != null && name.isNotEmpty) {
-        data['display_name'] = name;
-      }
-      if (avatarUrl != null && avatarUrl.isNotEmpty) {
-        data['avatar_url'] = avatarUrl;
-      }
-      if (tz != 'UTC') {
-        data['timezone'] = tz; // Use actual timezone field
-      }
+    return safeExecute(
+      () async {
+        // Use fix_db schema fields for profiles table
+        final data = buildDataMap({
+          'id': id, // profiles.id (UUID primary key)
+          'user_id': id, // profiles.user_id → auth.users.id
+          'display_name': name,
+          'avatar_url': avatarUrl,
+          'timezone': tz != 'UTC' ? tz : null,
+        });
 
-      final response = await SupabaseConfig.client
-          .from(_tableName)
-          .insert(data)
-          .select()
-          .single();
+        final response = await SupabaseConfig.client
+            .from(_tableName)
+            .insert(data)
+            .select()
+            .single();
 
-      // Convert back to Drift format for compatibility
-      final createdAt = DateTime.parse(response['created_at']);
-      final updatedAt = DateTime.parse(response['updated_at']);
-      final deletedAt = response['deleted_at'] != null ? DateTime.parse(response['deleted_at']) : null;
+        // Use base repository method for timestamp extraction
+        final timestamps = extractTimestamps(response);
 
-      return User(
-        id: response['id'],
-        createdAtUtc: createdAt.millisecondsSinceEpoch,
-        updatedAtUtc: updatedAt.millisecondsSinceEpoch,
-        deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
-        lastWriter: lastWriter,
-        name: response['display_name']?.toString() ?? response['username']?.toString() ?? 'Unknown User',
-        avatarUrl: response['avatar_url'],
-        tz: response['timezone']?.toString() ?? 'UTC', // Use timezone from fix_db schema
-        metadata: response['bio']?.toString() ?? '',
-      );
-    } catch (e) {
-      throw Exception('Failed to create profile: $e');
-    }
+        return User(
+          id: response['id'],
+          createdAtUtc: timestamps['createdAtUtc']!,
+          updatedAtUtc: timestamps['updatedAtUtc']!,
+          deletedAtUtc: timestamps['deletedAtUtc'],
+          lastWriter: lastWriter,
+          name: response['display_name']?.toString() ?? response['username']?.toString() ?? 'Unknown User',
+          avatarUrl: response['avatar_url'],
+          tz: response['timezone']?.toString() ?? 'UTC',
+          metadata: response['bio']?.toString() ?? '',
+        );
+      },
+      operationName: 'CREATE',
+      tableName: _tableName,
+      recordId: id,
+    );
   }
 
   @override
   Future<User?> getById(String id) async {
-    try {
-      if (kDebugMode) print('SupabaseProfilesRepository.getById: Looking for user with id: $id');
-      
-      final response = await SupabaseConfig.client
-          .from(_tableName)
-          .select()
-          .eq('id', id)
-          .isFilter('deleted_at', null)
-          .maybeSingle();
+    return safeExecute(
+      () async {
+        if (kDebugMode) print('SupabaseProfilesRepository.getById: Looking for user with id: $id');
+        
+        final response = await SupabaseConfig.client
+            .from(_tableName)
+            .select()
+            .eq('id', id)
+            .isFilter('deleted_at', null)
+            .maybeSingle();
 
-      if (kDebugMode) print('SupabaseProfilesRepository.getById: Response: $response');
+        if (kDebugMode) print('SupabaseProfilesRepository.getById: Response: $response');
 
-      if (response == null) {
-        if (kDebugMode) print('SupabaseProfilesRepository.getById: No profile found for id: $id');
-        return null;
-      }
+        if (response == null) {
+          if (kDebugMode) print('SupabaseProfilesRepository.getById: No profile found for id: $id');
+          return null;
+        }
 
-      final createdAt = DateTime.parse(response['created_at']);
-      final updatedAt = DateTime.parse(response['updated_at']);
-      final deletedAt = response['deleted_at'] != null ? DateTime.parse(response['deleted_at']) : null;
+        // Use base repository method for timestamp extraction
+        final timestamps = extractTimestamps(response);
 
-      return User(
-        id: response['id'],
-        createdAtUtc: createdAt.millisecondsSinceEpoch,
-        updatedAtUtc: updatedAt.millisecondsSinceEpoch,
-        deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
-        lastWriter: 'supabase:user',
-        name: response['display_name']?.toString() ?? 'Unknown User',
-        avatarUrl: response['avatar_url'],
-        tz: response['timezone']?.toString() ?? 'UTC', // Use timezone from fix_db schema
-        metadata: response['bio']?.toString() ?? '',
-      );
-    } catch (e) {
-      throw Exception('Failed to get profile by ID: $e');
-    }
+        return User(
+          id: response['id'],
+          createdAtUtc: timestamps['createdAtUtc']!,
+          updatedAtUtc: timestamps['updatedAtUtc']!,
+          deletedAtUtc: timestamps['deletedAtUtc'],
+          lastWriter: 'supabase:user',
+          name: response['display_name']?.toString() ?? 'Unknown User',
+          avatarUrl: response['avatar_url'],
+          tz: response['timezone']?.toString() ?? 'UTC',
+          metadata: response['bio']?.toString() ?? '',
+        );
+      },
+      operationName: 'GET_BY_ID',
+      tableName: _tableName,
+      recordId: id,
+    );
   }
 
   @override
   Future<List<User>> list() async {
-    try {
-      final response = await SupabaseConfig.client
-          .from(_tableName)
-          .select()
-          .order('created_at', ascending: false);
+    return safeExecute(
+      () async {
+        final response = await SupabaseConfig.client
+            .from(_tableName)
+            .select()
+            .order('created_at', ascending: false);
 
-      return response.map<User>((json) {
-        final createdAt = DateTime.parse(json['created_at']);
-        final updatedAt = DateTime.parse(json['updated_at']);
-        final deletedAt = json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null;
+        return response.map<User>((json) {
+          // Use base repository method for timestamp extraction
+          final timestamps = extractTimestamps(json);
 
-        return User(
-          id: json['id'],
-          createdAtUtc: createdAt.millisecondsSinceEpoch,
-          updatedAtUtc: updatedAt.millisecondsSinceEpoch,
-          deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
-          lastWriter: 'supabase:user',
-          name: json['display_name']?.toString() ?? 'Unknown User',
-          avatarUrl: json['avatar_url'],
-          tz: json['timezone']?.toString() ?? 'UTC', // Use timezone from fix_db schema
-          metadata: json['bio']?.toString() ?? '',
-        );
-      }).toList();
-    } catch (e) {
-      throw Exception('Failed to list profiles: $e');
-    }
+          return User(
+            id: json['id'],
+            createdAtUtc: timestamps['createdAtUtc']!,
+            updatedAtUtc: timestamps['updatedAtUtc']!,
+            deletedAtUtc: timestamps['deletedAtUtc'],
+            lastWriter: 'supabase:user',
+            name: json['display_name']?.toString() ?? 'Unknown User',
+            avatarUrl: json['avatar_url'],
+            tz: json['timezone']?.toString() ?? 'UTC',
+            metadata: json['bio']?.toString() ?? '',
+          );
+        }).toList();
+      },
+      operationName: 'LIST',
+      tableName: _tableName,
+    );
   }
 
   @override
@@ -154,16 +151,8 @@ class SupabaseProfilesRepository implements UsersRepository {
 
   @override
   Future<void> softDelete(String id, {String lastWriter = 'device:local'}) async {
-    try {
-      await SupabaseConfig.client
-          .from(_tableName)
-          .update({
-            'deleted_at': DateTime.now().toUtc().toIso8601String(),
-          })
-          .eq('id', id);
-    } catch (e) {
-      throw Exception('Failed to delete profile: $e');
-    }
+    // Use base repository method for consistent soft delete
+    await performSoftDelete(_tableName, id);
   }
 
   /// Update user bio specifically 
