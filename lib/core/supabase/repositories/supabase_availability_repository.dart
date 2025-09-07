@@ -1,8 +1,9 @@
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
+import 'package:rehearsal_app/core/supabase/base_repository.dart';
 import 'package:rehearsal_app/domain/models/availability.dart';
 
-class SupabaseAvailabilityRepository implements AvailabilityRepository {
+class SupabaseAvailabilityRepository extends BaseSupabaseRepository implements AvailabilityRepository {
   static const String _tableName = 'availabilities';
 
   @override
@@ -20,16 +21,14 @@ class SupabaseAvailabilityRepository implements AvailabilityRepository {
 
       if (response == null) return null;
       
-      // Convert Supabase response to Drift Availability object
-      final createdAt = DateTime.parse(response['created_at']);
-      final updatedAt = DateTime.parse(response['updated_at']);
-      final deletedAt = response['deleted_at'] != null ? DateTime.parse(response['deleted_at']) : null;
+      // Use base repository method for timestamp extraction
+      final timestamps = extractTimestamps(response);
       
       return Availability(
         id: response['id'],
-        createdAtUtc: createdAt.millisecondsSinceEpoch,
-        updatedAtUtc: updatedAt.millisecondsSinceEpoch,
-        deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
+        createdAtUtc: timestamps['createdAtUtc']!,
+        updatedAtUtc: timestamps['updatedAtUtc']!,
+        deletedAtUtc: timestamps['deletedAtUtc'],
         lastWriter: 'supabase:user',
         userId: userId,
         dateUtc: dateUtc00,
@@ -84,15 +83,14 @@ class SupabaseAvailabilityRepository implements AvailabilityRepository {
           .order('date_utc', ascending: true);
 
       return response.map<Availability>((json) {
-        final createdAt = DateTime.parse(json['created_at']);
-        final updatedAt = DateTime.parse(json['updated_at']);
-        final deletedAt = json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null;
+        // Use base repository method for timestamp extraction
+        final timestamps = extractTimestamps(json);
         
         return Availability(
           id: json['id'],
-          createdAtUtc: createdAt.millisecondsSinceEpoch,
-          updatedAtUtc: updatedAt.millisecondsSinceEpoch,
-          deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
+          createdAtUtc: timestamps['createdAtUtc']!,
+          updatedAtUtc: timestamps['updatedAtUtc']!,
+          deletedAtUtc: timestamps['deletedAtUtc'],
           lastWriter: 'supabase:user',
           userId: userId,
           dateUtc: json['date_utc'] as int,

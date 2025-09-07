@@ -42,14 +42,6 @@ abstract class BaseSupabaseRepository {
     }
   }
 
-  /// Add filter to exclude soft deleted records
-  /// Usage: excludeDeleted(query).maybeSingle()
-  T excludeDeleted<T>(T query) {
-    // This is a generic method that works with Supabase query builders
-    // The actual filtering should be applied in concrete implementations
-    return query;
-  }
-
   /// Safe execution wrapper with consistent error handling
   Future<T> safeExecute<T>(
     Future<T> Function() operation, {
@@ -94,13 +86,6 @@ abstract class BaseSupabaseRepository {
     return data;
   }
 
-  /// Common method to handle UUID generation
-  /// For now returns null, can be extended if needed
-  String? generateId() {
-    // Supabase handles UUID generation automatically
-    // This method is here for future extensions if needed
-    return null;
-  }
 }
 
 /// Custom exception for repository operations

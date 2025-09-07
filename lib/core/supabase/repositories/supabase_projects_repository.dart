@@ -91,19 +91,8 @@ class SupabaseProjectsRepository extends BaseSupabaseRepository implements Proje
 
   @override
   Future<void> delete(String id) async {
-    try {
-      final now = DateTime.now().toUtc();
-      
-      await SupabaseConfig.client
-          .from(_tableName)
-          .update({
-            'deleted_at': now.toIso8601String(),
-            'updated_at': now.toIso8601String(),
-          })
-          .eq('id', id);
-    } catch (e) {
-      throw Exception('Failed to delete project: $e');
-    }
+    // Use base repository method for consistent soft delete
+    await performSoftDelete(_tableName, id);
   }
 
   @override
@@ -128,7 +117,7 @@ class SupabaseProjectsRepository extends BaseSupabaseRepository implements Proje
       final response = await SupabaseConfig.client
           .from(_tableName)
           .select()
-          .eq('owner_id', userId)
+          .eq('director_id', userId)
           .isFilter('deleted_at', null)
           .order('updated_at', ascending: false);
 
@@ -177,8 +166,8 @@ class SupabaseProjectsRepository extends BaseSupabaseRepository implements Proje
       id: data['id'],
       name: data['name'],
       description: data['description'],
-      startDate: data['start_date'] != null ? DateTime.parse(data['start_date']) : null,
-      endDate: data['end_date'] != null ? DateTime.parse(data['end_date']) : null,
+      startDate: data['start_date'] != null ? DateTime.parse(data['start_date'] + 'T00:00:00Z') : null,
+      endDate: data['end_date'] != null ? DateTime.parse(data['end_date'] + 'T00:00:00Z') : null,
       venue: data['venue'],
       directorId: data['director_id'],
       createdAtUtc: timestamps['createdAtUtc']!,
