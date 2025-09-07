@@ -91,25 +91,11 @@ class SettingsNotifier extends StateNotifier<AsyncValue<UserSettings>> {
 
       final usersRepo = _ref.read(usersRepositoryProvider);
 
-      // Get current profile to preserve other metadata
-      final currentProfile = await usersRepo.getById(user.id);
-      final currentMetadata = currentProfile?.metadata != null
-          ? Map<String, dynamic>.from(
-              dart.jsonDecode(currentProfile!.metadata!),
-            )
-          : <String, dynamic>{};
-
-      // Update only the settings part of metadata
-      final updatedMetadata = {
-        ...currentMetadata,
-        'settings': settings.toJson(),
-      };
-
-      // Update profile metadata using custom method
+      // Update profile bio (settings stored as bio since no metadata field)
       if (usersRepo is SupabaseProfilesRepository) {
-        await (usersRepo).updateMetadata(
+        await (usersRepo).updateBio(
           id: user.id,
-          metadata: updatedMetadata,
+          bio: 'Settings: ${settings.toJson()}',
         );
       }
     } catch (e, stackTrace) {

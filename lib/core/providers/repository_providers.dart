@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 import 'package:rehearsal_app/domain/repositories/rehearsals_repository.dart';
 import 'package:rehearsal_app/domain/repositories/users_repository.dart';
+import 'package:rehearsal_app/domain/repositories/projects_repository.dart';
 import 'package:rehearsal_app/core/supabase/repositories/supabase_availability_repository.dart';
 import 'package:rehearsal_app/core/supabase/repositories/supabase_rehearsals_repository.dart';
 import 'package:rehearsal_app/core/supabase/repositories/supabase_profiles_repository.dart';
+import 'package:rehearsal_app/core/supabase/repositories/supabase_projects_repository.dart';
 import 'package:rehearsal_app/features/user/controller/user_provider.dart' show currentUserIdProvider;
 
 /// Centralized repository providers for the application.
@@ -21,6 +23,10 @@ final rehearsalsRepositoryProvider = Provider<RehearsalsRepository>((ref) {
 
 final usersRepositoryProvider = Provider<UsersRepository>((ref) {
   return SupabaseProfilesRepository();
+});
+
+final projectsRepositoryProvider = Provider<ProjectsRepository>((ref) {
+  return SupabaseProjectsRepository();
 });
 
 /// Current user id provider that gets the user from the user management system.

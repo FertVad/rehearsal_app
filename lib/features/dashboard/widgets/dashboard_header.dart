@@ -5,7 +5,7 @@ import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_colors.dart';
 import 'package:rehearsal_app/core/design_system/glass_system.dart';
 import 'package:rehearsal_app/core/providers/index.dart';
-import 'package:rehearsal_app/features/projects/presentation/projects_page.dart' show Project;
+import 'package:rehearsal_app/domain/models/project.dart';
 
 // Провайдер для выбранных проектов в фильтре
 final selectedProjectsFilterProvider = StateProvider<Set<String>>((ref) => {});
@@ -104,7 +104,7 @@ class DashboardHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final projects = ref.watch(projectsProvider);
+    final projectsAsync = ref.watch(projectsProvider);
     final selectedProjectIds = ref.watch(selectedProjectsFilterProvider);
 
     return Padding(
@@ -119,21 +119,38 @@ class DashboardHeader extends ConsumerWidget {
                 style: AppTypography.headingMedium,
               ),
               const Spacer(),
-              Text(
-                _getFilterText(projects, selectedProjectIds),
-                style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
+              projectsAsync.when(
+                loading: () => const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                error: (_, _) => Text(
+                  'Error loading projects',
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                data: (projects) => Text(
+                  _getFilterText(projects, selectedProjectIds),
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-          ProjectFilterChips(
-            projects: projects,
-            selectedProjectIds: selectedProjectIds,
-            onSelectionChanged: (newSelection) {
-              ref.read(selectedProjectsFilterProvider.notifier).state = newSelection;
-            },
+          projectsAsync.when(
+            loading: () => const SizedBox(height: 40),
+            error: (_, _) => const SizedBox(height: 40),
+            data: (projects) => ProjectFilterChips(
+              projects: projects,
+              selectedProjectIds: selectedProjectIds,
+              onSelectionChanged: (newSelection) {
+                ref.read(selectedProjectsFilterProvider.notifier).state = newSelection;
+              },
+            ),
           ),
         ],
       ),

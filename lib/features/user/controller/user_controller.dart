@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'package:rehearsal_app/core/providers/repository_providers.dart';
 import 'package:rehearsal_app/core/auth/auth_provider.dart';
+import 'package:rehearsal_app/domain/models/user.dart' as domain;
 import 'user_state.dart';
 
 class UserController extends Notifier<UserState> {
@@ -38,27 +41,48 @@ class UserController extends Notifier<UserState> {
     final usersRepo = ref.read(usersRepositoryProvider);
     
     try {
+      if (kDebugMode) print('UserController._loadUser: Loading user with id: $userId');
       final user = await usersRepo.getById(userId);
 
       if (user != null) {
+        if (kDebugMode) print('UserController._loadUser: User loaded successfully: ${user.name}');
         state = state.copyWith(currentUser: user, isLoading: false);
       } else {
-        // User doesn't have profile in our system
-        // This might be a timing issue - let's wait a bit and retry
-        await Future.delayed(const Duration(seconds: 1));
+        if (kDebugMode) print('UserController._loadUser: User not found, attempting to create profile');
         
-        final retryUser = await usersRepo.getById(userId);
-        if (retryUser != null) {
-          state = state.copyWith(currentUser: retryUser, isLoading: false);
-        } else {
-          final authService = ref.read(authServiceProvider);
-          final supabaseUser = authService.currentUser;
+        // Check authentication state
+        final authService = ref.read(authServiceProvider);
+        final supabaseUser = authService.currentUser;
+        
+        if (kDebugMode) print('UserController._loadUser: Current Supabase user: ${supabaseUser?.id}, email: ${supabaseUser?.email}');
+        
+        if (supabaseUser != null) {
+          // Add small delay to ensure auth session is fully established
+          await Future.delayed(const Duration(milliseconds: 500));
           
-          if (supabaseUser != null) {
-            await _createProfileForAuthenticatedUser(supabaseUser.id, supabaseUser.email ?? 'Unknown');
+          // Ensure profile exists using auth service
+          await authService.ensureUserProfile(
+            userId: supabaseUser.id,
+            email: supabaseUser.email ?? 'unknown@example.com',
+            displayName: supabaseUser.userMetadata?['display_name'],
+          );
+          
+          // Add another small delay before trying to load
+          await Future.delayed(const Duration(milliseconds: 200));
+          
+          // Try loading again after ensuring profile exists
+          final user = await usersRepo.getById(userId);
+          if (user != null) {
+            if (kDebugMode) print('UserController._loadUser: Successfully loaded user after profile creation');
+            state = state.copyWith(currentUser: user, isLoading: false);
           } else {
-            await _createDefaultUser();
+            if (kDebugMode) print('UserController._loadUser: Still could not load user, using fallback');
+            // Create a temporary user object with known data
+            final fallbackUser = await _createFallbackUser(supabaseUser);
+            state = state.copyWith(currentUser: fallbackUser, isLoading: false);
           }
+        } else {
+          await _createDefaultUser();
         }
       }
     } catch (e) {
@@ -85,22 +109,22 @@ class UserController extends Notifier<UserState> {
     state = state.copyWith(currentUser: user, isLoading: false);
   }
 
-  Future<void> _createProfileForAuthenticatedUser(String userId, String email) async {
-    try {
-      final usersRepo = ref.read(usersRepositoryProvider);
-      final user = await usersRepo.create(
-        id: userId,
-        name: email.split('@')[0], // Use email prefix as default name
-        tz: 'UTC',
-      );
-
-      state = state.copyWith(currentUser: user, isLoading: false);
-    } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: 'Failed to create profile: $e',
-      );
-    }
+  Future<domain.User> _createFallbackUser(supabase.User supabaseUser) async {
+    // Create a fallback user object based on Supabase auth data
+    // This ensures the user can use the app even if profile creation fails
+    final now = DateTime.now();
+    
+    return domain.User(
+      id: supabaseUser.id,
+      createdAtUtc: now.millisecondsSinceEpoch,
+      updatedAtUtc: now.millisecondsSinceEpoch,
+      deletedAtUtc: null,
+      lastWriter: 'fallback:auth',
+      name: supabaseUser.userMetadata?['full_name'] ?? supabaseUser.email?.split('@')[0] ?? 'Unknown User',
+      avatarUrl: supabaseUser.userMetadata?['avatar_url'],
+      tz: 'UTC',
+      metadata: 'fallback_user',
+    );
   }
 
   Future<void> updateProfile({

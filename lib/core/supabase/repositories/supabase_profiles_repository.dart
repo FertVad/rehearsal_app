@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:rehearsal_app/domain/repositories/users_repository.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
 import 'package:rehearsal_app/domain/models/user.dart';
@@ -14,13 +15,18 @@ class SupabaseProfilesRepository implements UsersRepository {
     String lastWriter = 'device:local',
   }) async {
     try {
-      final data = {
-        'user_id': id, // profiles.user_id links to auth.users.id
-        'display_name': name,
-        'avatar_url': avatarUrl,
-        'timezone': tz,
-        'metadata': <String, dynamic>{},
+      // Use actual schema fields for profiles table
+      final data = <String, dynamic>{
+        'id': id, // profiles.id links to auth.users.id (UUID)
       };
+      
+      // Add available fields based on real schema
+      if (name != null && name.isNotEmpty) {
+        data['display_name'] = name;
+      }
+      if (avatarUrl != null && avatarUrl.isNotEmpty) {
+        data['avatar_url'] = avatarUrl;
+      }
 
       final response = await SupabaseConfig.client
           .from(_tableName)
@@ -39,10 +45,10 @@ class SupabaseProfilesRepository implements UsersRepository {
         updatedAtUtc: updatedAt.millisecondsSinceEpoch,
         deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
         lastWriter: lastWriter,
-        name: response['display_name'],
+        name: response['full_name'] ?? response['username'] ?? 'Unknown User',
         avatarUrl: response['avatar_url'],
-        tz: response['timezone'],
-        metadata: response['metadata']?.toString(),
+        tz: 'UTC', // Default timezone since schema doesn't have timezone field
+        metadata: response['bio']?.toString() ?? '',
       );
     } catch (e) {
       throw Exception('Failed to create profile: $e');
@@ -52,13 +58,18 @@ class SupabaseProfilesRepository implements UsersRepository {
   @override
   Future<User?> getById(String id) async {
     try {
+      if (kDebugMode) print('SupabaseProfilesRepository.getById: Looking for user with id: $id');
+      
       final response = await SupabaseConfig.client
           .from(_tableName)
           .select()
-          .eq('user_id', id)
+          .eq('id', id)
           .maybeSingle();
 
+      if (kDebugMode) print('SupabaseProfilesRepository.getById: Response: $response');
+
       if (response == null) {
+        if (kDebugMode) print('SupabaseProfilesRepository.getById: No profile found for id: $id');
         return null;
       }
 
@@ -67,15 +78,15 @@ class SupabaseProfilesRepository implements UsersRepository {
       final deletedAt = response['deleted_at'] != null ? DateTime.parse(response['deleted_at']) : null;
 
       return User(
-        id: response['user_id'] ?? response['id'], // Use user_id if available, fallback to id
+        id: response['id'],
         createdAtUtc: createdAt.millisecondsSinceEpoch,
         updatedAtUtc: updatedAt.millisecondsSinceEpoch,
         deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
         lastWriter: 'supabase:user',
-        name: response['display_name'],
+        name: response['display_name']?.toString() ?? 'Unknown User',
         avatarUrl: response['avatar_url'],
-        tz: response['timezone'] ?? 'UTC',
-        metadata: response['metadata']?.toString(),
+        tz: 'UTC', // Default timezone since schema doesn't have timezone field
+        metadata: response['bio']?.toString() ?? '',
       );
     } catch (e) {
       throw Exception('Failed to get profile by ID: $e');
@@ -96,15 +107,15 @@ class SupabaseProfilesRepository implements UsersRepository {
         final deletedAt = json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null;
 
         return User(
-          id: json['user_id'] ?? json['id'], // Use user_id if available, fallback to id
+          id: json['id'],
           createdAtUtc: createdAt.millisecondsSinceEpoch,
           updatedAtUtc: updatedAt.millisecondsSinceEpoch,
           deletedAtUtc: deletedAt?.millisecondsSinceEpoch,
           lastWriter: 'supabase:user',
-          name: json['display_name'],
+          name: json['display_name']?.toString() ?? 'Unknown User',
           avatarUrl: json['avatar_url'],
-          tz: json['timezone'] ?? 'UTC',
-          metadata: json['metadata']?.toString(),
+          tz: 'UTC', // Default timezone since schema doesn't have timezone field
+          metadata: json['bio']?.toString() ?? '',
         );
       }).toList();
     } catch (e) {
@@ -125,12 +136,11 @@ class SupabaseProfilesRepository implements UsersRepository {
 
       if (name != null) updateData['display_name'] = name;
       if (avatarUrl != null) updateData['avatar_url'] = avatarUrl;
-      if (tz != null) updateData['timezone'] = tz;
 
       await SupabaseConfig.client
           .from(_tableName)
           .update(updateData)
-          .eq('user_id', id);
+          .eq('id', id);
     } catch (e) {
       throw Exception('Failed to update profile: $e');
     }
@@ -144,25 +154,25 @@ class SupabaseProfilesRepository implements UsersRepository {
           .update({
             'deleted_at': DateTime.now().toUtc().toIso8601String(),
           })
-          .eq('user_id', id);
+          .eq('id', id);
     } catch (e) {
       throw Exception('Failed to delete profile: $e');
     }
   }
 
-  /// Update user metadata specifically (for settings)
-  Future<void> updateMetadata({
+  /// Update user bio specifically 
+  Future<void> updateBio({
     required String id,
-    required Map<String, dynamic> metadata,
+    required String bio,
     String lastWriter = 'device:local',
   }) async {
     try {
       await SupabaseConfig.client
           .from(_tableName)
-          .update({'metadata': metadata})
-          .eq('user_id', id);
+          .update({'bio': bio})
+          .eq('id', id);
     } catch (e) {
-      throw Exception('Failed to update metadata: $e');
+      throw Exception('Failed to update bio: $e');
     }
   }
 }

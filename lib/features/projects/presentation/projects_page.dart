@@ -6,25 +6,20 @@ import 'package:rehearsal_app/core/widgets/loading_state.dart';
 import 'package:rehearsal_app/features/projects/widgets/project_card.dart';
 import 'package:rehearsal_app/features/dashboard/widgets/dash_background.dart';
 import 'package:rehearsal_app/l10n/app.dart';
+import 'package:rehearsal_app/core/providers/index.dart';
+import 'package:rehearsal_app/domain/models/project.dart';
 
-// Mock projects provider - replace with real implementation
-final projectsProvider = StateProvider<List<Project>>((ref) => [
-  // Mock data - remove when implementing real projects
-  Project(
-    id: '1',
-    title: 'Hamlet Production',
-    memberCount: 12,
-    description: 'Classic Shakespeare tragedy with modern interpretation',
-    lastActivity: DateTime.now().subtract(const Duration(hours: 2)),
-  ),
-  Project(
-    id: '2',
-    title: 'Summer Workshop',
-    memberCount: 8,
-    description: 'Interactive workshop for beginners',
-    lastActivity: DateTime.now().subtract(const Duration(days: 1)),
-  ),
-]);
+// Real projects provider connected to database
+final projectsProvider = FutureProvider<List<Project>>((ref) async {
+  final repository = ref.watch(projectsRepositoryProvider);
+  final userId = ref.watch(currentUserIdProvider);
+  
+  if (userId != null) {
+    return await repository.listForUser(userId);
+  } else {
+    return await repository.listAll();
+  }
+});
 
 final projectsLoadingProvider = StateProvider<bool>((ref) => false);
 
@@ -33,8 +28,7 @@ class ProjectsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final projects = ref.watch(projectsProvider);
-    final isLoading = ref.watch(projectsLoadingProvider);
+    final projectsAsync = ref.watch(projectsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -42,69 +36,80 @@ class ProjectsPage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => _showCreateProjectDialog(context),
+            onPressed: () => _showCreateProjectDialog(context, ref),
           ),
         ],
       ),
       body: DashBackground(
         child: SafeArea(
-          child: isLoading
-              ? const LoadingState(message: 'Loading projects...')
-              : projects.isEmpty
-                  ? EmptyState(
-                      icon: Icons.folder_outlined,
-                      title: context.l10n.noProjectsTitle,
-                      description: context.l10n.noProjectsDescription,
-                      actionLabel: context.l10n.createProject,
-                      onAction: () => _showCreateProjectDialog(context),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: () async {
-                        await Future.delayed(const Duration(seconds: 1));
-                      },
-                      child: CustomScrollView(
-                        slivers: [
-                          SliverPadding(
-                            padding: AppSpacing.paddingLG,
-                            sliver: SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) {
-                                  final project = projects[index];
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: AppSpacing.md,
-                                    ),
-                                    child: ProjectCard(
-                                      title: project.title,
-                                      memberCount: project.memberCount,
-                                      description: project.description,
-                                      lastActivity: project.lastActivity,
-                                      onTap: () => _openProject(context, project),
-                                    ),
-                                  );
-                                },
-                                childCount: projects.length,
-                              ),
+          child: projectsAsync.when(
+            loading: () => const LoadingState(message: 'Loading projects...'),
+            error: (error, stackTrace) => EmptyState(
+              icon: Icons.error_outline,
+              title: 'Failed to load projects',
+              description: 'Please check your connection and try again.',
+              actionLabel: 'Retry',
+              onAction: () => ref.refresh(projectsProvider),
+            ),
+            data: (projects) => projects.isEmpty
+                ? EmptyState(
+                    icon: Icons.folder_outlined,
+                    title: context.l10n.noProjectsTitle,
+                    description: context.l10n.noProjectsDescription,
+                    actionLabel: context.l10n.createProject,
+                    onAction: () => _showCreateProjectDialog(context, ref),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () async {
+                      ref.invalidate(projectsProvider);
+                    },
+                    child: CustomScrollView(
+                      slivers: [
+                        SliverPadding(
+                          padding: AppSpacing.paddingLG,
+                          sliver: SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                final project = projects[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: AppSpacing.md,
+                                  ),
+                                  child: ProjectCard(
+                                    title: project.title,
+                                    memberCount: project.memberCount,
+                                    description: project.description,
+                                    lastActivity: project.lastActivity,
+                                    onTap: () => _openProject(context, project),
+                                  ),
+                                );
+                              },
+                              childCount: projects.length,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
+          ),
         ),
       ),
-      floatingActionButton: projects.isNotEmpty
-          ? FloatingActionButton(
-              onPressed: () => _showCreateProjectDialog(context),
-              child: const Icon(Icons.add),
-            )
-          : null,
+      floatingActionButton: projectsAsync.maybeWhen(
+        data: (projects) => projects.isNotEmpty
+            ? FloatingActionButton(
+                onPressed: () => _showCreateProjectDialog(context, ref),
+                child: const Icon(Icons.add),
+              )
+            : null,
+        orElse: () => null,
+      ),
     );
   }
 
-  void _showCreateProjectDialog(BuildContext context) {
+  void _showCreateProjectDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (context) => const _CreateProjectDialog(),
+      builder: (context) => _CreateProjectDialog(ref: ref),
     );
   }
 
@@ -118,7 +123,9 @@ class ProjectsPage extends ConsumerWidget {
 }
 
 class _CreateProjectDialog extends ConsumerStatefulWidget {
-  const _CreateProjectDialog();
+  const _CreateProjectDialog({required this.ref});
+  
+  final WidgetRef ref;
 
   @override
   ConsumerState<_CreateProjectDialog> createState() => _CreateProjectDialogState();
@@ -183,46 +190,60 @@ class _CreateProjectDialogState extends ConsumerState<_CreateProjectDialog> {
     );
   }
 
-  void _createProject() {
+  void _createProject() async {
     if (_formKey.currentState!.validate()) {
-      final newProject = Project(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: _titleController.text.trim(),
-        memberCount: 1, // Creator is the first member
-        description: _descriptionController.text.trim().isEmpty
+      try {
+        final repository = ref.read(projectsRepositoryProvider);
+        final userId = ref.read(currentUserIdProvider);
+        
+        // Debug: Check if user is authenticated
+        if (userId == null) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('User not authenticated. Please log in first.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+        
+        final projectId = DateTime.now().millisecondsSinceEpoch.toString();
+        final title = _titleController.text.trim();
+        final description = _descriptionController.text.trim().isEmpty
             ? null
-            : _descriptionController.text.trim(),
-        lastActivity: DateTime.now(),
-      );
+            : _descriptionController.text.trim();
 
-      // Add to projects list
-      final currentProjects = ref.read(projectsProvider);
-      ref.read(projectsProvider.notifier).state = [...currentProjects, newProject];
+        await repository.create(
+          id: projectId,
+          name: title,
+          description: description,
+          ownerId: userId,
+        );
 
-      Navigator.of(context).pop();
+        // Refresh the projects list
+        widget.ref.invalidate(projectsProvider);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Project "${newProject.title}" created successfully!'),
-        ),
-      );
+        if (mounted) {
+          Navigator.of(context).pop();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Project "$title" created successfully!'),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to create project: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 }
-
-class Project {
-  const Project({
-    required this.id,
-    required this.title,
-    required this.memberCount,
-    this.description,
-    this.lastActivity,
-  });
-
-  final String id;
-  final String title;
-  final int memberCount;
-  final String? description;
-  final DateTime? lastActivity;
-}
-

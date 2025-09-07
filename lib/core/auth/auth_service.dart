@@ -1,8 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
 
 class AuthService {
   static SupabaseClient get _client => SupabaseConfig.client;
+  
+  // Helper method to validate UUID format
+  bool _isValidUUID(String uuid) {
+    return RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$').hasMatch(uuid);
+  }
   
   // Get current user
   User? get currentUser => _client.auth.currentUser;
@@ -28,7 +34,7 @@ class AuthService {
       
       if (response.user != null) {
         // Create profile after successful registration
-        await _createUserProfile(
+        await ensureUserProfile(
           userId: response.user!.id,
           email: email,
           displayName: displayName,
@@ -51,6 +57,16 @@ class AuthService {
         email: email,
         password: password,
       );
+      
+      if (response.user != null) {
+        // Ensure profile exists for existing user
+        await ensureUserProfile(
+          userId: response.user!.id,
+          email: email,
+          displayName: response.user!.userMetadata?['display_name'],
+        );
+      }
+      
       return response;
     } catch (e) {
       rethrow;
@@ -103,13 +119,31 @@ class AuthService {
     }
   }
 
-  /// Create user profile in our profiles table
-  Future<void> _createUserProfile({
+  /// Ensure user profile exists in our profiles table
+  Future<void> ensureUserProfile({
     required String userId,
     required String email,
     String? displayName,
   }) async {
     try {
+      if (kDebugMode) {
+        print('ensureUserProfile: Checking profile for user $userId with email $email');
+        print('ensureUserProfile: Current auth user: ${currentUser?.id}');
+        print('ensureUserProfile: Is authenticated: $isAuthenticated');
+      }
+      
+      // Validate that we have a proper UUID
+      if (userId.isEmpty || !_isValidUUID(userId)) {
+        if (kDebugMode) print('ensureUserProfile: Invalid userId format: $userId');
+        return;
+      }
+      
+      // Ensure user is authenticated before creating profile
+      if (!isAuthenticated || currentUser?.id != userId) {
+        if (kDebugMode) print('ensureUserProfile: User not authenticated or ID mismatch. Auth: $isAuthenticated, Current: ${currentUser?.id}, Target: $userId');
+        return;
+      }
+      
       // First check if profile already exists
       final existing = await _client
           .from('profiles')
@@ -118,17 +152,32 @@ class AuthService {
           .maybeSingle();
       
       if (existing != null) {
+        if (kDebugMode) print('ensureUserProfile: Profile already exists for user $userId');
         return; // Profile already exists
       }
       
-      await _client.from('profiles').insert({
-        'id': userId, // Use id instead of user_id to match repository
-        'display_name': displayName ?? email.split('@')[0],
-        'timezone': 'UTC',
-        'metadata': <String, dynamic>{},
-      });
-    } catch (e) {
-      // Profile creation failed, but auth succeeded
+      // Create profile with actual schema fields
+      final profileData = <String, dynamic>{
+        'id': userId,
+      };
+      
+      // Add fields that actually exist in the database
+      if (displayName != null && displayName.isNotEmpty) {
+        profileData['display_name'] = displayName;
+      }
+      
+      if (kDebugMode) print('ensureUserProfile: Creating profile with data: $profileData');
+      
+      // Create new profile - timestamps are set automatically by DB
+      await _client.from('profiles').insert(profileData);
+      
+      if (kDebugMode) print('ensureUserProfile: Profile created successfully for user $userId');
+    } catch (e, stackTrace) {
+      if (kDebugMode) {
+        print('ensureUserProfile: Failed to create profile for $userId: $e');
+        print('ensureUserProfile: Stack trace: $stackTrace');
+      }
+      // Profile creation failed, but auth succeeded - this is not critical
     }
   }
 
@@ -140,7 +189,7 @@ class AuthService {
       final response = await _client
           .from('profiles')
           .select()
-          .eq('user_id', currentUser!.id)
+          .eq('id', currentUser!.id)
           .maybeSingle();
       
       return response;
@@ -164,7 +213,6 @@ class AuthService {
       final updateData = <String, dynamic>{};
       if (displayName != null) updateData['display_name'] = displayName;
       if (avatarUrl != null) updateData['avatar_url'] = avatarUrl;
-      if (timezone != null) updateData['timezone'] = timezone;
       if (bio != null) updateData['bio'] = bio;
       if (phone != null) updateData['phone'] = phone;
       
@@ -172,7 +220,7 @@ class AuthService {
         await _client
             .from('profiles')
             .update(updateData)
-            .eq('user_id', currentUser!.id);
+            .eq('id', currentUser!.id);
       }
     } catch (e) {
       rethrow;

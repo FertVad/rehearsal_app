@@ -47,6 +47,7 @@ export 'package:rehearsal_app/core/providers/repository_providers.dart' show
   availabilityRepositoryProvider, // Provider<AvailabilityRepository> - Availability data access
   rehearsalsRepositoryProvider,  // Provider<RehearsalsRepository> - Rehearsals data access
   usersRepositoryProvider,      // Provider<UsersRepository> - Users data access
+  projectsRepositoryProvider,   // Provider<ProjectsRepository> - Projects data access
   repositoryCurrentUserIdProvider; // Provider<String> - Current user ID for repositories
 
 // =============================================================================
