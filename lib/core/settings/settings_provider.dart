@@ -1,3 +1,4 @@
+import 'dart:convert' as dart;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rehearsal_app/core/providers/repository_providers.dart';
@@ -32,20 +33,15 @@ class SettingsNotifier extends StateNotifier<AsyncValue<UserSettings>> {
         return;
       }
 
-      // Parse settings from metadata field (which now contains notification_settings)
-      // The notification_settings JSONB field from database is mapped to metadata in User model
-      final settingsJson = profile.metadata != null
-          ? {
-              'notifications': profile.metadata!.contains('notifications:true'),
-              'soundEnabled': profile.metadata!.contains('soundEnabled:true'),
-              'theme': profile.metadata!.contains('theme:') 
-                  ? profile.metadata!.split('theme:')[1].split(',')[0]
-                  : 'system',
-              'language': profile.metadata!.contains('language:')
-                  ? profile.metadata!.split('language:')[1].split(',')[0]
-                  : null,
-            }
-          : <String, dynamic>{};
+      // Parse settings from metadata field (which contains notification_settings JSON)
+      final settingsJson = profile.metadata != null && profile.metadata!.isNotEmpty
+          ? (dart.jsonDecode(profile.metadata!) as Map<String, dynamic>)
+          : <String, dynamic>{
+              'notifications': true,
+              'soundEnabled': true,
+              'theme': 'system',
+              'language': null,
+            };
 
       final settings = UserSettings.fromJson(settingsJson);
       state = AsyncValue.data(settings);

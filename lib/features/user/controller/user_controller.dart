@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'package:rehearsal_app/core/providers/repository_providers.dart';
 import 'package:rehearsal_app/core/auth/auth_provider.dart';
@@ -8,7 +7,6 @@ import 'package:rehearsal_app/domain/models/user.dart' as domain;
 import 'user_state.dart';
 
 class UserController extends Notifier<UserState> {
-  static const String _currentUserIdKey = 'current_user_id';
 
   @override
   UserState build() {
@@ -94,19 +92,20 @@ class UserController extends Notifier<UserState> {
   }
 
   Future<void> _createDefaultUser() async {
-    final usersRepo = ref.read(usersRepositoryProvider);
-    final userId = 'user_${DateTime.now().millisecondsSinceEpoch}';
-
-    final user = await usersRepo.create(
-      id: userId,
-      name: 'Local User',
-      tz: 'UTC',
+    // NOTE: Users are now automatically created via database trigger
+    // when auth.users record is created. This method is deprecated.
+    // Local users should not be created directly through repository.
+    
+    if (kDebugMode) {
+      print('⚠️  _createDefaultUser() is deprecated. Users are created via auth trigger.');
+    }
+    
+    // Set state to indicate no user found, which should trigger auth flow
+    state = state.copyWith(
+      currentUser: null,
+      isLoading: false,
+      error: 'No authenticated user. Please sign up or log in.',
     );
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_currentUserIdKey, userId);
-
-    state = state.copyWith(currentUser: user, isLoading: false);
   }
 
   Future<domain.User> _createFallbackUser(supabase.User supabaseUser) async {

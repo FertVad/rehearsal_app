@@ -7,6 +7,8 @@ class User {
     this.deletedAtUtc,
     required this.lastWriter,
     this.name,
+    this.email,
+    this.phone,
     this.avatarUrl,
     required this.tz,
     this.metadata,
@@ -18,6 +20,8 @@ class User {
   final int? deletedAtUtc;
   final String lastWriter;
   final String? name;
+  final String? email;
+  final String? phone;
   final String? avatarUrl;
   final String tz;
   final String? metadata;
@@ -29,6 +33,8 @@ class User {
     int? deletedAtUtc,
     String? lastWriter,
     String? name,
+    String? email,
+    String? phone,
     String? avatarUrl,
     String? tz,
     String? metadata,
@@ -40,6 +46,8 @@ class User {
       deletedAtUtc: deletedAtUtc ?? this.deletedAtUtc,
       lastWriter: lastWriter ?? this.lastWriter,
       name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       tz: tz ?? this.tz,
       metadata: metadata ?? this.metadata,

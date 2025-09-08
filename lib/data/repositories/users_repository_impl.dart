@@ -1,3 +1,4 @@
+import 'dart:convert' as dart;
 import 'package:flutter/foundation.dart';
 import 'package:rehearsal_app/data/repositories/base_repository.dart';
 import 'package:rehearsal_app/data/datasources/supabase_datasource.dart';
@@ -12,21 +13,6 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
   UsersRepositoryImpl({SupabaseDataSource? dataSource}) 
       : _dataSource = dataSource ?? SupabaseDataSource();
 
-  @override
-  Future<User> create({
-    required String id,
-    String? name,
-    String? avatarUrl,
-    String tz = 'UTC',
-    String lastWriter = 'device:local',
-  }) async {
-    // NOTE: Users are automatically created via database trigger when auth.users record is created
-    // This method exists for interface compatibility but should not be called directly
-    // Instead, rely on the auth system and database triggers
-    throw UnsupportedError(
-      'Users are automatically created via database trigger. Use getById() to fetch user after auth registration.'
-    );
-  }
 
   @override
   Future<User?> getById(String id) async {
@@ -140,6 +126,8 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
       deletedAtUtc: timestamps['deletedAtUtc'],
       lastWriter: lastWriter,
       name: json['full_name']?.toString(),
+      email: json['email']?.toString(),
+      phone: json['phone']?.toString(),
       avatarUrl: json['avatar_url']?.toString(),
       tz: json['timezone']?.toString() ?? 'UTC',
       metadata: _formatNotificationSettings(json['notification_settings']),
@@ -151,15 +139,13 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
     if (notificationSettings == null) return null;
     
     if (notificationSettings is Map) {
-      // Convert map to simple string representation for metadata field
-      final settings = notificationSettings as Map<String, dynamic>;
-      return settings.entries
-          .map((e) => '${e.key}:${e.value}')
-          .join(',');
+      // Convert map to JSON string for metadata field
+      return dart.jsonEncode(notificationSettings);
     }
     
     return notificationSettings.toString();
   }
+
 
   /// Update user notification settings specifically
   Future<void> updateNotificationSettings({
