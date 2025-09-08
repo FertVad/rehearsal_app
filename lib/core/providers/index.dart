@@ -77,48 +77,10 @@ export 'package:rehearsal_app/core/router/auth_router.dart' show
 
 /// Projects page providers
 export 'package:rehearsal_app/features/projects/presentation/projects_page.dart' show
-  projectsProvider,            // StateProvider<List<Project>> - Projects list
-  projectsLoadingProvider;     // StateProvider<bool> - Projects loading state
+  projectsProvider;            // StateProvider<List<Project>> - Projects list
 
 /// Calendar page providers
 export 'package:rehearsal_app/features/calendar/presentation/calendar_page.dart' show
   selectedCalendarDateProvider; // StateProvider<DateTime?> - Selected calendar date
 
-// =============================================================================
-// PROVIDER REGISTRY
-// =============================================================================
-
-/// Registry of all providers for debugging and testing
-/// DO NOT USE IN PRODUCTION CODE - for development tools only
-const Map<String, String> providerRegistry = {
-  // Auth & User
-  'authServiceProvider': 'Provider<AuthService>',
-  'currentUserProvider': 'StreamProvider<User?>',
-  'userProfileProvider': 'FutureProvider<Map<String, dynamic>?>',
-  'authNotifierProvider': 'StateNotifierProvider<AuthNotifier, AsyncValue<User?>>',
-  'userControllerProvider': 'NotifierProvider<UserController, UserState>',
-  'currentUserIdProvider': 'Provider<String?>',
-  'authAwareUserControllerProvider': 'Provider<UserState>',
-  
-  // Settings
-  'settingsProvider': 'StateNotifierProvider<SettingsNotifier, AsyncValue<UserSettings>>',
-  'themeProvider': 'Provider<ThemeMode>',
-  'localeProvider': 'NotifierProvider<LocaleNotifier, Locale?>',
-  
-  // Repositories
-  'availabilityRepositoryProvider': 'Provider<AvailabilityRepository>',
-  'rehearsalsRepositoryProvider': 'Provider<RehearsalsRepository>',
-  'usersRepositoryProvider': 'Provider<UsersRepository>',
-  'repositoryCurrentUserIdProvider': 'Provider<String>',
-  
-  // Features
-  'availabilityControllerProvider': 'NotifierProvider<AvailabilityController, AvailabilityState>',
-  'eventDatesProvider': 'FutureProvider.family<List<DateTime>, DateTime>',
-  'availabilityMapProvider': 'FutureProvider.family<Map<DateTime, AvailabilityStatus>, DateTime>',
-  'navigationIndexProvider': 'StateProvider<int>',
-  'routerProvider': 'Provider<GoRouter>',
-  'projectsProvider': 'StateProvider<List<Project>>',
-  'projectsLoadingProvider': 'StateProvider<bool>',
-  'selectedCalendarDateProvider': 'StateProvider<DateTime?>',
-};
 

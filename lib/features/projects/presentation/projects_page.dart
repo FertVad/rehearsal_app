@@ -21,7 +21,6 @@ final projectsProvider = FutureProvider<List<Project>>((ref) async {
   }
 });
 
-final projectsLoadingProvider = StateProvider<bool>((ref) => false);
 
 class ProjectsPage extends ConsumerWidget {
   const ProjectsPage({super.key});
