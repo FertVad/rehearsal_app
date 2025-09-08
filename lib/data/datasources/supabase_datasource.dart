@@ -161,23 +161,6 @@ class SupabaseDataSource {
     }
   }
 
-  /// Hard delete operation (use with caution)
-  Future<void> hardDelete({
-    required String table,
-    required String id,
-  }) async {
-    try {
-      _logOperation('HARD_DELETE', table, recordId: id);
-      
-      await client
-          .from(table)
-          .delete()
-          .eq('id', id);
-    } catch (e) {
-      _logOperation('HARD_DELETE ERROR', table, recordId: id);
-      rethrow;
-    }
-  }
 
   /// Upsert operation
   Future<Map<String, dynamic>> upsert({
@@ -219,21 +202,6 @@ class SupabaseDataSource {
   /// Get current user ID
   String? get currentUserId => client.auth.currentUser?.id;
 
-  /// Execute raw SQL query (use sparingly)
-  Future<List<Map<String, dynamic>>> rawQuery(String query) async {
-    try {
-      if (kDebugMode) {
-        print('🗄️ SupabaseDataSource: RAW_QUERY - $query');
-      }
-      
-      return await client.rpc('execute_sql', params: {'query': query});
-    } catch (e) {
-      if (kDebugMode) {
-        print('🗄️ SupabaseDataSource: RAW_QUERY ERROR - $query');
-      }
-      rethrow;
-    }
-  }
 
   /// Count records in table
   Future<int> count({
@@ -266,26 +234,4 @@ class SupabaseDataSource {
     }
   }
 
-  /// Check if record exists
-  Future<bool> exists({
-    required String table,
-    required String id,
-    bool excludeDeleted = true,
-  }) async {
-    try {
-      _logOperation('EXISTS', table, recordId: id);
-      
-      var query = client.from(table).select('id').eq('id', id);
-
-      if (excludeDeleted) {
-        query = query.isFilter('deleted_at', null);
-      }
-
-      final result = await query.maybeSingle();
-      return result != null;
-    } catch (e) {
-      _logOperation('EXISTS ERROR', table, recordId: id);
-      rethrow;
-    }
-  }
 }
