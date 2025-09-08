@@ -234,6 +234,8 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
 
 
   void _signOut(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    
     // Show confirmation dialog
     final shouldSignOut = await showDialog<bool>(
       context: context,
@@ -258,8 +260,6 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     );
 
     if (shouldSignOut == true && mounted) {
-      // ignore: use_build_context_synchronously
-      final messenger = ScaffoldMessenger.of(context);
       try {
         await ref.read(authNotifierProvider.notifier).signOut();
         // Navigation will be handled by the router automatically

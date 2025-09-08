@@ -24,8 +24,12 @@ class UserController extends Notifier<UserState> {
         // User is authenticated, load their profile
         await _loadUser(supabaseUser.id);
       } else {
-        // Not authenticated, create local user (fallback)
-        await _createDefaultUser();
+        // Not authenticated - set appropriate state
+        state = state.copyWith(
+          currentUser: null,
+          isLoading: false,
+          error: 'No authenticated user. Please sign up or log in.',
+        );
       }
     } catch (e) {
       state = state.copyWith(
@@ -80,7 +84,12 @@ class UserController extends Notifier<UserState> {
             state = state.copyWith(currentUser: fallbackUser, isLoading: false);
           }
         } else {
-          await _createDefaultUser();
+          // No authenticated user - set appropriate state
+          state = state.copyWith(
+            currentUser: null,
+            isLoading: false,
+            error: 'No authenticated user. Please sign up or log in.',
+          );
         }
       }
     } catch (e) {
@@ -91,22 +100,6 @@ class UserController extends Notifier<UserState> {
     }
   }
 
-  Future<void> _createDefaultUser() async {
-    // NOTE: Users are now automatically created via database trigger
-    // when auth.users record is created. This method is deprecated.
-    // Local users should not be created directly through repository.
-    
-    if (kDebugMode) {
-      print('⚠️  _createDefaultUser() is deprecated. Users are created via auth trigger.');
-    }
-    
-    // Set state to indicate no user found, which should trigger auth flow
-    state = state.copyWith(
-      currentUser: null,
-      isLoading: false,
-      error: 'No authenticated user. Please sign up or log in.',
-    );
-  }
 
   Future<domain.User> _createFallbackUser(supabase.User supabaseUser) async {
     // Create a fallback user object based on Supabase auth data

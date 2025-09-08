@@ -1,14 +1,31 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseConfig {
-  static const String url = 'https://atinuvocevcitsezubqm.supabase.co';
-  static const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0aW51dm9jZXZjaXRzZXp1YnFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5OTg5NDYsImV4cCI6MjA3MjU3NDk0Nn0.oischXeF_8bYzEveuPkaWna-JQXooraskhOqZ1UjaDI';
+  static String get url {
+    final envUrl = dotenv.env['SUPABASE_URL'];
+    if (envUrl == null || envUrl.isEmpty) {
+      throw Exception('SUPABASE_URL not found in environment variables');
+    }
+    return envUrl;
+  }
+  
+  static String get anonKey {
+    final envKey = dotenv.env['SUPABASE_ANON_KEY'];
+    if (envKey == null || envKey.isEmpty) {
+      throw Exception('SUPABASE_ANON_KEY not found in environment variables');
+    }
+    return envKey;
+  }
   
   static Future<void> initialize() async {
+    // Загружаем .env файл
+    await dotenv.load(fileName: ".env");
+    
     await Supabase.initialize(
       url: url,
       anonKey: anonKey,
-      debug: true, // Enable debug mode for development
+      debug: dotenv.env['FLUTTER_ENV'] == 'development',
     );
   }
   

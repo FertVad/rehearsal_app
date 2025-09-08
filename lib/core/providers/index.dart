@@ -8,8 +8,8 @@
 /// - Provider: for read-only computed values (e.g., themeProvider)
 /// - NotifierProvider: for complex state management (e.g., userControllerProvider)
 /// - StreamProvider: for reactive data streams (e.g., currentUserProvider)
-library;
 /// - FutureProvider: for async computations (e.g., userProfileProvider)
+library;
 
 // =============================================================================
 // AUTH & USER MANAGEMENT

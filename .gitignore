@@ -12,6 +12,20 @@
 .swiftpm/
 migrate_working_dir/
 
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Generated localization files
+lib/l10n/app_localizations*.dart
+*.g.dart
+*.freezed.dart
+
+# Generated files
+**/generated/
+**/.generated/
+
 # IntelliJ related
 *.iml
 *.ipr

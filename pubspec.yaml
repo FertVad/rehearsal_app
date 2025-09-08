@@ -43,6 +43,7 @@ dependencies:
   shared_preferences: ^2.2.2
   freezed_annotation: ^3.1.0
   json_annotation: ^4.8.1
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,10 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   # No web assets needed for Supabase-only app
+  
+  # Environment variables
+  assets:
+    - .env
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
