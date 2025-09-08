@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:rehearsal_app/core/utils/logger.dart';
 
 class SupabaseDataSource {
   static final SupabaseDataSource _instance = SupabaseDataSource._internal();
@@ -12,11 +12,7 @@ class SupabaseDataSource {
 
   /// Centralized logging for database operations
   void _logOperation(String operation, String table, {String? recordId, Map<String, dynamic>? data}) {
-    if (kDebugMode) {
-      final recordInfo = recordId != null ? ' (id: $recordId)' : '';
-      final dataInfo = data != null ? ' data: ${data.keys.toList()}' : '';
-      print('🗄️ SupabaseDataSource: $operation on $table$recordInfo$dataInfo');
-    }
+    Logger.repository(operation, table, recordId: recordId, data: data);
   }
 
   /// Generic select operation with common options

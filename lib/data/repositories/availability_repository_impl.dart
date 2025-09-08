@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:rehearsal_app/core/utils/logger.dart';
 import 'package:rehearsal_app/data/repositories/base_repository.dart';
 import 'package:rehearsal_app/data/datasources/supabase_datasource.dart';
 import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
@@ -19,13 +19,11 @@ class AvailabilityRepositoryImpl extends BaseRepository implements AvailabilityR
   }) async {
     return await safeExecute(
       () async {
-        if (kDebugMode) {
-          print('🔍 AvailabilityRepositoryImpl.getForUserOnDateUtc: Looking for availability for user $userId on date $dateUtc00');
-        }
-
         // Convert milliseconds to date string for query
         final date = DateTime.fromMillisecondsSinceEpoch(dateUtc00, isUtc: true);
         final dateString = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        
+        Logger.repository('GET_FOR_USER_ON_DATE', _tableName, recordId: '${userId}_$dateUtc00', data: {'date': dateString});
 
         final response = await _dataSource.select(
           table: _tableName,
@@ -37,9 +35,7 @@ class AvailabilityRepositoryImpl extends BaseRepository implements AvailabilityR
         );
 
         if (response.isEmpty) {
-          if (kDebugMode) {
-            print('🔍 AvailabilityRepositoryImpl.getForUserOnDateUtc: No availability found');
-          }
+          Logger.debug('No availability found for user $userId on date $dateString');
           return null;
         }
 
@@ -74,11 +70,7 @@ class AvailabilityRepositoryImpl extends BaseRepository implements AvailabilityR
           if (note != null) 'notes': note,
         });
 
-        if (kDebugMode) {
-          print('🔍 AvailabilityRepositoryImpl.upsertForUserOnDateUtc:');
-          print('🔍 User ID: $userId, Date: $dateString');
-          print('🔍 Upsert data: $upsertData');
-        }
+        Logger.repository('UPSERT_FOR_USER_ON_DATE', _tableName, recordId: '${userId}_$dateUtc00', data: upsertData);
 
         await _dataSource.upsert(
           table: _tableName,
@@ -107,9 +99,10 @@ class AvailabilityRepositoryImpl extends BaseRepository implements AvailabilityR
         final fromDateString = '${fromDate.year.toString().padLeft(4, '0')}-${fromDate.month.toString().padLeft(2, '0')}-${fromDate.day.toString().padLeft(2, '0')}';
         final toDateString = '${toDate.year.toString().padLeft(4, '0')}-${toDate.month.toString().padLeft(2, '0')}-${toDate.day.toString().padLeft(2, '0')}';
 
-        if (kDebugMode) {
-          print('🔍 AvailabilityRepositoryImpl.listForUserRange: $userId from $fromDateString to $toDateString');
-        }
+        Logger.repository('LIST_FOR_USER_RANGE', _tableName, recordId: userId, data: {
+          'from': fromDateString,
+          'to': toDateString
+        });
 
         final response = await _dataSource.select(
           table: _tableName,

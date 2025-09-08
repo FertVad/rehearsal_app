@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
+import 'package:rehearsal_app/core/utils/logger.dart';
 
 class AuthService {
   static SupabaseClient get _client => SupabaseConfig.client;
@@ -126,21 +126,19 @@ class AuthService {
     String? displayName,
   }) async {
     try {
-      if (kDebugMode) {
-        print('ensureUserProfile: Checking profile for user $userId with email $email');
-        print('ensureUserProfile: Current auth user: ${currentUser?.id}');
-        print('ensureUserProfile: Is authenticated: $isAuthenticated');
-      }
+      Logger.auth('ensureUserProfile: Checking profile for user $userId with email $email');
+      Logger.auth('ensureUserProfile: Current auth user: ${currentUser?.id}');
+      Logger.auth('ensureUserProfile: Is authenticated: $isAuthenticated');
       
       // Validate that we have a proper UUID
       if (userId.isEmpty || !_isValidUUID(userId)) {
-        if (kDebugMode) print('ensureUserProfile: Invalid userId format: $userId');
+        Logger.warning('ensureUserProfile: Invalid userId format: $userId');
         return;
       }
       
       // Ensure user is authenticated before creating profile
       if (!isAuthenticated || currentUser?.id != userId) {
-        if (kDebugMode) print('ensureUserProfile: User not authenticated or ID mismatch. Auth: $isAuthenticated, Current: ${currentUser?.id}, Target: $userId');
+        Logger.warning('ensureUserProfile: User not authenticated or ID mismatch. Auth: $isAuthenticated, Current: ${currentUser?.id}, Target: $userId');
         return;
       }
       
@@ -152,7 +150,7 @@ class AuthService {
           .maybeSingle();
       
       if (existing != null) {
-        if (kDebugMode) print('ensureUserProfile: Profile already exists for user $userId');
+        Logger.info('ensureUserProfile: Profile already exists for user $userId');
         return; // Profile already exists
       }
       
@@ -166,17 +164,14 @@ class AuthService {
         profileData['display_name'] = displayName;
       }
       
-      if (kDebugMode) print('ensureUserProfile: Creating profile with data: $profileData');
+      Logger.info('ensureUserProfile: Creating profile with data: $profileData');
       
       // Create new profile - timestamps are set automatically by DB
       await _client.from('profiles').insert(profileData);
       
-      if (kDebugMode) print('ensureUserProfile: Profile created successfully for user $userId');
+      Logger.info('ensureUserProfile: Profile created successfully for user $userId');
     } catch (e, stackTrace) {
-      if (kDebugMode) {
-        print('ensureUserProfile: Failed to create profile for $userId: $e');
-        print('ensureUserProfile: Stack trace: $stackTrace');
-      }
+      Logger.error('ensureUserProfile: Failed to create profile for $userId', error: e, stackTrace: stackTrace);
       // Profile creation failed, but auth succeeded - this is not critical
     }
   }

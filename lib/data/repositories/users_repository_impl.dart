@@ -1,5 +1,5 @@
 import 'dart:convert' as dart;
-import 'package:flutter/foundation.dart';
+import 'package:rehearsal_app/core/utils/logger.dart';
 import 'package:rehearsal_app/data/repositories/base_repository.dart';
 import 'package:rehearsal_app/data/datasources/supabase_datasource.dart';
 import 'package:rehearsal_app/domain/repositories/users_repository.dart';
@@ -18,9 +18,7 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
   Future<User?> getById(String id) async {
     return await safeExecute(
       () async {
-        if (kDebugMode) {
-          print('🔍 UsersRepositoryImpl.getById: Looking for user with id: $id');
-        }
+        Logger.repository('GET_BY_ID', _tableName, recordId: id);
 
         final response = await _dataSource.selectById(
           table: _tableName,
@@ -29,9 +27,7 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
         );
 
         if (response == null) {
-          if (kDebugMode) {
-            print('🔍 UsersRepositoryImpl.getById: No user found for id: $id');
-          }
+          Logger.debug('No user found for id: $id');
           return null;
         }
 
@@ -78,12 +74,8 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
           if (tz != null) 'timezone': tz,
         });
 
-        if (kDebugMode) {
-          print('🔍 UsersRepositoryImpl.update()');
-          print('🔍 User ID: $id');
-          print('🔍 Update data: $updateData');
-          print('🔍 Current auth user: ${_dataSource.currentUserId}');
-        }
+        Logger.repository('UPDATE', _tableName, recordId: id, data: updateData);
+        Logger.debug('Current auth user: ${_dataSource.currentUserId}');
 
         if (updateData.isNotEmpty) {
           await _dataSource.update(

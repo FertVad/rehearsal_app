@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'package:rehearsal_app/core/providers/repository_providers.dart';
 import 'package:rehearsal_app/core/auth/auth_provider.dart';
 import 'package:rehearsal_app/domain/models/user.dart' as domain;
+import 'package:rehearsal_app/core/utils/logger.dart';
 import 'user_state.dart';
 
 class UserController extends Notifier<UserState> {
@@ -43,20 +43,20 @@ class UserController extends Notifier<UserState> {
     final usersRepo = ref.read(usersRepositoryProvider);
     
     try {
-      if (kDebugMode) print('UserController._loadUser: Loading user with id: $userId');
+      Logger.debug('UserController._loadUser: Loading user with id: $userId');
       final user = await usersRepo.getById(userId);
 
       if (user != null) {
-        if (kDebugMode) print('UserController._loadUser: User loaded successfully: ${user.name}');
+        Logger.info('UserController._loadUser: User loaded successfully: ${user.name}');
         state = state.copyWith(currentUser: user, isLoading: false);
       } else {
-        if (kDebugMode) print('UserController._loadUser: User not found, attempting to create profile');
+        Logger.info('UserController._loadUser: User not found, attempting to create profile');
         
         // Check authentication state
         final authService = ref.read(authServiceProvider);
         final supabaseUser = authService.currentUser;
         
-        if (kDebugMode) print('UserController._loadUser: Current Supabase user: ${supabaseUser?.id}, email: ${supabaseUser?.email}');
+        Logger.debug('UserController._loadUser: Current Supabase user: ${supabaseUser?.id}, email: ${supabaseUser?.email}');
         
         if (supabaseUser != null) {
           // Add small delay to ensure auth session is fully established
@@ -75,10 +75,10 @@ class UserController extends Notifier<UserState> {
           // Try loading again after ensuring profile exists
           final user = await usersRepo.getById(userId);
           if (user != null) {
-            if (kDebugMode) print('UserController._loadUser: Successfully loaded user after profile creation');
+            Logger.info('UserController._loadUser: Successfully loaded user after profile creation');
             state = state.copyWith(currentUser: user, isLoading: false);
           } else {
-            if (kDebugMode) print('UserController._loadUser: Still could not load user, using fallback');
+            Logger.warning('UserController._loadUser: Still could not load user, using fallback');
             // Create a temporary user object with known data
             final fallbackUser = await _createFallbackUser(supabaseUser);
             state = state.copyWith(currentUser: fallbackUser, isLoading: false);

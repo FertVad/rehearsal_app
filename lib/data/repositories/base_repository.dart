@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
+import 'package:rehearsal_app/core/utils/logger.dart';
 
 abstract class BaseRepository {
   // Common field names
@@ -48,15 +48,11 @@ abstract class BaseRepository {
     String? recordId,
   }) async {
     try {
-      if (kDebugMode) {
-        print('$operationName on $tableName${recordId != null ? ' (id: $recordId)' : ''}');
-      }
+      Logger.repository(operationName, tableName, recordId: recordId);
       return await operation();
     } catch (e) {
       final errorMessage = 'Failed to $operationName on $tableName: $e';
-      if (kDebugMode) {
-        print(errorMessage);
-      }
+      Logger.error(errorMessage);
       throw Exception(errorMessage);
     }
   }

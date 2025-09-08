@@ -7,6 +7,7 @@ import 'package:rehearsal_app/core/navigation/app_shell.dart';
 import 'package:rehearsal_app/features/about/presentation/about_page.dart';
 import 'package:rehearsal_app/features/auth/presentation/auth_page.dart';
 import 'package:rehearsal_app/core/auth/auth_provider.dart';
+import 'package:rehearsal_app/core/utils/logger.dart';
 
 // Router provider that handles authentication
 final routerProvider = Provider<GoRouter>((ref) {
@@ -19,24 +20,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isGoingToAuth = state.matchedLocation == '/auth';
       
       // Debug logging
-      if (kDebugMode) {
-        print('GoRouter redirect: isAuthenticated=$isAuthenticated, location=${state.matchedLocation}');
-      }
+      Logger.navigation('GoRouter redirect: isAuthenticated=$isAuthenticated, location=${state.matchedLocation}');
       
       // If not authenticated and trying to go to protected route, go to auth
       if (!isAuthenticated && !isGoingToAuth) {
-        if (kDebugMode) print('Redirecting to /auth - not authenticated');
+        Logger.navigation('Redirecting to /auth - not authenticated');
         return '/auth';
       }
       
       // If authenticated and on auth page, go to home
       if (isAuthenticated && isGoingToAuth) {
-        if (kDebugMode) print('Redirecting to / - authenticated');
+        Logger.navigation('Redirecting to / - authenticated');
         return '/';
       }
       
       // No redirect needed
-      if (kDebugMode) print('No redirect needed');
+      Logger.navigation('No redirect needed');
       return null;
     },
     refreshListenable: AuthChangeNotifier(ref),
@@ -88,9 +87,7 @@ class AuthChangeNotifier extends ChangeNotifier {
   AuthChangeNotifier(this._ref) {
     _subscription = _ref.read(authServiceProvider).authStateChanges.listen(
       (authState) {
-        if (kDebugMode) {
-          print('AuthChangeNotifier: Auth state changed - user: ${authState.session?.user.id}');
-        }
+        Logger.auth('Auth state changed - user: ${authState.session?.user.id}');
         // Small delay to ensure state is properly updated
         Future.microtask(() => notifyListeners());
       },

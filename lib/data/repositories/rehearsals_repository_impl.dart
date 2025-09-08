@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:rehearsal_app/core/utils/logger.dart';
 import 'package:rehearsal_app/data/repositories/base_repository.dart';
 import 'package:rehearsal_app/data/datasources/supabase_datasource.dart';
 import 'package:rehearsal_app/domain/repositories/rehearsals_repository.dart';
@@ -39,11 +39,8 @@ class RehearsalsRepositoryImpl extends BaseRepository implements RehearsalsRepos
           'created_by': _dataSource.currentUserId, // Current authenticated user
         });
 
-        if (kDebugMode) {
-          print('🔍 RehearsalsRepositoryImpl.create:');
-          print('🔍 Insert data: $insertData');
-          print('🔍 Current auth user: ${_dataSource.currentUserId}');
-        }
+        Logger.repository('CREATE', _tableName, recordId: id, data: insertData);
+        Logger.debug('Current auth user: ${_dataSource.currentUserId}');
 
         final response = await _dataSource.insert(
           table: _tableName,
@@ -62,9 +59,7 @@ class RehearsalsRepositoryImpl extends BaseRepository implements RehearsalsRepos
   Future<Rehearsal?> getById(String id) async {
     return await safeExecute(
       () async {
-        if (kDebugMode) {
-          print('🔍 RehearsalsRepositoryImpl.getById: Looking for rehearsal with id: $id');
-        }
+        Logger.repository('GET_BY_ID', _tableName, recordId: id);
 
         final response = await _dataSource.selectById(
           table: _tableName,
@@ -73,9 +68,7 @@ class RehearsalsRepositoryImpl extends BaseRepository implements RehearsalsRepos
         );
 
         if (response == null) {
-          if (kDebugMode) {
-            print('🔍 RehearsalsRepositoryImpl.getById: No rehearsal found for id: $id');
-          }
+          Logger.debug('No rehearsal found for id: $id');
           return null;
         }
 
@@ -98,9 +91,7 @@ class RehearsalsRepositoryImpl extends BaseRepository implements RehearsalsRepos
         final startOfDay = DateTime.fromMillisecondsSinceEpoch(dateUtc00, isUtc: true);
         final endOfDay = startOfDay.add(const Duration(days: 1));
 
-        if (kDebugMode) {
-          print('🔍 RehearsalsRepositoryImpl.listForUserOnDateUtc: $userId on ${startOfDay.toIso8601String()}');
-        }
+        Logger.repository('LIST_FOR_USER_ON_DATE', _tableName, recordId: userId, data: {'date': startOfDay.toIso8601String()});
 
         // Query rehearsals that start within the day
         final response = await _dataSource.select(
@@ -136,9 +127,10 @@ class RehearsalsRepositoryImpl extends BaseRepository implements RehearsalsRepos
         final fromDateTime = DateTime.fromMillisecondsSinceEpoch(fromUtc, isUtc: true);
         final toDateTime = DateTime.fromMillisecondsSinceEpoch(toUtc, isUtc: true);
 
-        if (kDebugMode) {
-          print('🔍 RehearsalsRepositoryImpl.listForUserInRange: $userId from ${fromDateTime.toIso8601String()} to ${toDateTime.toIso8601String()}');
-        }
+        Logger.repository('LIST_FOR_USER_IN_RANGE', _tableName, recordId: userId, data: {
+          'from': fromDateTime.toIso8601String(),
+          'to': toDateTime.toIso8601String()
+        });
 
         final response = await _dataSource.select(
           table: _tableName,
@@ -181,11 +173,7 @@ class RehearsalsRepositoryImpl extends BaseRepository implements RehearsalsRepos
           'status': 'updated', // Mark as updated
         });
 
-        if (kDebugMode) {
-          print('🔍 RehearsalsRepositoryImpl.update:');
-          print('🔍 Rehearsal ID: $id');
-          print('🔍 Update data: $updateData');
-        }
+        Logger.repository('UPDATE', _tableName, recordId: id, data: updateData);
 
         if (updateData.isNotEmpty) {
           await _dataSource.update(

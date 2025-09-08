@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:rehearsal_app/core/utils/logger.dart';
 import 'package:rehearsal_app/data/repositories/base_repository.dart';
 import 'package:rehearsal_app/data/datasources/supabase_datasource.dart';
 import 'package:rehearsal_app/domain/repositories/projects_repository.dart';
@@ -37,11 +37,8 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
           'is_active': true,
         });
 
-        if (kDebugMode) {
-          print('🔍 ProjectsRepositoryImpl.create:');
-          print('🔍 Insert data: $insertData');
-          print('🔍 Current auth user: ${_dataSource.currentUserId}');
-        }
+        Logger.repository('CREATE', _tableName, recordId: id, data: insertData);
+        Logger.debug('Current auth user: ${_dataSource.currentUserId}');
 
         final response = await _dataSource.insert(
           table: _tableName,
@@ -78,11 +75,7 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
           if (directorId != null) 'creator_id': directorId,
         });
 
-        if (kDebugMode) {
-          print('🔍 ProjectsRepositoryImpl.update:');
-          print('🔍 Project ID: $id');
-          print('🔍 Update data: $updateData');
-        }
+        Logger.repository('UPDATE', _tableName, recordId: id, data: updateData);
 
         if (updateData.isNotEmpty) {
           await _dataSource.update(
@@ -130,9 +123,7 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
   Future<Project?> getById(String id) async {
     return await safeExecute(
       () async {
-        if (kDebugMode) {
-          print('🔍 ProjectsRepositoryImpl.getById: Looking for project with id: $id');
-        }
+        Logger.repository('GET_BY_ID', _tableName, recordId: id);
 
         final response = await _dataSource.selectById(
           table: _tableName,
@@ -141,9 +132,7 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
         );
 
         if (response == null) {
-          if (kDebugMode) {
-            print('🔍 ProjectsRepositoryImpl.getById: No project found for id: $id');
-          }
+          Logger.debug('No project found for id: $id');
           return null;
         }
 
@@ -159,9 +148,7 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
   Future<List<Project>> listForUser(String userId) async {
     return await safeExecute(
       () async {
-        if (kDebugMode) {
-          print('🔍 ProjectsRepositoryImpl.listForUser: Loading projects for user $userId');
-        }
+        Logger.repository('LIST_FOR_USER', _tableName, recordId: userId);
 
         // First, get project IDs where user is a member
         final membershipResponse = await _dataSource.select(
@@ -217,9 +204,7 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
   Future<List<Project>> searchByName(String query) async {
     return await safeExecute(
       () async {
-        if (kDebugMode) {
-          print('🔍 ProjectsRepositoryImpl.searchByName: Searching for "$query"');
-        }
+        Logger.repository('SEARCH_BY_NAME', _tableName, recordId: query, data: {'query': query});
 
         final response = await _dataSource.select(
           table: _tableName,
