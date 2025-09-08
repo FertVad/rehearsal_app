@@ -1,0 +1,128 @@
+# Задача для Claude Code: Создание новых Supabase репозиториев
+
+## Контекст
+Flutter приложение Rehearsal App использует Supabase как backend. Недавно была полностью пересоздана схема БД и настроена интеграция с Supabase Auth. Нужно создать новые репозитории под новую схему.
+
+## Схема БД
+База данных содержит 6 основных таблиц:
+
+1. **users** - пользователи (интегрированы с auth.users через триггер)
+   - id (UUID, PK) = auth.users.id 
+   - full_name, email, phone, avatar_url
+   - timezone, language, theme, notification_settings (JSONB)
+   - is_active, last_login, created_at, updated_at, deleted_at
+
+2. **projects** - театральные проекты  
+   - id (UUID, PK), name, description, creator_id (FK)
+   - invite_code (unique), start_date, end_date, timezone
+   - is_active, created_at, updated_at, deleted_at
+
+3. **project_members** - участники проектов
+   - id (UUID, PK), project_id (FK), user_id (FK) 
+   - role (creator/admin/member), invited_by (FK), joined_at
+   - created_at, updated_at
+
+4. **rehearsals** - репетиции
+   - id (UUID, PK), project_id (FK), created_by (FK)
+   - start_datetime, end_datetime (TIMESTAMPTZ, всегда UTC)
+   - location, scene_details, status (scheduled/updated/cancelled)
+   - created_at, updated_at, deleted_at
+
+5. **rehearsal_participants** - участники репетиций
+   - id (UUID, PK), rehearsal_id (FK), user_id (FK)
+   - rsvp_status (attending/declined/maybe/pending), response_at, notes
+   - created_at, updated_at
+
+6. **user_availability** - доступность пользователей
+   - id (UUID, PK), user_id (FK), date (DATE)
+   - status (free/busy/partial), time_slots (JSONB), notes  
+   - created_at, updated_at
+
+## Задачи
+
+### ЗАДАЧА 1: Создать BaseRepository
+**Файл:** `lib/data/repositories/base_repository.dart`
+
+Создать универсальный базовый класс для всех репозиториев со следующими возможностями:
+- Извлечение timestamps (created_at, updated_at, deleted_at) из Supabase ответов
+- Универсальный soft delete для любой таблицы  
+- Безопасное выполнение операций с обработкой ошибок
+- Логирование для debug режима
+- Помощники для конвертации дат и валидации
+
+### ЗАДАЧА 2: Создать SupabaseDataSource
+**Файл:** `lib/data/datasources/supabase_datasource.dart`
+
+Создать обертку над SupabaseConfig для:
+- Централизованного доступа к Supabase client
+- Методов-помощников для типовых операций (select, insert, update, delete)
+- Единого места для настройки и логирования
+
+### ЗАДАЧА 3: Создать UsersRepositoryImpl  
+**Файл:** `lib/data/repositories/users_repository_impl.dart`
+
+Реализовать интерфейс `UsersRepository` для работы с таблицей `users`:
+- getById(String id) - получить профиль пользователя
+- list() - получить всех пользователей (для админки)
+- update() - обновить профиль пользователя
+- softDelete() - мягкое удаление профиля
+
+**ВАЖНО:** НЕ создавать метод create() - пользователи создаются автоматически через триггер при регистрации в auth.users.
+
+### ЗАДАЧА 4: Обновить repository_providers.dart
+**Файл:** `lib/core/providers/repository_providers.dart`
+
+Обновить провайдеры для использования новых репозиториев:
+- Заменить импорты старых Supabase репозиториев на новые
+- Обновить инстанциирование репозиториев
+
+### ЗАДАЧА 5: Обновить settings_provider.dart  
+**Файл:** `lib/core/settings/settings_provider.dart`
+
+Убрать зависимость от SupabaseProfilesRepository:
+- Удалить импорт `supabase_profiles_repository.dart`
+- Заменить специфичные вызовы на общие методы интерфейса
+- Использовать notification_settings JSONB поле вместо хранения в bio
+
+## Технические требования
+
+### Обработка ошибок
+- Использовать try-catch во всех методах
+- Логировать ошибки в debug режиме
+- Возвращать понятные исключения
+
+### Timestamps  
+- Все timestamps в БД в UTC
+- Автоматически извлекать created_at, updated_at, deleted_at
+- Конвертировать в millisecondsSinceEpoch для domain моделей
+
+### Аутентификация
+- Использовать auth.uid() для получения текущего пользователя
+- Проверять права доступа где необходимо
+- Работать с RLS policies БД
+
+### Imports
+Использовать следующие импорты:
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:rehearsal_app/core/supabase/supabase_config.dart';
+import 'package:rehearsal_app/domain/repositories/users_repository.dart';
+import 'package:rehearsal_app/domain/models/user.dart';
+// и т.д.
+```
+
+## Критерии готовности
+
+- [ ] BaseRepository создан с универсальными методами
+- [ ] SupabaseDataSource создан как обертка
+- [ ] UsersRepositoryImpl полностью реализован
+- [ ] repository_providers.dart обновлен
+- [ ] settings_provider.dart обновлен  
+- [ ] Код компилируется без ошибок
+- [ ] Все импорты корректные
+- [ ] Следует паттернам существующего кода
+
+## Приоритет
+Высокий - блокирует дальнейшую разработку.
+
+Начинать с BaseRepository, затем UsersRepository, затем обновление провайдеров.

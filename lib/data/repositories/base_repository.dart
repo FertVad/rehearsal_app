@@ -1,9 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:rehearsal_app/core/supabase/supabase_config.dart';
 
-/// Base class for all Supabase repositories
-/// Provides common functionality and reduces code duplication
-abstract class BaseSupabaseRepository {
+abstract class BaseRepository {
   // Common field names
   static const String deletedAtField = 'deleted_at';
   static const String createdAtField = 'created_at';
@@ -86,6 +84,29 @@ abstract class BaseSupabaseRepository {
     return data;
   }
 
+  /// Convert DateTime to UTC milliseconds for domain models
+  int dateTimeToUtcMs(DateTime dateTime) {
+    return dateTime.toUtc().millisecondsSinceEpoch;
+  }
+
+  /// Convert UTC milliseconds to DateTime
+  DateTime utcMsToDateTime(int milliseconds) {
+    return DateTime.fromMillisecondsSinceEpoch(milliseconds).toUtc();
+  }
+
+  /// Get current authenticated user ID
+  String? getCurrentUserId() {
+    return SupabaseConfig.client.auth.currentUser?.id;
+  }
+
+  /// Validate required fields before operations
+  void validateRequiredFields(Map<String, dynamic> fields, List<String> requiredFields) {
+    for (final field in requiredFields) {
+      if (!shouldIncludeField(fields[field])) {
+        throw ArgumentError('Required field $field is missing or empty');
+      }
+    }
+  }
 }
 
 /// Custom exception for repository operations

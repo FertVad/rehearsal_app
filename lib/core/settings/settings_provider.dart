@@ -1,10 +1,9 @@
-import 'dart:convert' as dart;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rehearsal_app/core/providers/repository_providers.dart';
 import 'package:rehearsal_app/core/auth/auth_provider.dart';
 import 'package:rehearsal_app/core/settings/user_settings.dart';
-import 'package:rehearsal_app/core/supabase/repositories/supabase_profiles_repository.dart';
+import 'package:rehearsal_app/data/repositories/users_repository_impl.dart';
 
 /// Settings notifier that syncs with Supabase profiles.metadata
 class SettingsNotifier extends StateNotifier<AsyncValue<UserSettings>> {
@@ -33,12 +32,20 @@ class SettingsNotifier extends StateNotifier<AsyncValue<UserSettings>> {
         return;
       }
 
-      // Parse settings from metadata field
-      final metadataString = profile.metadata;
-      final metadata = metadataString != null
-          ? Map<String, dynamic>.from(dart.jsonDecode(metadataString))
+      // Parse settings from metadata field (which now contains notification_settings)
+      // The notification_settings JSONB field from database is mapped to metadata in User model
+      final settingsJson = profile.metadata != null
+          ? {
+              'notifications': profile.metadata!.contains('notifications:true'),
+              'soundEnabled': profile.metadata!.contains('soundEnabled:true'),
+              'theme': profile.metadata!.contains('theme:') 
+                  ? profile.metadata!.split('theme:')[1].split(',')[0]
+                  : 'system',
+              'language': profile.metadata!.contains('language:')
+                  ? profile.metadata!.split('language:')[1].split(',')[0]
+                  : null,
+            }
           : <String, dynamic>{};
-      final settingsJson = metadata['settings'] as Map<String, dynamic>? ?? {};
 
       final settings = UserSettings.fromJson(settingsJson);
       state = AsyncValue.data(settings);
@@ -91,11 +98,19 @@ class SettingsNotifier extends StateNotifier<AsyncValue<UserSettings>> {
 
       final usersRepo = _ref.read(usersRepositoryProvider);
 
-      // Update profile bio (settings stored as bio since no metadata field)
-      if (usersRepo is SupabaseProfilesRepository) {
-        await (usersRepo).updateBio(
+      // Update notification_settings JSONB field in users table
+      if (usersRepo is UsersRepositoryImpl) {
+        // Convert settings to notification_settings JSONB format
+        final notificationSettings = {
+          'notifications': settings.notifications,
+          'sound': settings.soundEnabled,
+          'theme': settings.theme.name,
+          'language': settings.language,
+        };
+        
+        await (usersRepo).updateNotificationSettings(
           id: user.id,
-          bio: 'Settings: ${settings.toJson()}',
+          settings: notificationSettings,
         );
       }
     } catch (e, stackTrace) {
