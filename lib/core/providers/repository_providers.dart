@@ -3,7 +3,10 @@ import 'package:rehearsal_app/domain/repositories/availability_repository.dart';
 import 'package:rehearsal_app/domain/repositories/rehearsals_repository.dart';
 import 'package:rehearsal_app/domain/repositories/users_repository.dart';
 import 'package:rehearsal_app/domain/repositories/projects_repository.dart';
+import 'package:rehearsal_app/data/repositories/availability_repository_impl.dart';
+import 'package:rehearsal_app/data/repositories/rehearsals_repository_impl.dart';
 import 'package:rehearsal_app/data/repositories/users_repository_impl.dart';
+import 'package:rehearsal_app/data/repositories/projects_repository_impl.dart';
 import 'package:rehearsal_app/features/user/controller/user_provider.dart' show currentUserIdProvider;
 
 /// Centralized repository providers for the application.
@@ -11,13 +14,11 @@ import 'package:rehearsal_app/features/user/controller/user_provider.dart' show 
 
 // Repository providers - using new repository implementations
 final availabilityRepositoryProvider = Provider<AvailabilityRepository>((ref) {
-  // TODO: Implement AvailabilityRepositoryImpl when needed
-  throw UnsupportedError('AvailabilityRepository not yet implemented with new architecture');
+  return AvailabilityRepositoryImpl();
 });
 
 final rehearsalsRepositoryProvider = Provider<RehearsalsRepository>((ref) {
-  // TODO: Implement RehearsalsRepositoryImpl when needed  
-  throw UnsupportedError('RehearsalsRepository not yet implemented with new architecture');
+  return RehearsalsRepositoryImpl();
 });
 
 final usersRepositoryProvider = Provider<UsersRepository>((ref) {
@@ -25,8 +26,7 @@ final usersRepositoryProvider = Provider<UsersRepository>((ref) {
 });
 
 final projectsRepositoryProvider = Provider<ProjectsRepository>((ref) {
-  // TODO: Implement ProjectsRepositoryImpl when needed
-  throw UnsupportedError('ProjectsRepository not yet implemented with new architecture');
+  return ProjectsRepositoryImpl();
 });
 
 /// Current user id provider that gets the user from the user management system.
