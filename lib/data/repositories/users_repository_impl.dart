@@ -159,35 +159,4 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
     );
   }
 
-  /// Get users by email (for admin/search purposes)
-  Future<List<User>> searchByEmail(String email) async {
-    return await safeExecute(
-      () async {
-        final response = await _dataSource.select(
-          table: _tableName,
-          filters: {'email': email},
-          excludeDeleted: true,
-        );
-
-        return response.map<User>((json) => _mapToUser(json, lastWriter: 'supabase:user')).toList();
-      },
-      operationName: 'SEARCH_BY_EMAIL',
-      tableName: _tableName,
-    );
-  }
-
-  /// Get active users count
-  Future<int> getActiveUsersCount() async {
-    return await safeExecute(
-      () async {
-        return await _dataSource.count(
-          table: _tableName,
-          filters: {'is_active': true},
-          excludeDeleted: true,
-        );
-      },
-      operationName: 'COUNT_ACTIVE_USERS',
-      tableName: _tableName,
-    );
-  }
 }

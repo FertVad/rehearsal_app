@@ -200,32 +200,6 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
     );
   }
 
-  @override
-  Future<List<Project>> searchByName(String query) async {
-    return await safeExecute(
-      () async {
-        Logger.repository('SEARCH_BY_NAME', _tableName, recordId: query, data: {'query': query});
-
-        final response = await _dataSource.select(
-          table: _tableName,
-          orderBy: 'updated_at',
-          ascending: false,
-          excludeDeleted: true,
-        );
-
-        // Filter by name (case-insensitive)
-        final filtered = response.where((json) {
-          final name = (json['name'] as String? ?? '').toLowerCase();
-          return name.contains(query.toLowerCase());
-        }).toList();
-
-        return filtered.map<Project>((json) => _mapToProject(json, lastWriter: 'supabase:project')).toList();
-      },
-      operationName: 'SEARCH_BY_NAME',
-      tableName: _tableName,
-      recordId: query,
-    );
-  }
 
   /// Map Supabase response to Project domain model
   Project _mapToProject(Map<String, dynamic> json, {required String lastWriter}) {

@@ -37,6 +37,4 @@ abstract class ProjectsRepository {
   /// Lists all projects
   Future<List<Project>> listAll();
 
-  /// Searches projects by name
-  Future<List<Project>> searchByName(String query);
 }
