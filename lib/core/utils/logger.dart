@@ -21,7 +21,12 @@ class Logger {
     }
   }
 
-  static void error(String message, {String? tag, Object? error, StackTrace? stackTrace}) {
+  static void error(
+    String message, {
+    String? tag,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
     if (kDebugMode) {
       print('❌ ${tag ?? _tag}: $message');
       if (error != null) {
@@ -33,7 +38,12 @@ class Logger {
     }
   }
 
-  static void repository(String operation, String table, {String? recordId, Map<String, dynamic>? data}) {
+  static void repository(
+    String operation,
+    String table, {
+    String? recordId,
+    Map<String, dynamic>? data,
+  }) {
     if (kDebugMode) {
       final recordInfo = recordId != null ? ' (id: $recordId)' : '';
       final dataInfo = data != null ? '\nData: $data' : '';

@@ -12,15 +12,13 @@ import 'package:rehearsal_app/core/utils/localization_helper.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 class RehearsalDetailsPage extends ConsumerStatefulWidget {
-  const RehearsalDetailsPage({
-    super.key,
-    required this.rehearsalId,
-  });
+  const RehearsalDetailsPage({super.key, required this.rehearsalId});
 
   final String rehearsalId;
 
   @override
-  ConsumerState<RehearsalDetailsPage> createState() => _RehearsalDetailsPageState();
+  ConsumerState<RehearsalDetailsPage> createState() =>
+      _RehearsalDetailsPageState();
 }
 
 class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
@@ -43,7 +41,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
     try {
       final rehearsalsRepo = ref.read(rehearsalsRepositoryProvider);
       final rehearsal = await rehearsalsRepo.getById(widget.rehearsalId);
-      
+
       setState(() {
         _rehearsal = rehearsal;
         _isLoading = false;
@@ -59,9 +57,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: LoadingState(),
-      );
+      return const Scaffold(body: LoadingState());
     }
 
     if (_error != null || _rehearsal == null) {
@@ -71,11 +67,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: AppColors.statusBusy,
-              ),
+              Icon(Icons.error_outline, size: 64, color: AppColors.statusBusy),
               const SizedBox(height: AppSpacing.lg),
               Text(
                 _error ?? context.l10n.rehearsalNotFound,
@@ -94,8 +86,14 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
     }
 
     final rehearsal = _rehearsal!;
-    final startTime = DateTime.fromMillisecondsSinceEpoch(rehearsal.startsAtUtc, isUtc: true).toLocal();
-    final endTime = DateTime.fromMillisecondsSinceEpoch(rehearsal.endsAtUtc, isUtc: true).toLocal();
+    final startTime = DateTime.fromMillisecondsSinceEpoch(
+      rehearsal.startsAtUtc,
+      isUtc: true,
+    ).toLocal();
+    final endTime = DateTime.fromMillisecondsSinceEpoch(
+      rehearsal.endsAtUtc,
+      isUtc: true,
+    ).toLocal();
 
     return Scaffold(
       appBar: AppBar(
@@ -148,7 +146,10 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
                       // Date
                       Row(
                         children: [
-                          Icon(Icons.calendar_today, color: AppColors.primaryPurple),
+                          Icon(
+                            Icons.calendar_today,
+                            color: AppColors.primaryPurple,
+                          ),
                           const SizedBox(width: AppSpacing.sm),
                           Text(
                             _formatDate(startTime),
@@ -223,10 +224,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
 
                 // Notes
                 if (rehearsal.note != null && rehearsal.note!.isNotEmpty) ...[
-                  Text(
-                    context.l10n.notes,
-                    style: AppTypography.headingMedium,
-                  ),
+                  Text(context.l10n.notes, style: AppTypography.headingMedium),
                   const SizedBox(height: AppSpacing.md),
                   Container(
                     width: double.infinity,
@@ -254,10 +252,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
                 ],
 
                 // Metadata
-                Text(
-                  context.l10n.details,
-                  style: AppTypography.headingMedium,
-                ),
+                Text(context.l10n.details, style: AppTypography.headingMedium),
                 const SizedBox(height: AppSpacing.md),
                 Container(
                   width: double.infinity,
@@ -317,7 +312,7 @@ class _RehearsalDetailsPageState extends ConsumerState<RehearsalDetailsPage> {
   String _formatDuration(Duration duration) {
     final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
-    
+
     if (hours > 0) {
       return '${hours}h ${minutes}m';
     } else {

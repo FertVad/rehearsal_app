@@ -17,7 +17,7 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(navigationIndexProvider);
-    
+
     return Scaffold(
       body: IndexedStack(
         index: currentIndex,
@@ -66,4 +66,3 @@ class AppShell extends ConsumerWidget {
     );
   }
 }
-

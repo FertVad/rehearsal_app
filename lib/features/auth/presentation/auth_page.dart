@@ -17,7 +17,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _displayNameController = TextEditingController();
-  
+
   bool _isSignUp = false;
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -35,7 +35,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    
+
     // Listen to auth state changes for UI updates only (router handles navigation)
     ref.listen<AsyncValue<dynamic>>(authNotifierProvider, (previous, next) {
       next.when(
@@ -109,25 +109,31 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                           const SizedBox(height: 16),
                           Text(
                             'Rehearsal App',
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           const SizedBox(height: 32),
-                          
+
                           // Toggle between Sign In and Sign Up
                           Row(
                             children: [
                               Expanded(
                                 child: GestureDetector(
-                                  onTap: () => setState(() => _isSignUp = false),
+                                  onTap: () =>
+                                      setState(() => _isSignUp = false),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
                                     decoration: BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
-                                          color: !_isSignUp ? AppColors.primaryPurple : Colors.transparent,
+                                          color: !_isSignUp
+                                              ? AppColors.primaryPurple
+                                              : Colors.transparent,
                                           width: 2,
                                         ),
                                       ),
@@ -136,8 +142,14 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                                       l10n.signIn,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        color: !_isSignUp ? AppColors.primaryPurple : AppColors.white.withAlpha(178), // 0.7 * 255
-                                        fontWeight: !_isSignUp ? FontWeight.bold : FontWeight.normal,
+                                        color: !_isSignUp
+                                            ? AppColors.primaryPurple
+                                            : AppColors.white.withAlpha(
+                                                178,
+                                              ), // 0.7 * 255
+                                        fontWeight: !_isSignUp
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
                                       ),
                                     ),
                                   ),
@@ -147,11 +159,15 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                                 child: GestureDetector(
                                   onTap: () => setState(() => _isSignUp = true),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
                                     decoration: BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
-                                          color: _isSignUp ? AppColors.primaryPurple : Colors.transparent,
+                                          color: _isSignUp
+                                              ? AppColors.primaryPurple
+                                              : Colors.transparent,
                                           width: 2,
                                         ),
                                       ),
@@ -160,8 +176,14 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                                       l10n.signUp,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        color: _isSignUp ? AppColors.primaryPurple : AppColors.white.withAlpha(178), // 0.7 * 255
-                                        fontWeight: _isSignUp ? FontWeight.bold : FontWeight.normal,
+                                        color: _isSignUp
+                                            ? AppColors.primaryPurple
+                                            : AppColors.white.withAlpha(
+                                                178,
+                                              ), // 0.7 * 255
+                                        fontWeight: _isSignUp
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
                                       ),
                                     ),
                                   ),
@@ -170,7 +192,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                             ],
                           ),
                           const SizedBox(height: 32),
-                          
+
                           // Form fields
                           if (_isSignUp) ...[
                             TextFormField(
@@ -180,7 +202,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                                 prefixIcon: const Icon(Icons.person),
                               ),
                               validator: (value) {
-                                if (_isSignUp && (value == null || value.trim().isEmpty)) {
+                                if (_isSignUp &&
+                                    (value == null || value.trim().isEmpty)) {
                                   return l10n.pleaseEnterDisplayName;
                                 }
                                 return null;
@@ -188,7 +211,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                             ),
                             const SizedBox(height: 16),
                           ],
-                          
+
                           TextFormField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
@@ -207,7 +230,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                             },
                           ),
                           const SizedBox(height: 16),
-                          
+
                           TextFormField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
@@ -215,8 +238,14 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                               labelText: l10n.password,
                               prefixIcon: const Icon(Icons.lock),
                               suffixIcon: IconButton(
-                                icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword,
+                                ),
                               ),
                             ),
                             validator: (value) {
@@ -229,7 +258,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                               return null;
                             },
                           ),
-                          
+
                           if (_isSignUp) ...[
                             const SizedBox(height: 16),
                             TextFormField(
@@ -239,21 +268,29 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                                 labelText: l10n.confirmPassword,
                                 prefixIcon: const Icon(Icons.lock),
                                 suffixIcon: IconButton(
-                                  icon: Icon(_obscureConfirmPassword ? Icons.visibility : Icons.visibility_off),
-                                  onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                                  icon: Icon(
+                                    _obscureConfirmPassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                  ),
+                                  onPressed: () => setState(
+                                    () => _obscureConfirmPassword =
+                                        !_obscureConfirmPassword,
+                                  ),
                                 ),
                               ),
                               validator: (value) {
-                                if (_isSignUp && value != _passwordController.text) {
+                                if (_isSignUp &&
+                                    value != _passwordController.text) {
                                   return l10n.passwordsDoNotMatch;
                                 }
                                 return null;
                               },
                             ),
                           ],
-                          
+
                           const SizedBox(height: 24),
-                          
+
                           // Submit button
                           SizedBox(
                             width: double.infinity,
@@ -263,44 +300,54 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                                   ? const SizedBox(
                                       height: 20,
                                       width: 20,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
                                     )
                                   : Text(_isSignUp ? l10n.signUp : l10n.signIn),
                             ),
                           ),
-                          
+
                           if (!_isSignUp) ...[
                             const SizedBox(height: 16),
                             TextButton(
-                              onPressed: _isLoading ? null : _handleForgotPassword,
+                              onPressed: _isLoading
+                                  ? null
+                                  : _handleForgotPassword,
                               child: Text(l10n.forgotPassword),
                             ),
                           ],
-                          
+
                           const SizedBox(height: 24),
-                          
+
                           // Divider
                           Row(
                             children: [
                               const Expanded(child: Divider()),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
                                 child: Text(
                                   l10n.or,
-                                  style: TextStyle(color: AppColors.white.withAlpha(178)), // 0.7 * 255
+                                  style: TextStyle(
+                                    color: AppColors.white.withAlpha(178),
+                                  ), // 0.7 * 255
                                 ),
                               ),
                               const Expanded(child: Divider()),
                             ],
                           ),
-                          
+
                           const SizedBox(height: 24),
-                          
+
                           // Google Sign In button
                           SizedBox(
                             width: double.infinity,
                             child: OutlinedButton.icon(
-                              onPressed: _isLoading ? null : _handleGoogleSignIn,
+                              onPressed: _isLoading
+                                  ? null
+                                  : _handleGoogleSignIn,
                               icon: Icon(Icons.g_mobiledata, size: 24),
                               label: Text(l10n.continueWithGoogle),
                             ),
@@ -320,16 +367,16 @@ class _AuthPageState extends ConsumerState<AuthPage> {
 
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     final authNotifier = ref.read(authNotifierProvider.notifier);
     String? error;
-    
+
     if (_isSignUp) {
       error = await authNotifier.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,
-        displayName: _displayNameController.text.trim().isEmpty 
-            ? null 
+        displayName: _displayNameController.text.trim().isEmpty
+            ? null
             : _displayNameController.text.trim(),
       );
     } else {
@@ -338,13 +385,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
         password: _passwordController.text,
       );
     }
-    
+
     if (error != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: AppColors.statusBusy,
-        ),
+        SnackBar(content: Text(error), backgroundColor: AppColors.statusBusy),
       );
     }
   }
@@ -352,13 +396,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   Future<void> _handleGoogleSignIn() async {
     final authNotifier = ref.read(authNotifierProvider.notifier);
     final error = await authNotifier.signInWithGoogle();
-    
+
     if (error != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: AppColors.statusBusy,
-        ),
+        SnackBar(content: Text(error), backgroundColor: AppColors.statusBusy),
       );
     }
   }
@@ -373,17 +414,19 @@ class _AuthPageState extends ConsumerState<AuthPage> {
       );
       return;
     }
-    
+
     final authNotifier = ref.read(authNotifierProvider.notifier);
-    final error = await authNotifier.resetPassword(email: _emailController.text.trim());
-    
+    final error = await authNotifier.resetPassword(
+      email: _emailController.text.trim(),
+    );
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            error ?? context.l10n.passwordResetEmailSent,
-          ),
-          backgroundColor: error != null ? AppColors.statusBusy : AppColors.statusFree,
+          content: Text(error ?? context.l10n.passwordResetEmailSent),
+          backgroundColor: error != null
+              ? AppColors.statusBusy
+              : AppColors.statusFree,
         ),
       );
     }

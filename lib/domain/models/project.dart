@@ -12,6 +12,9 @@ class Project {
     this.deletedAtUtc,
     this.ownerId,
     this.memberCount = 1,
+    this.inviteCode,
+    this.inviteSlug,
+    this.inviteActive = true,
   });
 
   final String id;
@@ -26,13 +29,16 @@ class Project {
   final int? deletedAtUtc;
   final String? ownerId;
   final int memberCount;
+  final String? inviteCode;
+  final String? inviteSlug;
+  final bool inviteActive;
 
   String get title => name;
 
   DateTime get createdAt => DateTime.fromMillisecondsSinceEpoch(createdAtUtc);
   DateTime get updatedAt => DateTime.fromMillisecondsSinceEpoch(updatedAtUtc);
-  DateTime? get deletedAt => deletedAtUtc != null 
-      ? DateTime.fromMillisecondsSinceEpoch(deletedAtUtc!) 
+  DateTime? get deletedAt => deletedAtUtc != null
+      ? DateTime.fromMillisecondsSinceEpoch(deletedAtUtc!)
       : null;
 
   DateTime get lastActivity => updatedAt;
@@ -50,6 +56,9 @@ class Project {
     int? deletedAtUtc,
     String? ownerId,
     int? memberCount,
+    String? inviteCode,
+    String? inviteSlug,
+    bool? inviteActive,
   }) {
     return Project(
       id: id ?? this.id,
@@ -64,6 +73,9 @@ class Project {
       deletedAtUtc: deletedAtUtc ?? this.deletedAtUtc,
       ownerId: ownerId ?? this.ownerId,
       memberCount: memberCount ?? this.memberCount,
+      inviteCode: inviteCode ?? this.inviteCode,
+      inviteSlug: inviteSlug ?? this.inviteSlug,
+      inviteActive: inviteActive ?? this.inviteActive,
     );
   }
 

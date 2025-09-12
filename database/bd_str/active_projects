@@ -1,0 +1,26 @@
+create view public.active_projects as
+select
+  p.id,
+  p.name,
+  p.description,
+  p.creator_id,
+  p.invite_code,
+  p.start_date,
+  p.end_date,
+  p.timezone,
+  p.is_active,
+  p.created_at,
+  p.updated_at,
+  p.deleted_at,
+  count(pm.user_id) as member_count,
+  u.full_name as creator_name
+from
+  projects p
+  left join project_members pm on p.id = pm.project_id
+  left join users u on p.creator_id = u.id
+where
+  p.deleted_at is null
+  and p.is_active = true
+group by
+  p.id,
+  u.full_name;

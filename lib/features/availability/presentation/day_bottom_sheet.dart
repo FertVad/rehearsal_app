@@ -84,10 +84,36 @@ class _DayBottomSheetState extends ConsumerState<DayBottomSheet> {
         _showError();
         return;
       }
+      // Use the local timezone by getting it from the timezone package
+      // On web, this will default to the browser's timezone
+      String localTimezoneName = 'UTC'; // default fallback
+      try {
+        localTimezoneName = tz.local.name;
+      } catch (e) {
+        // Try to determine timezone from offset if tz.local fails
+        final now = DateTime.now();
+        final offset = now.timeZoneOffset;
+
+        // Map common offsets to IANA timezone names
+        // This is a simplified mapping for the most common cases
+        if (offset.inHours == 2 || offset.inHours == 3) {
+          // Israel timezone (UTC+2/+3 depending on DST)
+          localTimezoneName = 'Asia/Jerusalem';
+        } else if (offset.inHours >= -8 && offset.inHours <= -5) {
+          // US timezones
+          localTimezoneName = 'America/New_York';
+        } else if (offset.inHours >= 1 && offset.inHours <= 2) {
+          // European timezones
+          localTimezoneName = 'Europe/Berlin';
+        } else {
+          localTimezoneName = 'UTC';
+        }
+      }
+
       await controller.setIntervals(
         dayLocal: widget.dayLocal,
         intervalsLocal: _intervals,
-        tz: tz.local.name,
+        tz: localTimezoneName,
       );
       if (!mounted) return;
     } else {

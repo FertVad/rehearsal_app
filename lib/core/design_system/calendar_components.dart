@@ -91,7 +91,10 @@ class CalendarDayButton extends StatelessWidget {
   Widget build(BuildContext context) {
     // Проверка на сегодняшний день
     final today = DateTime.now();
-    final isToday = day.year == today.year && day.month == today.month && day.day == today.day;
+    final isToday =
+        day.year == today.year &&
+        day.month == today.month &&
+        day.day == today.day;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -99,7 +102,9 @@ class CalendarDayButton extends StatelessWidget {
         // Weekday кратко (Mon/Tue/…)
         Text(
           _weekdayShort(day),
-          style: AppTypography.calendarWeekday.copyWith(color: Colors.white.withValues(alpha: 0.85)),
+          style: AppTypography.calendarWeekday.copyWith(
+            color: Colors.white.withValues(alpha: 0.85),
+          ),
         ),
         const SizedBox(height: AppSpacing.xs),
 
@@ -113,14 +118,18 @@ class CalendarDayButton extends StatelessWidget {
               selected: isSelected,
               isToday: isToday,
               child: GestureDetector(
-                onTap: onTap != null ? () {
-                  AppHaptics.selection();
-                  onTap!();
-                } : null,
-                onLongPress: onLongPress != null ? () {
-                  AppHaptics.light();
-                  onLongPress!();
-                } : null,
+                onTap: onTap != null
+                    ? () {
+                        AppHaptics.selection();
+                        onTap!();
+                      }
+                    : null,
+                onLongPress: onLongPress != null
+                    ? () {
+                        AppHaptics.light();
+                        onLongPress!();
+                      }
+                    : null,
                 child: AppGlass(
                   size: GlassSize.small,
                   style: GlassStyle.light,
@@ -161,8 +170,8 @@ class CalendarDayButton extends StatelessWidget {
 /// было ощущение стеклянного объёма.
 class _DropletSurface extends StatelessWidget {
   const _DropletSurface({
-    required this.child, 
-    required this.selected, 
+    required this.child,
+    required this.selected,
     this.isToday = false,
   });
 
@@ -173,12 +182,12 @@ class _DropletSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color borderBase = Colors.white.withValues(alpha: 0.18);
-    
+
     // Определяем стиль в зависимости от состояния
     Color borderColor = borderBase;
     double borderWidth = 0.8;
     List<BoxShadow>? boxShadow;
-    
+
     if (selected) {
       // Выбранный день: свечение (без бордера)
       borderColor = borderBase;
@@ -206,10 +215,7 @@ class _DropletSurface extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: borderColor,
-          width: borderWidth,
-        ),
+        border: Border.all(color: borderColor, width: borderWidth),
         boxShadow: boxShadow,
       ),
       child: child,

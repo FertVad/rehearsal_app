@@ -44,13 +44,8 @@ class ImprovedDayCell extends StatelessWidget {
           child: Stack(
             children: [
               // Day number
-              Center(
-                child: Text(
-                  '${date.day}',
-                  style: _getTextStyle(),
-                ),
-              ),
-              
+              Center(child: Text('${date.day}', style: _getTextStyle())),
+
               // Event indicator
               if (hasEvents)
                 Positioned(
@@ -65,7 +60,7 @@ class ImprovedDayCell extends StatelessWidget {
                     ),
                   ),
                 ),
-              
+
               // Availability status
               if (availabilityStatus != null)
                 Positioned(
@@ -76,7 +71,7 @@ class ImprovedDayCell extends StatelessWidget {
                     child: StatusIndicator(status: availabilityStatus!),
                   ),
                 ),
-              
+
               // Today indicator
               if (isToday)
                 Positioned(
@@ -111,10 +106,7 @@ class ImprovedDayCell extends StatelessWidget {
 
   Border? _getBorder() {
     if (isSelected) {
-      return Border.all(
-        color: AppColors.primaryPurple,
-        width: 2,
-      );
+      return Border.all(color: AppColors.primaryPurple, width: 2);
     }
     if (isToday) {
       return Border.all(

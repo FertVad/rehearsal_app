@@ -7,7 +7,6 @@ import 'package:rehearsal_app/core/utils/logger.dart';
 import 'user_state.dart';
 
 class UserController extends Notifier<UserState> {
-
   @override
   UserState build() {
     _initializeUser();
@@ -19,7 +18,7 @@ class UserController extends Notifier<UserState> {
       // Check if user is authenticated via Supabase
       final authService = ref.read(authServiceProvider);
       final supabaseUser = authService.currentUser;
-      
+
       if (supabaseUser != null) {
         // User is authenticated, load their profile
         await _loadUser(supabaseUser.id);
@@ -41,44 +40,54 @@ class UserController extends Notifier<UserState> {
 
   Future<void> _loadUser(String userId) async {
     final usersRepo = ref.read(usersRepositoryProvider);
-    
+
     try {
       Logger.debug('UserController._loadUser: Loading user with id: $userId');
       final user = await usersRepo.getById(userId);
 
       if (user != null) {
-        Logger.info('UserController._loadUser: User loaded successfully: ${user.name}');
+        Logger.info(
+          'UserController._loadUser: User loaded successfully: ${user.name}',
+        );
         state = state.copyWith(currentUser: user, isLoading: false);
       } else {
-        Logger.info('UserController._loadUser: User not found, attempting to create profile');
-        
+        Logger.info(
+          'UserController._loadUser: User not found, attempting to create profile',
+        );
+
         // Check authentication state
         final authService = ref.read(authServiceProvider);
         final supabaseUser = authService.currentUser;
-        
-        Logger.debug('UserController._loadUser: Current Supabase user: ${supabaseUser?.id}, email: ${supabaseUser?.email}');
-        
+
+        Logger.debug(
+          'UserController._loadUser: Current Supabase user: ${supabaseUser?.id}, email: ${supabaseUser?.email}',
+        );
+
         if (supabaseUser != null) {
           // Add small delay to ensure auth session is fully established
           await Future.delayed(const Duration(milliseconds: 500));
-          
+
           // Ensure profile exists using auth service
           await authService.ensureUserProfile(
             userId: supabaseUser.id,
             email: supabaseUser.email ?? 'unknown@example.com',
             displayName: supabaseUser.userMetadata?['display_name'],
           );
-          
+
           // Add another small delay before trying to load
           await Future.delayed(const Duration(milliseconds: 200));
-          
+
           // Try loading again after ensuring profile exists
           final user = await usersRepo.getById(userId);
           if (user != null) {
-            Logger.info('UserController._loadUser: Successfully loaded user after profile creation');
+            Logger.info(
+              'UserController._loadUser: Successfully loaded user after profile creation',
+            );
             state = state.copyWith(currentUser: user, isLoading: false);
           } else {
-            Logger.warning('UserController._loadUser: Still could not load user, using fallback');
+            Logger.warning(
+              'UserController._loadUser: Still could not load user, using fallback',
+            );
             // Create a temporary user object with known data
             final fallbackUser = await _createFallbackUser(supabaseUser);
             state = state.copyWith(currentUser: fallbackUser, isLoading: false);
@@ -100,19 +109,21 @@ class UserController extends Notifier<UserState> {
     }
   }
 
-
   Future<domain.User> _createFallbackUser(supabase.User supabaseUser) async {
     // Create a fallback user object based on Supabase auth data
     // This ensures the user can use the app even if profile creation fails
     final now = DateTime.now();
-    
+
     return domain.User(
       id: supabaseUser.id,
       createdAtUtc: now.millisecondsSinceEpoch,
       updatedAtUtc: now.millisecondsSinceEpoch,
       deletedAtUtc: null,
       lastWriter: 'fallback:auth',
-      name: supabaseUser.userMetadata?['full_name'] ?? supabaseUser.email?.split('@')[0] ?? 'Unknown User',
+      name:
+          supabaseUser.userMetadata?['full_name'] ??
+          supabaseUser.email?.split('@')[0] ??
+          'Unknown User',
       avatarUrl: supabaseUser.userMetadata?['avatar_url'],
       tz: 'UTC',
       metadata: 'fallback_user',

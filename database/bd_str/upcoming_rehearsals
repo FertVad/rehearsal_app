@@ -1,0 +1,34 @@
+create view public.upcoming_rehearsals as
+select
+  r.id,
+  r.project_id,
+  r.start_datetime,
+  r.end_datetime,
+  r.location,
+  r.scene_details,
+  r.created_by,
+  r.status,
+  r.created_at,
+  r.updated_at,
+  r.deleted_at,
+  p.name as project_name,
+  p.timezone as project_timezone,
+  u.full_name as created_by_name,
+  count(rp.user_id) as participant_count
+from
+  rehearsals r
+  join projects p on r.project_id = p.id
+  join users u on r.created_by = u.id
+  left join rehearsal_participants rp on r.id = rp.rehearsal_id
+  and rp.rsvp_status::text = 'attending'::text
+where
+  r.deleted_at is null
+  and r.status::text <> 'cancelled'::text
+  and r.start_datetime > now()
+group by
+  r.id,
+  p.name,
+  p.timezone,
+  u.full_name
+order by
+  r.start_datetime;

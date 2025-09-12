@@ -5,9 +5,7 @@ import 'package:rehearsal_app/app.dart';
 import 'package:rehearsal_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('app starts with bottom navigation', (
-    WidgetTester tester,
-  ) async {
+  testWidgets('app starts with bottom navigation', (WidgetTester tester) async {
     await tester.pumpWidget(ProviderScope(child: App()));
     await tester.pumpAndSettle();
 

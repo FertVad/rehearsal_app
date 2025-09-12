@@ -45,10 +45,7 @@ void main() {
       expect(statusFor(dayPartial), AvailabilityStatus.partial);
 
       final dayNone = DateTime(2024, 1, 13);
-      expect(
-        find.byKey(ValueKey('dot-${dateUtc00(dayNone)}')),
-        findsNothing,
-      );
+      expect(find.byKey(ValueKey('dot-${dateUtc00(dayNone)}')), findsNothing);
     });
 
     testWidgets('tapping day triggers callback', (tester) async {

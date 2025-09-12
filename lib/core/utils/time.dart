@@ -33,7 +33,10 @@ int dateUtc00(DateTime anyLocal) {
     endLocal.hour,
     endLocal.minute,
   );
-  return (startUtc: start.millisecondsSinceEpoch, endUtc: end.millisecondsSinceEpoch);
+  return (
+    startUtc: start.millisecondsSinceEpoch,
+    endUtc: end.millisecondsSinceEpoch,
+  );
 }
 
 /// Converts a UTC interval to local [TimeOfDay] values in [tzName].

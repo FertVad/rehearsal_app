@@ -9,7 +9,7 @@ class SupabaseConfig {
     }
     return envUrl;
   }
-  
+
   static String get anonKey {
     final envKey = dotenv.env['SUPABASE_ANON_KEY'];
     if (envKey == null || envKey.isEmpty) {
@@ -17,17 +17,17 @@ class SupabaseConfig {
     }
     return envKey;
   }
-  
+
   static Future<void> initialize() async {
     // Загружаем .env файл
     await dotenv.load(fileName: ".env");
-    
+
     await Supabase.initialize(
       url: url,
       anonKey: anonKey,
       debug: dotenv.env['FLUTTER_ENV'] == 'development',
     );
   }
-  
+
   static SupabaseClient get client => Supabase.instance.client;
 }

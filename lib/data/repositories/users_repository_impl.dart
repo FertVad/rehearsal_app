@@ -7,12 +7,11 @@ import 'package:rehearsal_app/domain/models/user.dart';
 
 class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
   static const String _tableName = 'users';
-  
+
   final SupabaseDataSource _dataSource;
 
-  UsersRepositoryImpl({SupabaseDataSource? dataSource}) 
-      : _dataSource = dataSource ?? SupabaseDataSource();
-
+  UsersRepositoryImpl({SupabaseDataSource? dataSource})
+    : _dataSource = dataSource ?? SupabaseDataSource();
 
   @override
   Future<User?> getById(String id) async {
@@ -50,7 +49,9 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
           excludeDeleted: true,
         );
 
-        return response.map<User>((json) => _mapToUser(json, lastWriter: 'supabase:user')).toList();
+        return response
+            .map<User>((json) => _mapToUser(json, lastWriter: 'supabase:user'))
+            .toList();
       },
       operationName: 'LIST',
       tableName: _tableName,
@@ -78,11 +79,7 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
         Logger.debug('Current auth user: ${_dataSource.currentUserId}');
 
         if (updateData.isNotEmpty) {
-          await _dataSource.update(
-            table: _tableName,
-            id: id,
-            data: updateData,
-          );
+          await _dataSource.update(table: _tableName, id: id, data: updateData);
         }
       },
       operationName: 'UPDATE',
@@ -92,13 +89,13 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
   }
 
   @override
-  Future<void> softDelete(String id, {String lastWriter = 'device:local'}) async {
+  Future<void> softDelete(
+    String id, {
+    String lastWriter = 'device:local',
+  }) async {
     await safeExecute(
       () async {
-        await _dataSource.softDelete(
-          table: _tableName,
-          id: id,
-        );
+        await _dataSource.softDelete(table: _tableName, id: id);
       },
       operationName: 'SOFT_DELETE',
       tableName: _tableName,
@@ -129,15 +126,14 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
   /// Format notification settings JSONB field for metadata
   String? _formatNotificationSettings(dynamic notificationSettings) {
     if (notificationSettings == null) return null;
-    
+
     if (notificationSettings is Map) {
       // Convert map to JSON string for metadata field
       return dart.jsonEncode(notificationSettings);
     }
-    
+
     return notificationSettings.toString();
   }
-
 
   /// Update user notification settings specifically
   Future<void> updateNotificationSettings({
@@ -158,5 +154,4 @@ class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
       recordId: id,
     );
   }
-
 }

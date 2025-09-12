@@ -6,6 +6,7 @@ import 'package:rehearsal_app/core/design_system/app_typography.dart';
 import 'package:rehearsal_app/core/widgets/loading_state.dart';
 import 'package:rehearsal_app/features/dashboard/widgets/dash_background.dart';
 import 'package:rehearsal_app/core/providers/index.dart';
+import 'package:rehearsal_app/core/settings/user_settings.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 class UserProfilePage extends ConsumerStatefulWidget {
@@ -29,20 +30,16 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
   @override
   Widget build(BuildContext context) {
     final userState = ref.watch(authAwareUserControllerProvider);
-    
+
     if (userState.isLoading) {
-      return const Scaffold(
-        body: LoadingState(),
-      );
+      return const Scaffold(body: LoadingState());
     }
 
     final user = userState.currentUser;
     if (user == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Profile')),
-        body: Center(
-          child: Text(context.l10n.noUserFound),
-        ),
+        body: Center(child: Text(context.l10n.noUserFound)),
       );
     }
 
@@ -56,10 +53,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
       appBar: AppBar(
         title: Text(context.l10n.navProfile),
         actions: [
-          TextButton(
-            onPressed: _saveProfile,
-            child: Text(context.l10n.save),
-          ),
+          TextButton(onPressed: _saveProfile, child: Text(context.l10n.save)),
         ],
       ),
       body: DashBackground(
@@ -123,7 +117,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                 ),
                 const SizedBox(height: AppSpacing.lg),
 
-                // Timezone Field  
+                // Timezone Field
                 TextFormField(
                   controller: _timezoneController,
                   decoration: InputDecoration(
@@ -135,12 +129,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                 const SizedBox(height: AppSpacing.xl),
 
                 // Language Selector
-                Text(
-                  'Language / Язык',
-                  style: AppTypography.headingMedium,
-                ),
+                Text('Language / Язык', style: AppTypography.headingMedium),
                 const SizedBox(height: AppSpacing.md),
-                
+
                 Container(
                   padding: AppSpacing.paddingMD,
                   decoration: BoxDecoration(
@@ -154,24 +145,83 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                         title: 'English',
                         value: const Locale('en'),
                         currentValue: ref.watch(localeProvider),
-                        onChanged: (locale) => ref.read(localeProvider.notifier).changeLocale(locale),
+                        onChanged: (locale) => ref
+                            .read(localeProvider.notifier)
+                            .changeLocale(locale),
                       ),
                       _LanguageOption(
                         title: 'Русский',
                         value: const Locale('ru'),
                         currentValue: ref.watch(localeProvider),
-                        onChanged: (locale) => ref.read(localeProvider.notifier).changeLocale(locale),
+                        onChanged: (locale) => ref
+                            .read(localeProvider.notifier)
+                            .changeLocale(locale),
                       ),
                       _LanguageOption(
                         title: 'System / Системный',
                         value: null,
                         currentValue: ref.watch(localeProvider),
-                        onChanged: (locale) => ref.read(localeProvider.notifier).changeLocale(locale),
+                        onChanged: (locale) => ref
+                            .read(localeProvider.notifier)
+                            .changeLocale(locale),
                       ),
                     ],
                   ),
                 ),
-                
+
+                const SizedBox(height: AppSpacing.xl),
+
+                // Theme Selector
+                Text('Theme / Тема', style: AppTypography.headingMedium),
+                const SizedBox(height: AppSpacing.md),
+
+                Container(
+                  padding: AppSpacing.paddingMD,
+                  decoration: BoxDecoration(
+                    color: AppColors.glassLightBase,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+                    border: Border.all(color: AppColors.glassLightStroke),
+                  ),
+                  child: Consumer(
+                    builder: (context, ref, child) {
+                      final settingsAsync = ref.watch(settingsProvider);
+                      return settingsAsync.when(
+                        data: (settings) => Column(
+                          children: [
+                            _ThemeOption(
+                              title: 'Light / Светлая',
+                              value: AppTheme.light,
+                              currentValue: settings.theme,
+                              onChanged: (theme) => ref
+                                  .read(settingsProvider.notifier)
+                                  .updateTheme(theme),
+                            ),
+                            _ThemeOption(
+                              title: 'Dark / Темная',
+                              value: AppTheme.dark,
+                              currentValue: settings.theme,
+                              onChanged: (theme) => ref
+                                  .read(settingsProvider.notifier)
+                                  .updateTheme(theme),
+                            ),
+                            _ThemeOption(
+                              title: 'System / Системная',
+                              value: AppTheme.system,
+                              currentValue: settings.theme,
+                              onChanged: (theme) => ref
+                                  .read(settingsProvider.notifier)
+                                  .updateTheme(theme),
+                            ),
+                          ],
+                        ),
+                        loading: () => const CircularProgressIndicator(),
+                        error: (error, stack) =>
+                            Text('Error loading theme settings'),
+                      );
+                    },
+                  ),
+                ),
+
                 const SizedBox(height: AppSpacing.xl),
 
                 // Sign Out Button
@@ -212,7 +262,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
-                          onPressed: () => ref.read(userControllerProvider.notifier).clearError(),
+                          onPressed: () => ref
+                              .read(userControllerProvider.notifier)
+                              .clearError(),
                         ),
                       ],
                     ),
@@ -226,16 +278,21 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
   }
 
   void _saveProfile() {
-    ref.read(userControllerProvider.notifier).updateProfile(
-          name: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
-          timezone: _timezoneController.text.trim().isEmpty ? null : _timezoneController.text.trim(),
+    ref
+        .read(userControllerProvider.notifier)
+        .updateProfile(
+          name: _nameController.text.trim().isEmpty
+              ? null
+              : _nameController.text.trim(),
+          timezone: _timezoneController.text.trim().isEmpty
+              ? null
+              : _timezoneController.text.trim(),
         );
   }
 
-
   void _signOut(BuildContext context) async {
     final messenger = ScaffoldMessenger.of(context);
-    
+
     // Show confirmation dialog
     final shouldSignOut = await showDialog<bool>(
       context: context,
@@ -301,23 +358,67 @@ class _LanguageOption extends StatelessWidget {
           height: 20,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(
-              color: AppColors.primaryPurple,
-              width: 2,
-            ),
+            border: Border.all(color: AppColors.primaryPurple, width: 2),
           ),
-          child: _isSelected 
-            ? Center(
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.primaryPurple,
+          child: _isSelected
+              ? Center(
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.primaryPurple,
+                    ),
                   ),
-                ),
-              )
-            : null,
+                )
+              : null,
+        ),
+      ),
+      onTap: () => onChanged(value),
+    );
+  }
+
+  bool get _isSelected => value == currentValue;
+}
+
+class _ThemeOption extends StatelessWidget {
+  const _ThemeOption({
+    required this.title,
+    required this.value,
+    required this.currentValue,
+    required this.onChanged,
+  });
+
+  final String title;
+  final AppTheme value;
+  final AppTheme currentValue;
+  final ValueChanged<AppTheme> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(title),
+      leading: GestureDetector(
+        onTap: () => onChanged(value),
+        child: Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: AppColors.primaryPurple, width: 2),
+          ),
+          child: _isSelected
+              ? Center(
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.primaryPurple,
+                    ),
+                  ),
+                )
+              : null,
         ),
       ),
       onTap: () => onChanged(value),

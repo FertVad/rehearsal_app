@@ -43,10 +43,7 @@ class CalendarView extends StatelessWidget {
                   .map(
                     (day) => Expanded(
                       child: Center(
-                        child: Text(
-                          day,
-                          style: AppTypography.calendarWeekday,
-                        ),
+                        child: Text(day, style: AppTypography.calendarWeekday),
                       ),
                     ),
                   )
@@ -66,8 +63,9 @@ class CalendarView extends StatelessWidget {
     final lastDayOfMonth = DateTime(currentDate.year, currentDate.month + 1, 0);
     final firstDayOfWeek = firstDayOfMonth.weekday - 1;
     final startDate = firstDayOfMonth.subtract(Duration(days: firstDayOfWeek));
-    final endDate =
-        lastDayOfMonth.add(Duration(days: 7 - lastDayOfMonth.weekday));
+    final endDate = lastDayOfMonth.add(
+      Duration(days: 7 - lastDayOfMonth.weekday),
+    );
 
     final weeks = <Widget>[];
     DateTime current = startDate;
@@ -81,8 +79,9 @@ class CalendarView extends StatelessWidget {
         final isToday = _isSameDay(date, DateTime.now());
         final isSelected =
             selectedDate != null && _isSameDay(date, selectedDate!);
-        final hasEvents =
-            eventDates.any((eventDate) => _isSameDay(eventDate, date));
+        final hasEvents = eventDates.any(
+          (eventDate) => _isSameDay(eventDate, date),
+        );
         final availabilityStatus = availabilityMap[_normalizeDate(date)];
 
         week.add(
@@ -129,4 +128,3 @@ class CalendarView extends StatelessWidget {
     return DateTime(date.year, date.month, date.day);
   }
 }
-

@@ -37,4 +37,6 @@ abstract class ProjectsRepository {
   /// Lists all projects
   Future<List<Project>> listAll();
 
+  /// Gets a project by invite slug
+  Future<Project?> getByInviteSlug(String inviteSlug);
 }

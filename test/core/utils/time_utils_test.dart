@@ -11,7 +11,11 @@ void main() {
 
   test('dateUtc00 returns start of the day in UTC', () {
     final date = DateTime(2024, 3, 15, 12, 34);
-    final expected = DateTime(date.year, date.month, date.day).toUtc().millisecondsSinceEpoch;
+    final expected = DateTime(
+      date.year,
+      date.month,
+      date.day,
+    ).toUtc().millisecondsSinceEpoch;
     expect(dateUtc00(date), expected);
   });
 
@@ -24,13 +28,31 @@ void main() {
     final interval = toUtcInterval(day, startLocal, endLocal, tzName);
 
     final location = tz.getLocation(tzName);
-    final expectedStart = tz.TZDateTime(location, day.year, day.month, day.day, 1, 30);
-    final expectedEnd = tz.TZDateTime(location, day.year, day.month, day.day, 3, 30);
+    final expectedStart = tz.TZDateTime(
+      location,
+      day.year,
+      day.month,
+      day.day,
+      1,
+      30,
+    );
+    final expectedEnd = tz.TZDateTime(
+      location,
+      day.year,
+      day.month,
+      day.day,
+      3,
+      30,
+    );
 
     expect(interval.startUtc, expectedStart.millisecondsSinceEpoch);
     expect(interval.endUtc, expectedEnd.millisecondsSinceEpoch);
 
-    final roundTrip = fromUtcInterval(interval.startUtc, interval.endUtc, tzName);
+    final roundTrip = fromUtcInterval(
+      interval.startUtc,
+      interval.endUtc,
+      tzName,
+    );
     expect(roundTrip.startLocal, startLocal);
     expect(roundTrip.endLocal, endLocal);
   });
@@ -44,13 +66,31 @@ void main() {
     final interval = toUtcInterval(day, startLocal, endLocal, tzName);
 
     final location = tz.getLocation(tzName);
-    final expectedStart = tz.TZDateTime(location, day.year, day.month, day.day, 0, 30);
-    final expectedEnd = tz.TZDateTime(location, day.year, day.month, day.day, 2, 30);
+    final expectedStart = tz.TZDateTime(
+      location,
+      day.year,
+      day.month,
+      day.day,
+      0,
+      30,
+    );
+    final expectedEnd = tz.TZDateTime(
+      location,
+      day.year,
+      day.month,
+      day.day,
+      2,
+      30,
+    );
 
     expect(interval.startUtc, expectedStart.millisecondsSinceEpoch);
     expect(interval.endUtc, expectedEnd.millisecondsSinceEpoch);
 
-    final roundTrip = fromUtcInterval(interval.startUtc, interval.endUtc, tzName);
+    final roundTrip = fromUtcInterval(
+      interval.startUtc,
+      interval.endUtc,
+      tzName,
+    );
     expect(roundTrip.startLocal, startLocal);
     expect(roundTrip.endLocal, endLocal);
   });

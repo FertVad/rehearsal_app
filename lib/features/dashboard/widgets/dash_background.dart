@@ -16,4 +16,3 @@ class DashBackground extends StatelessWidget {
     );
   }
 }
-

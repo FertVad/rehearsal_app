@@ -11,11 +11,7 @@ class UserState {
   final bool isLoading;
   final String? error;
 
-  UserState copyWith({
-    User? currentUser,
-    bool? isLoading,
-    String? error,
-  }) {
+  UserState copyWith({User? currentUser, bool? isLoading, String? error}) {
     return UserState(
       currentUser: currentUser ?? this.currentUser,
       isLoading: isLoading ?? this.isLoading,

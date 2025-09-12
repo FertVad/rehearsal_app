@@ -13,9 +13,11 @@ class App extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     final themeMode = ref.watch(themeProvider);
     final router = ref.watch(routerProvider);
-    
+
     return MaterialApp.router(
-      key: ValueKey('app_${locale?.languageCode ?? 'system'}_${themeMode.name}'),
+      key: ValueKey(
+        'app_${locale?.languageCode ?? 'system'}_${themeMode.name}',
+      ),
       locale: locale,
       onGenerateTitle: (context) => context.l10n.appTitle,
       theme: buildAppTheme(),

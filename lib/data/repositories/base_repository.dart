@@ -13,10 +13,10 @@ abstract class BaseRepository {
   Map<String, int?> extractTimestamps(Map<String, dynamic> response) {
     final createdAt = DateTime.parse(response[createdAtField]);
     final updatedAt = DateTime.parse(response[updatedAtField]);
-    final deletedAt = response[deletedAtField] != null 
-        ? DateTime.parse(response[deletedAtField]) 
+    final deletedAt = response[deletedAtField] != null
+        ? DateTime.parse(response[deletedAtField])
         : null;
-    
+
     return {
       'createdAtUtc': createdAt.millisecondsSinceEpoch,
       'updatedAtUtc': updatedAt.millisecondsSinceEpoch,
@@ -96,7 +96,10 @@ abstract class BaseRepository {
   }
 
   /// Validate required fields before operations
-  void validateRequiredFields(Map<String, dynamic> fields, List<String> requiredFields) {
+  void validateRequiredFields(
+    Map<String, dynamic> fields,
+    List<String> requiredFields,
+  ) {
     for (final field in requiredFields) {
       if (!shouldIncludeField(fields[field])) {
         throw ArgumentError('Required field $field is missing or empty');

@@ -36,10 +36,7 @@ class ProjectCard extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [
-                        AppColors.primaryPurple,
-                        AppColors.primaryPink,
-                      ],
+                      colors: [AppColors.primaryPurple, AppColors.primaryPink],
                     ),
                     borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
                   ),
@@ -80,13 +77,10 @@ class ProjectCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  color: AppColors.textTertiary,
-                ),
+                Icon(Icons.chevron_right, color: AppColors.textTertiary),
               ],
             ),
-            
+
             if (description != null) ...[
               const SizedBox(height: AppSpacing.md),
               Text(
@@ -98,7 +92,7 @@ class ProjectCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            
+
             if (lastActivity != null) ...[
               const SizedBox(height: AppSpacing.md),
               Text(
@@ -117,7 +111,7 @@ class ProjectCard extends StatelessWidget {
   String _formatLastActivity(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays == 0) {
       return 'Today';
     } else if (difference.inDays == 1) {
@@ -129,4 +123,3 @@ class ProjectCard extends StatelessWidget {
     }
   }
 }
-

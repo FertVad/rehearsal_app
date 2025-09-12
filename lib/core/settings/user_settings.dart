@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// User settings stored in profiles.metadata
+/// User settings stored in users.notification_settings
 class UserSettings {
   const UserSettings({
     this.theme = AppTheme.system,

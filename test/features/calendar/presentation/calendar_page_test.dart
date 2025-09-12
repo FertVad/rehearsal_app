@@ -7,8 +7,9 @@ import 'package:rehearsal_app/features/calendar/widgets/calendar_view.dart';
 import 'package:rehearsal_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('calendar page shows title and navigation buttons',
-      (tester) async {
+  testWidgets('calendar page shows title and navigation buttons', (
+    tester,
+  ) async {
     // Load English strings for stable assertions
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
 

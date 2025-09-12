@@ -3,15 +3,17 @@ import 'package:rehearsal_app/data/repositories/base_repository.dart';
 import 'package:rehearsal_app/data/datasources/supabase_datasource.dart';
 import 'package:rehearsal_app/domain/repositories/projects_repository.dart';
 import 'package:rehearsal_app/domain/models/project.dart';
+import 'package:rehearsal_app/core/services/invite_service.dart';
 
-class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepository {
+class ProjectsRepositoryImpl extends BaseRepository
+    implements ProjectsRepository {
   static const String _tableName = 'projects';
   static const String _membersTableName = 'project_members';
-  
+
   final SupabaseDataSource _dataSource;
 
-  ProjectsRepositoryImpl({SupabaseDataSource? dataSource}) 
-      : _dataSource = dataSource ?? SupabaseDataSource();
+  ProjectsRepositoryImpl({SupabaseDataSource? dataSource})
+    : _dataSource = dataSource ?? SupabaseDataSource();
 
   @override
   Future<Project> create({
@@ -26,20 +28,34 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
   }) async {
     return await safeExecute(
       () async {
+        final creatorId = directorId ?? _dataSource.currentUserId;
+
+        // Generate invite slug from project name
+        String inviteSlug = InviteService.generateSlugFromName(name);
+
+        // Add timestamp suffix to ensure uniqueness
+        final timestamp = DateTime.now().millisecondsSinceEpoch
+            .toString()
+            .substring(8);
+        inviteSlug = InviteService.generateUniqueSlug(name, suffix: timestamp);
+
         final insertData = buildDataMap({
           'id': id,
           'name': name,
           if (description != null) 'description': description,
           if (startDate != null) 'start_date': startDate.toIso8601String(),
           if (endDate != null) 'end_date': endDate.toIso8601String(),
-          if (venue != null) 'location': venue,
-          'creator_id': directorId ?? _dataSource.currentUserId, // Use current user if not specified
+          'creator_id': creatorId,
           'is_active': true,
+          'invite_slug': inviteSlug,
+          'invite_active': true,
         });
 
         Logger.repository('CREATE', _tableName, recordId: id, data: insertData);
         Logger.debug('Current auth user: ${_dataSource.currentUserId}');
+        Logger.debug('Generated invite slug: $inviteSlug');
 
+        // Create the project (trigger automatically adds creator as member)
         final response = await _dataSource.insert(
           table: _tableName,
           data: insertData,
@@ -71,18 +87,13 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
           if (description != null) 'description': description,
           if (startDate != null) 'start_date': startDate.toIso8601String(),
           if (endDate != null) 'end_date': endDate.toIso8601String(),
-          if (venue != null) 'location': venue,
           if (directorId != null) 'creator_id': directorId,
         });
 
         Logger.repository('UPDATE', _tableName, recordId: id, data: updateData);
 
         if (updateData.isNotEmpty) {
-          await _dataSource.update(
-            table: _tableName,
-            id: id,
-            data: updateData,
-          );
+          await _dataSource.update(table: _tableName, id: id, data: updateData);
         }
 
         // Fetch updated project
@@ -108,10 +119,7 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
   Future<void> delete(String id) async {
     await safeExecute(
       () async {
-        await _dataSource.softDelete(
-          table: _tableName,
-          id: id,
-        );
+        await _dataSource.softDelete(table: _tableName, id: id);
       },
       operationName: 'SOFT_DELETE',
       tableName: _tableName,
@@ -157,7 +165,9 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
           excludeDeleted: false, // membership records don't have deleted_at
         );
 
-        final projectIds = membershipResponse.map<String>((json) => json['project_id'] as String).toList();
+        final projectIds = membershipResponse
+            .map<String>((json) => json['project_id'] as String)
+            .toList();
 
         if (projectIds.isEmpty) {
           return [];
@@ -172,9 +182,15 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
         );
 
         // Filter to only projects where user is a member
-        final filtered = response.where((json) => projectIds.contains(json['id'])).toList();
+        final filtered = response
+            .where((json) => projectIds.contains(json['id']))
+            .toList();
 
-        return filtered.map<Project>((json) => _mapToProject(json, lastWriter: 'supabase:project')).toList();
+        return filtered
+            .map<Project>(
+              (json) => _mapToProject(json, lastWriter: 'supabase:project'),
+            )
+            .toList();
       },
       operationName: 'LIST_FOR_USER',
       tableName: _tableName,
@@ -193,16 +209,51 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
           excludeDeleted: true,
         );
 
-        return response.map<Project>((json) => _mapToProject(json, lastWriter: 'supabase:project')).toList();
+        return response
+            .map<Project>(
+              (json) => _mapToProject(json, lastWriter: 'supabase:project'),
+            )
+            .toList();
       },
       operationName: 'LIST_ALL',
       tableName: _tableName,
     );
   }
 
+  @override
+  Future<Project?> getByInviteSlug(String inviteSlug) async {
+    return await safeExecute(
+      () async {
+        Logger.repository(
+          'GET_BY_INVITE_SLUG',
+          _tableName,
+          recordId: inviteSlug,
+        );
+
+        final response = await _dataSource.select(
+          table: _tableName,
+          filters: {'invite_slug': inviteSlug},
+          excludeDeleted: true,
+        );
+
+        if (response.isEmpty) {
+          Logger.debug('No project found for invite slug: $inviteSlug');
+          return null;
+        }
+
+        return _mapToProject(response.first, lastWriter: 'supabase:project');
+      },
+      operationName: 'GET_BY_INVITE_SLUG',
+      tableName: _tableName,
+      recordId: inviteSlug,
+    );
+  }
 
   /// Map Supabase response to Project domain model
-  Project _mapToProject(Map<String, dynamic> json, {required String lastWriter}) {
+  Project _mapToProject(
+    Map<String, dynamic> json, {
+    required String lastWriter,
+  }) {
     // Use base repository method for timestamp extraction
     final timestamps = extractTimestamps(json);
 
@@ -224,13 +275,16 @@ class ProjectsRepositoryImpl extends BaseRepository implements ProjectsRepositor
       description: json['description']?.toString(),
       startDate: startDate,
       endDate: endDate,
-      venue: json['location']?.toString(),
+      venue: null, // venue field not present in current DB schema
       directorId: json['creator_id'],
       createdAtUtc: timestamps['createdAtUtc']!,
       updatedAtUtc: timestamps['updatedAtUtc']!,
       deletedAtUtc: timestamps['deletedAtUtc'],
       ownerId: json['creator_id'],
       memberCount: json['member_count'] ?? 1,
+      inviteCode: json['invite_code'],
+      inviteSlug: json['invite_slug'],
+      inviteActive: json['invite_active'] ?? true,
     );
   }
 }

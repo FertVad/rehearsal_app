@@ -4,18 +4,20 @@ import 'package:rehearsal_app/core/utils/logger.dart';
 
 class AuthService {
   static SupabaseClient get _client => SupabaseConfig.client;
-  
+
   // Helper method to validate UUID format
   bool _isValidUUID(String uuid) {
-    return RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$').hasMatch(uuid);
+    return RegExp(
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+    ).hasMatch(uuid);
   }
-  
+
   // Get current user
   User? get currentUser => _client.auth.currentUser;
-  
+
   // Get auth state stream
   Stream<AuthState> get authStateChanges => _client.auth.onAuthStateChange;
-  
+
   // Check if user is authenticated
   bool get isAuthenticated => currentUser != null;
 
@@ -31,7 +33,7 @@ class AuthService {
         password: password,
         data: displayName != null ? {'display_name': displayName} : null,
       );
-      
+
       if (response.user != null) {
         // Create profile after successful registration
         await ensureUserProfile(
@@ -40,7 +42,7 @@ class AuthService {
           displayName: displayName,
         );
       }
-      
+
       return response;
     } catch (e) {
       rethrow;
@@ -57,7 +59,7 @@ class AuthService {
         email: email,
         password: password,
       );
-      
+
       if (response.user != null) {
         // Ensure profile exists for existing user
         await ensureUserProfile(
@@ -66,7 +68,7 @@ class AuthService {
           displayName: response.user!.userMetadata?['display_name'],
         );
       }
-      
+
       return response;
     } catch (e) {
       rethrow;
@@ -119,74 +121,86 @@ class AuthService {
     }
   }
 
-  /// Ensure user profile exists in our profiles table
+  /// Ensure user profile exists in our users table
   Future<void> ensureUserProfile({
     required String userId,
     required String email,
     String? displayName,
   }) async {
     try {
-      Logger.auth('ensureUserProfile: Checking profile for user $userId with email $email');
+      Logger.auth(
+        'ensureUserProfile: Checking profile for user $userId with email $email',
+      );
       Logger.auth('ensureUserProfile: Current auth user: ${currentUser?.id}');
       Logger.auth('ensureUserProfile: Is authenticated: $isAuthenticated');
-      
+
       // Validate that we have a proper UUID
       if (userId.isEmpty || !_isValidUUID(userId)) {
         Logger.warning('ensureUserProfile: Invalid userId format: $userId');
         return;
       }
-      
+
       // Ensure user is authenticated before creating profile
       if (!isAuthenticated || currentUser?.id != userId) {
-        Logger.warning('ensureUserProfile: User not authenticated or ID mismatch. Auth: $isAuthenticated, Current: ${currentUser?.id}, Target: $userId');
+        Logger.warning(
+          'ensureUserProfile: User not authenticated or ID mismatch. Auth: $isAuthenticated, Current: ${currentUser?.id}, Target: $userId',
+        );
         return;
       }
-      
+
       // First check if profile already exists
       final existing = await _client
-          .from('profiles')
+          .from('users')
           .select('id')
           .eq('id', userId)
           .maybeSingle();
-      
+
       if (existing != null) {
-        Logger.info('ensureUserProfile: Profile already exists for user $userId');
+        Logger.info(
+          'ensureUserProfile: Profile already exists for user $userId',
+        );
         return; // Profile already exists
       }
-      
+
       // Create profile with actual schema fields
-      final profileData = <String, dynamic>{
-        'id': userId,
-      };
-      
+      final profileData = <String, dynamic>{'id': userId};
+
       // Add fields that actually exist in the database
       if (displayName != null && displayName.isNotEmpty) {
-        profileData['display_name'] = displayName;
+        profileData['full_name'] = displayName;
       }
-      
-      Logger.info('ensureUserProfile: Creating profile with data: $profileData');
-      
+
+      Logger.info(
+        'ensureUserProfile: Creating profile with data: $profileData',
+      );
+
       // Create new profile - timestamps are set automatically by DB
-      await _client.from('profiles').insert(profileData);
-      
-      Logger.info('ensureUserProfile: Profile created successfully for user $userId');
+      await _client.from('users').insert(profileData);
+
+      Logger.info(
+        'ensureUserProfile: Profile created successfully for user $userId',
+      );
     } catch (e, stackTrace) {
-      Logger.error('ensureUserProfile: Failed to create profile for $userId', error: e, stackTrace: stackTrace);
+      Logger.error(
+        'ensureUserProfile: Failed to create profile for $userId',
+        error: e,
+        stackTrace: stackTrace,
+      );
       // Profile creation failed, but auth succeeded - this is not critical
     }
   }
 
-  /// Get user profile from our profiles table
+  /// Get user profile from our users table
   Future<Map<String, dynamic>?> getUserProfile() async {
     if (!isAuthenticated) return null;
-    
+
     try {
       final response = await _client
-          .from('profiles')
+          .from('users')
           .select()
           .eq('id', currentUser!.id)
           .maybeSingle();
-      
+
       return response;
     } catch (e) {
       // Failed to get user profile
@@ -203,17 +217,17 @@ class AuthService {
     String? phone,
   }) async {
     if (!isAuthenticated) throw Exception('User not authenticated');
-    
+
     try {
       final updateData = <String, dynamic>{};
-      if (displayName != null) updateData['display_name'] = displayName;
+      if (displayName != null) updateData['full_name'] = displayName;
       if (avatarUrl != null) updateData['avatar_url'] = avatarUrl;
       if (bio != null) updateData['bio'] = bio;
       if (phone != null) updateData['phone'] = phone;
-      
+
       if (updateData.isNotEmpty) {
         await _client
-            .from('profiles')
+            .from('users')
             .update(updateData)
             .eq('id', currentUser!.id);
       }

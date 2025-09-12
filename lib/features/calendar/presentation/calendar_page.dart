@@ -14,8 +14,9 @@ import 'package:rehearsal_app/core/utils/localization_helper.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 final selectedCalendarDateProvider = StateProvider<DateTime?>((ref) => null);
-final currentCalendarMonthProvider =
-    StateProvider<DateTime>((ref) => DateTime.now());
+final currentCalendarMonthProvider = StateProvider<DateTime>(
+  (ref) => DateTime.now(),
+);
 
 class CalendarPage extends ConsumerWidget {
   const CalendarPage({super.key});
@@ -47,60 +48,69 @@ class CalendarPage extends ConsumerWidget {
             },
             child: CustomScrollView(
               slivers: [
-              // Month navigation
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: AppSpacing.paddingLG,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.chevron_left),
-                        onPressed: () {
-                          final previousMonth = DateTime(
-                            currentMonth.year,
-                            currentMonth.month - 1,
-                          );
-                          ref.read(currentCalendarMonthProvider.notifier).state =
-                              previousMonth;
-                        },
-                      ),
-                      Text(
-                        _getMonthYearString(currentMonth, context),
-                        style: AppTypography.headingMedium,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.chevron_right),
-                        onPressed: () {
-                          final nextMonth = DateTime(
-                            currentMonth.year,
-                            currentMonth.month + 1,
-                          );
-                          ref.read(currentCalendarMonthProvider.notifier).state =
-                              nextMonth;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Calendar
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: AppSpacing.paddingLG,
-                  child: _buildCalendar(currentMonth, selectedDate, ref, context),
-                ),
-              ),
-
-              // Selected date details
-              if (selectedDate != null)
+                // Month navigation
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: AppSpacing.paddingLG,
-                    child: _DateDetails(date: selectedDate),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left),
+                          onPressed: () {
+                            final previousMonth = DateTime(
+                              currentMonth.year,
+                              currentMonth.month - 1,
+                            );
+                            ref
+                                    .read(currentCalendarMonthProvider.notifier)
+                                    .state =
+                                previousMonth;
+                          },
+                        ),
+                        Text(
+                          _getMonthYearString(currentMonth, context),
+                          style: AppTypography.headingMedium,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right),
+                          onPressed: () {
+                            final nextMonth = DateTime(
+                              currentMonth.year,
+                              currentMonth.month + 1,
+                            );
+                            ref
+                                    .read(currentCalendarMonthProvider.notifier)
+                                    .state =
+                                nextMonth;
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+
+                // Calendar
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: AppSpacing.paddingLG,
+                    child: _buildCalendar(
+                      currentMonth,
+                      selectedDate,
+                      ref,
+                      context,
+                    ),
+                  ),
+                ),
+
+                // Selected date details
+                if (selectedDate != null)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: AppSpacing.paddingLG,
+                      child: _DateDetails(date: selectedDate),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -114,15 +124,19 @@ class CalendarPage extends ConsumerWidget {
     return '${months[date.month - 1]} ${date.year}';
   }
 
-  Widget _buildCalendar(DateTime currentMonth, DateTime? selectedDate, WidgetRef ref, BuildContext context) {
+  Widget _buildCalendar(
+    DateTime currentMonth,
+    DateTime? selectedDate,
+    WidgetRef ref,
+    BuildContext context,
+  ) {
     final eventDatesAsync = ref.watch(eventDatesProvider(currentMonth));
-    final availabilityMapAsync = ref.watch(availabilityMapProvider(currentMonth));
+    final availabilityMapAsync = ref.watch(
+      availabilityMapProvider(currentMonth),
+    );
 
     return eventDatesAsync.when(
-      loading: () => const SizedBox(
-        height: 300,
-        child: LoadingState(),
-      ),
+      loading: () => const SizedBox(height: 300, child: LoadingState()),
       error: (error, stackTrace) => SizedBox(
         height: 300,
         child: EmptyState(
@@ -137,10 +151,7 @@ class CalendarPage extends ConsumerWidget {
         ),
       ),
       data: (eventDates) => availabilityMapAsync.when(
-        loading: () => const SizedBox(
-          height: 300,
-          child: LoadingState(),
-        ),
+        loading: () => const SizedBox(height: 300, child: LoadingState()),
         error: (error, stackTrace) => CalendarView(
           currentDate: currentMonth,
           selectedDate: selectedDate,
@@ -148,7 +159,8 @@ class CalendarPage extends ConsumerWidget {
             ref.read(selectedCalendarDateProvider.notifier).state = date;
           },
           eventDates: eventDates,
-          availabilityMap: const {}, // Show events without availability on error
+          availabilityMap:
+              const {}, // Show events without availability on error
         ),
         data: (availabilityMap) => CalendarView(
           currentDate: currentMonth,
@@ -173,7 +185,7 @@ class _DateDetails extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch locale changes to trigger rebuild
     ref.watch(localeProvider);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -192,10 +204,12 @@ class _DateDetails extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.md),
-        
+
         // Rehearsals for this date
         FutureBuilder(
-          key: ValueKey('rehearsals_${date.toIso8601String()}_${ref.watch(localeProvider)}'),
+          key: ValueKey(
+            'rehearsals_${date.toIso8601String()}_${ref.watch(localeProvider)}',
+          ),
           future: _loadRehearsals(ref, date),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -223,7 +237,7 @@ class _DateDetails extends ConsumerWidget {
             }
 
             final rehearsals = snapshot.data ?? [];
-            
+
             if (rehearsals.isEmpty) {
               return Container(
                 width: double.infinity,
@@ -260,9 +274,15 @@ class _DateDetails extends ConsumerWidget {
 
             return Column(
               children: rehearsals.map((rehearsal) {
-                final startTime = DateTime.fromMillisecondsSinceEpoch(rehearsal.startsAtUtc, isUtc: true).toLocal();
-                final endTime = DateTime.fromMillisecondsSinceEpoch(rehearsal.endsAtUtc, isUtc: true).toLocal();
-                
+                final startTime = DateTime.fromMillisecondsSinceEpoch(
+                  rehearsal.startsAtUtc,
+                  isUtc: true,
+                ).toLocal();
+                final endTime = DateTime.fromMillisecondsSinceEpoch(
+                  rehearsal.endsAtUtc,
+                  isUtc: true,
+                ).toLocal();
+
                 return Container(
                   width: double.infinity,
                   margin: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -272,10 +292,7 @@ class _DateDetails extends ConsumerWidget {
                     border: Border.all(color: AppColors.glassLightStroke),
                   ),
                   child: ListTile(
-                    leading: Icon(
-                      Icons.event,
-                      color: AppColors.primaryPurple,
-                    ),
+                    leading: Icon(Icons.event, color: AppColors.primaryPurple),
                     title: Text(
                       rehearsal.place ?? context.l10n.rehearsal,
                       style: AppTypography.bodyLarge,
@@ -305,9 +322,18 @@ class _DateDetails extends ConsumerWidget {
   Future<List<dynamic>> _loadRehearsals(WidgetRef ref, DateTime date) async {
     try {
       final rehearsalsRepo = ref.read(rehearsalsRepositoryProvider);
-      final userId = ref.read(currentUserIdProvider) ?? 'anonymous';
-      final dateUtc = DateTime(date.year, date.month, date.day).toUtc().millisecondsSinceEpoch;
-      
+      final userId = ref.read(currentUserIdProvider);
+      final dateUtc = DateTime(
+        date.year,
+        date.month,
+        date.day,
+      ).toUtc().millisecondsSinceEpoch;
+
+      // Return empty list if user is not authenticated
+      if (userId == null) {
+        return [];
+      }
+
       return await rehearsalsRepo.listForUserOnDateUtc(
         userId: userId,
         dateUtc00: dateUtc,
@@ -323,7 +349,7 @@ class _DateDetails extends ConsumerWidget {
         builder: (context) => RehearsalCreatePage(selectedDate: date),
       ),
     );
-    
+
     if (result == true) {
       // Refresh the calendar data
       // Note: The FutureBuilder will automatically rebuild
@@ -338,4 +364,3 @@ class _DateDetails extends ConsumerWidget {
     );
   }
 }
-

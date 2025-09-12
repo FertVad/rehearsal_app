@@ -4,7 +4,7 @@ import 'user_controller.dart';
 import 'user_state.dart';
 
 /// User controller provider - Manages user profile state and operations
-/// Handles CRUD operations for user profiles, settings, and metadata
+/// Handles CRUD operations for users, settings, and metadata
 final userControllerProvider = NotifierProvider<UserController, UserState>(
   UserController.new,
 );
@@ -24,7 +24,7 @@ final authAwareUserControllerProvider = Provider<UserState>((ref) {
   // Watch auth state to trigger user reload when auth changes
   ref.watch(authNotifierProvider);
   final userController = ref.watch(userControllerProvider);
-  
+
   // When auth state changes, invalidate user controller to reload
   ref.listen(authNotifierProvider, (previous, next) {
     next.whenData((user) {
@@ -32,11 +32,11 @@ final authAwareUserControllerProvider = Provider<UserState>((ref) {
         // User logged in, reload user controller
         ref.invalidate(userControllerProvider);
       } else if (previous?.hasValue == true && previous?.value != null) {
-        // User logged out, reload user controller  
+        // User logged out, reload user controller
         ref.invalidate(userControllerProvider);
       }
     });
   });
-  
+
   return userController;
 });

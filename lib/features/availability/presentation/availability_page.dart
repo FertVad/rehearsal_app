@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 import 'package:rehearsal_app/core/design_system/app_typography.dart';
-import 'package:rehearsal_app/core/design_system/calendar_components.dart' as calendar;
+import 'package:rehearsal_app/core/design_system/calendar_components.dart'
+    as calendar;
 import 'package:rehearsal_app/core/widgets/loading_state.dart';
 import 'package:rehearsal_app/core/widgets/empty_state.dart';
 import 'package:rehearsal_app/core/utils/localization_helper.dart';
@@ -27,14 +28,16 @@ class _AvailabilityPageState extends ConsumerState<AvailabilityPage> {
     super.initState();
     _currentMonth = DateTime.now();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(availabilityControllerProvider.notifier).loadMonth(_currentMonth);
+      ref
+          .read(availabilityControllerProvider.notifier)
+          .loadMonth(_currentMonth);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(availabilityControllerProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.availabilityTitle),
@@ -75,24 +78,23 @@ class _AvailabilityPageState extends ConsumerState<AvailabilityPage> {
               ],
             ),
           ),
-          
+
           // Weekday headers
           Padding(
             padding: AppSpacing.paddingLG,
             child: Row(
               children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-                  .map((day) => Expanded(
-                        child: Center(
-                          child: Text(
-                            day,
-                            style: AppTypography.calendarWeekday,
-                          ),
-                        ),
-                      ))
+                  .map(
+                    (day) => Expanded(
+                      child: Center(
+                        child: Text(day, style: AppTypography.calendarWeekday),
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ),
-          
+
           // Calendar grid
           Expanded(
             child: Padding(
@@ -109,7 +111,7 @@ class _AvailabilityPageState extends ConsumerState<AvailabilityPage> {
     if (state.isLoading) {
       return const LoadingState();
     }
-    
+
     if (state.error != null) {
       return EmptyState(
         icon: Icons.error_outline,
@@ -121,7 +123,7 @@ class _AvailabilityPageState extends ConsumerState<AvailabilityPage> {
             .loadMonth(_currentMonth),
       );
     }
-    
+
     // Convert AvailabilityView to AvailabilityStatus for CalendarGrid
     final byDateStatus = <int, calendar.AvailabilityStatus>{};
     for (final entry in state.byDate.entries) {
@@ -140,7 +142,7 @@ class _AvailabilityPageState extends ConsumerState<AvailabilityPage> {
       }
       byDateStatus[entry.key] = calendarStatus;
     }
-    
+
     return CalendarGrid(
       month: _currentMonth,
       byDate: byDateStatus,

@@ -34,7 +34,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     _authService.authStateChanges.listen((authState) {
       state = AsyncValue.data(authState.session?.user);
     });
-    
+
     // Set initial state
     final currentUser = _authService.currentUser;
     state = AsyncValue.data(currentUser);
@@ -48,13 +48,13 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
   }) async {
     try {
       state = const AsyncValue.loading();
-      
+
       final response = await _authService.signUpWithEmail(
         email: email,
         password: password,
         displayName: displayName,
       );
-      
+
       if (response.user != null) {
         state = AsyncValue.data(response.user);
         return null; // Success
@@ -75,12 +75,12 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
   }) async {
     try {
       state = const AsyncValue.loading();
-      
+
       final response = await _authService.signInWithEmail(
         email: email,
         password: password,
       );
-      
+
       if (response.user != null) {
         state = AsyncValue.data(response.user);
         return null; // Success
@@ -98,9 +98,9 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
   Future<String?> signInWithGoogle() async {
     try {
       state = const AsyncValue.loading();
-      
+
       final success = await _authService.signInWithGoogle();
-      
+
       if (success) {
         // State will be updated by the auth stream listener
         return null; // Success
@@ -146,7 +146,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
 }
 
 // Auth notifier provider
-final authNotifierProvider = StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((ref) {
-  final authService = ref.watch(authServiceProvider);
-  return AuthNotifier(authService);
-});
+final authNotifierProvider =
+    StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((ref) {
+      final authService = ref.watch(authServiceProvider);
+      return AuthNotifier(authService);
+    });

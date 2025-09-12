@@ -6,7 +6,7 @@ import 'package:rehearsal_app/core/auth/auth_provider.dart';
 import 'package:rehearsal_app/core/settings/user_settings.dart';
 import 'package:rehearsal_app/data/repositories/users_repository_impl.dart';
 
-/// Settings notifier that syncs with Supabase profiles.metadata
+/// Settings notifier that syncs with Supabase users.notification_settings
 class SettingsNotifier extends StateNotifier<AsyncValue<UserSettings>> {
   SettingsNotifier(this._ref) : super(const AsyncValue.loading()) {
     _loadSettings();
@@ -34,7 +34,8 @@ class SettingsNotifier extends StateNotifier<AsyncValue<UserSettings>> {
       }
 
       // Parse settings from metadata field (which contains notification_settings JSON)
-      final settingsJson = profile.metadata != null && profile.metadata!.isNotEmpty
+      final settingsJson =
+          profile.metadata != null && profile.metadata!.isNotEmpty
           ? (dart.jsonDecode(profile.metadata!) as Map<String, dynamic>)
           : <String, dynamic>{
               'notifications': true,
@@ -103,7 +104,7 @@ class SettingsNotifier extends StateNotifier<AsyncValue<UserSettings>> {
           'theme': settings.theme.name,
           'language': settings.language,
         };
-        
+
         await (usersRepo).updateNotificationSettings(
           id: user.id,
           settings: notificationSettings,
@@ -119,7 +120,7 @@ class SettingsNotifier extends StateNotifier<AsyncValue<UserSettings>> {
 }
 
 /// Settings provider - Main settings management
-/// Syncs user preferences with Supabase profiles.metadata
+/// Syncs user preferences with Supabase users.notification_settings
 /// Handles theme, language, notifications, and other user settings
 final settingsProvider =
     StateNotifierProvider<SettingsNotifier, AsyncValue<UserSettings>>((ref) {
@@ -152,7 +153,7 @@ class LocaleNotifier extends Notifier<Locale?> {
           error: (_, _) => null,
         );
   }
-  
+
   /// Change locale and save to settings
   void changeLocale(Locale? locale) {
     ref.read(settingsProvider.notifier).updateLanguage(locale?.languageCode);
@@ -162,4 +163,6 @@ class LocaleNotifier extends Notifier<Locale?> {
 /// Locale provider - Current app language
 /// null = system locale, otherwise fixed Locale
 /// Use changeLocale() method to update and persist to database
-final localeProvider = NotifierProvider<LocaleNotifier, Locale?>(() => LocaleNotifier());
+final localeProvider = NotifierProvider<LocaleNotifier, Locale?>(
+  () => LocaleNotifier(),
+);

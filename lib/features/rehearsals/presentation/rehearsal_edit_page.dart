@@ -10,10 +10,7 @@ import 'package:rehearsal_app/core/utils/localization_helper.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 
 class RehearsalEditPage extends ConsumerStatefulWidget {
-  const RehearsalEditPage({
-    super.key,
-    required this.rehearsal,
-  });
+  const RehearsalEditPage({super.key, required this.rehearsal});
 
   final Rehearsal rehearsal;
 
@@ -29,21 +26,27 @@ class _RehearsalEditPageState extends ConsumerState<RehearsalEditPage> {
   late DateTime _selectedDate;
   late TimeOfDay _startTime;
   late TimeOfDay _endTime;
-  
+
   bool _isLoading = false;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    
-    final startTime = DateTime.fromMillisecondsSinceEpoch(widget.rehearsal.startsAtUtc, isUtc: true).toLocal();
-    final endTime = DateTime.fromMillisecondsSinceEpoch(widget.rehearsal.endsAtUtc, isUtc: true).toLocal();
-    
+
+    final startTime = DateTime.fromMillisecondsSinceEpoch(
+      widget.rehearsal.startsAtUtc,
+      isUtc: true,
+    ).toLocal();
+    final endTime = DateTime.fromMillisecondsSinceEpoch(
+      widget.rehearsal.endsAtUtc,
+      isUtc: true,
+    ).toLocal();
+
     _selectedDate = DateTime(startTime.year, startTime.month, startTime.day);
     _startTime = TimeOfDay.fromDateTime(startTime);
     _endTime = TimeOfDay.fromDateTime(endTime);
-    
+
     _placeController.text = widget.rehearsal.place ?? '';
     _noteController.text = widget.rehearsal.note ?? '';
   }
@@ -63,13 +66,13 @@ class _RehearsalEditPageState extends ConsumerState<RehearsalEditPage> {
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _saveChanges,
-            child: _isLoading 
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(context.l10n.save),
+            child: _isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(context.l10n.save),
           ),
         ],
       ),
@@ -88,7 +91,7 @@ class _RehearsalEditPageState extends ConsumerState<RehearsalEditPage> {
                     style: AppTypography.headingMedium,
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  
+
                   // Date Picker
                   Container(
                     decoration: BoxDecoration(
@@ -104,9 +107,9 @@ class _RehearsalEditPageState extends ConsumerState<RehearsalEditPage> {
                       onTap: _selectDate,
                     ),
                   ),
-                  
+
                   const SizedBox(height: AppSpacing.md),
-                  
+
                   // Time Pickers Row
                   Row(
                     children: [
@@ -114,8 +117,12 @@ class _RehearsalEditPageState extends ConsumerState<RehearsalEditPage> {
                         child: Container(
                           decoration: BoxDecoration(
                             color: AppColors.glassLightBase,
-                            borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                            border: Border.all(color: AppColors.glassLightStroke),
+                            borderRadius: BorderRadius.circular(
+                              AppSpacing.radiusMD,
+                            ),
+                            border: Border.all(
+                              color: AppColors.glassLightStroke,
+                            ),
                           ),
                           child: ListTile(
                             leading: const Icon(Icons.access_time),
@@ -130,8 +137,12 @@ class _RehearsalEditPageState extends ConsumerState<RehearsalEditPage> {
                         child: Container(
                           decoration: BoxDecoration(
                             color: AppColors.glassLightBase,
-                            borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
-                            border: Border.all(color: AppColors.glassLightStroke),
+                            borderRadius: BorderRadius.circular(
+                              AppSpacing.radiusMD,
+                            ),
+                            border: Border.all(
+                              color: AppColors.glassLightStroke,
+                            ),
                           ),
                           child: ListTile(
                             leading: const Icon(Icons.access_time_filled),
@@ -171,10 +182,7 @@ class _RehearsalEditPageState extends ConsumerState<RehearsalEditPage> {
                   const SizedBox(height: AppSpacing.xl),
 
                   // Notes
-                  Text(
-                    context.l10n.notes,
-                    style: AppTypography.headingMedium,
-                  ),
+                  Text(context.l10n.notes, style: AppTypography.headingMedium),
                   const SizedBox(height: AppSpacing.md),
                   TextFormField(
                     controller: _noteController,
@@ -197,11 +205,16 @@ class _RehearsalEditPageState extends ConsumerState<RehearsalEditPage> {
                       margin: const EdgeInsets.only(bottom: AppSpacing.lg),
                       decoration: BoxDecoration(
                         color: AppColors.statusBusy.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusMD),
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusMD,
+                        ),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_outline, color: AppColors.statusBusy),
+                          Icon(
+                            Icons.error_outline,
+                            color: AppColors.statusBusy,
+                          ),
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Text(
@@ -253,9 +266,12 @@ class _RehearsalEditPageState extends ConsumerState<RehearsalEditPage> {
         if (isStart) {
           _startTime = time;
           // Auto-adjust end time if it's before start time
-          if (_endTime.hour < time.hour || 
+          if (_endTime.hour < time.hour ||
               (_endTime.hour == time.hour && _endTime.minute <= time.minute)) {
-            _endTime = TimeOfDay(hour: (time.hour + 2) % 24, minute: time.minute);
+            _endTime = TimeOfDay(
+              hour: (time.hour + 2) % 24,
+              minute: time.minute,
+            );
           }
         } else {
           _endTime = time;
@@ -285,7 +301,8 @@ class _RehearsalEditPageState extends ConsumerState<RehearsalEditPage> {
       _endTime.minute,
     );
 
-    if (endDateTime.isBefore(startDateTime) || endDateTime.isAtSameMomentAs(startDateTime)) {
+    if (endDateTime.isBefore(startDateTime) ||
+        endDateTime.isAtSameMomentAs(startDateTime)) {
       setState(() {
         _error = context.l10n.endTimeError;
       });
@@ -299,13 +316,15 @@ class _RehearsalEditPageState extends ConsumerState<RehearsalEditPage> {
 
     try {
       final rehearsalsRepo = ref.read(rehearsalsRepositoryProvider);
-      
+
       await rehearsalsRepo.update(
         id: widget.rehearsal.id,
         startsAtUtc: startDateTime.toUtc().millisecondsSinceEpoch,
         endsAtUtc: endDateTime.toUtc().millisecondsSinceEpoch,
         place: _placeController.text.trim(),
-        note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
+        note: _noteController.text.trim().isEmpty
+            ? null
+            : _noteController.text.trim(),
       );
 
       if (mounted) {

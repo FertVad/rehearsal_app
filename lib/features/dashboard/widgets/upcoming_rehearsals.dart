@@ -11,21 +11,19 @@ import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_create_
 import 'package:rehearsal_app/features/rehearsals/presentation/rehearsal_details_page.dart';
 import 'package:rehearsal_app/core/utils/localization_helper.dart';
 import 'package:rehearsal_app/l10n/app.dart';
-import 'package:rehearsal_app/features/dashboard/widgets/dashboard_header.dart' show selectedProjectsFilterProvider;
+import 'package:rehearsal_app/features/dashboard/widgets/dashboard_header.dart'
+    show selectedProjectsFilterProvider;
 
 class UpcomingRehearsals extends ConsumerWidget {
-  const UpcomingRehearsals({
-    super.key,
-    this.selectedDate,
-  });
-  
+  const UpcomingRehearsals({super.key, this.selectedDate});
+
   final DateTime? selectedDate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch locale changes to trigger rebuild
     ref.watch(localeProvider);
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Column(
@@ -35,10 +33,10 @@ class UpcomingRehearsals extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                selectedDate != null 
-                  ? _getSelectedDateTitle(context, selectedDate!)
-                  : context.l10n.upcomingRehearsals, 
-                style: AppTypography.headingMedium
+                selectedDate != null
+                    ? _getSelectedDateTitle(context, selectedDate!)
+                    : context.l10n.upcomingRehearsals,
+                style: AppTypography.headingMedium,
               ),
               IconButton(
                 icon: const Icon(Icons.add),
@@ -52,7 +50,9 @@ class UpcomingRehearsals extends ConsumerWidget {
             child: SizedBox(
               height: 250,
               child: FutureBuilder(
-                key: ValueKey('upcoming_rehearsals_${ref.watch(localeProvider)}_${selectedDate?.millisecondsSinceEpoch}_${ref.watch(selectedProjectsFilterProvider).join(',')}'),
+                key: ValueKey(
+                  'upcoming_rehearsals_${ref.watch(localeProvider)}_${selectedDate?.millisecondsSinceEpoch}_${ref.watch(selectedProjectsFilterProvider).join(',')}',
+                ),
                 future: _loadRehearsalsForDate(ref, selectedDate),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -72,7 +72,7 @@ class UpcomingRehearsals extends ConsumerWidget {
                   }
 
                   final rehearsals = snapshot.data ?? [];
-                  
+
                   if (rehearsals.isEmpty) {
                     return EmptyState(
                       icon: Icons.event_busy,
@@ -114,7 +114,8 @@ class UpcomingRehearsals extends ConsumerWidget {
                                   color: AppColors.textSecondary,
                                 ),
                               ),
-                              if (rehearsal.note != null && rehearsal.note!.isNotEmpty)
+                              if (rehearsal.note != null &&
+                                  rehearsal.note!.isNotEmpty)
                                 Text(
                                   rehearsal.note!,
                                   style: AppTypography.bodySmall.copyWith(
@@ -126,7 +127,8 @@ class UpcomingRehearsals extends ConsumerWidget {
                             ],
                           ),
                           trailing: const Icon(Icons.chevron_right),
-                          onTap: () => _openRehearsalDetails(context, rehearsal.id),
+                          onTap: () =>
+                              _openRehearsalDetails(context, rehearsal.id),
                         ),
                       );
                     },
@@ -140,17 +142,29 @@ class UpcomingRehearsals extends ConsumerWidget {
     );
   }
 
-  Future<List<dynamic>> _loadRehearsalsForDate(WidgetRef ref, DateTime? selectedDate) async {
+  Future<List<dynamic>> _loadRehearsalsForDate(
+    WidgetRef ref,
+    DateTime? selectedDate,
+  ) async {
     try {
       final rehearsalsRepo = ref.read(rehearsalsRepositoryProvider);
-      final userId = ref.read(currentUserIdProvider) ?? 'anonymous';
+      final userId = ref.read(currentUserIdProvider);
       final selectedProjectIds = ref.read(selectedProjectsFilterProvider);
-      
+
+      // Return empty list if user is not authenticated
+      if (userId == null) {
+        return [];
+      }
+
       List<dynamic> rehearsals;
-      
+
       if (selectedDate != null) {
         // Load rehearsals for specific date
-        final startOfDay = DateTime(selectedDate.year, selectedDate.month, selectedDate.day).toUtc();
+        final startOfDay = DateTime(
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+        ).toUtc();
         rehearsals = await rehearsalsRepo.listForUserOnDateUtc(
           userId: userId,
           dateUtc00: startOfDay.millisecondsSinceEpoch,
@@ -159,38 +173,40 @@ class UpcomingRehearsals extends ConsumerWidget {
         // Load upcoming rehearsals (next 7 days)
         final now = DateTime.now().toUtc();
         final nextWeek = now.add(const Duration(days: 7));
-        
+
         rehearsals = await rehearsalsRepo.listForUserInRange(
           userId: userId,
           fromUtc: now.millisecondsSinceEpoch,
           toUtc: nextWeek.millisecondsSinceEpoch,
         );
       }
-      
+
       // Apply project filter
-      final filteredRehearsals = selectedProjectIds.isEmpty 
-          ? rehearsals 
-          : rehearsals.where((r) => selectedProjectIds.contains(r.projectId)).toList();
-      
+      final filteredRehearsals = selectedProjectIds.isEmpty
+          ? rehearsals
+          : rehearsals
+                .where((r) => selectedProjectIds.contains(r.projectId))
+                .toList();
+
       // Sort by start time
       filteredRehearsals.sort((a, b) => a.startsAtUtc.compareTo(b.startsAtUtc));
-      
+
       // Limit to 5 most recent for upcoming rehearsals
       if (selectedDate == null) {
         return filteredRehearsals.take(5).toList();
       }
-      
+
       return filteredRehearsals;
     } catch (e) {
       throw Exception('Failed to load rehearsals: $e');
     }
   }
-  
+
   String _getSelectedDateTitle(BuildContext context, DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final selectedDay = DateTime(date.year, date.month, date.day);
-    
+
     if (selectedDay == today) {
       return 'Today\'s Schedule';
     } else if (selectedDay == today.add(const Duration(days: 1))) {
@@ -206,11 +222,9 @@ class UpcomingRehearsals extends ConsumerWidget {
 
   Future<void> _createRehearsal(BuildContext context) async {
     final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
-        builder: (context) => const RehearsalCreatePage(),
-      ),
+      MaterialPageRoute(builder: (context) => const RehearsalCreatePage()),
     );
-    
+
     if (result == true) {
       // Data will be refreshed automatically by FutureBuilder
     }

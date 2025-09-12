@@ -39,22 +39,24 @@ class ProjectFilterChips extends StatelessWidget {
             ),
           ),
           // Project chips
-          ...projects.map((project) => Padding(
-                padding: const EdgeInsets.only(right: AppSpacing.sm),
-                child: _FilterChip(
-                  label: project.title,
-                  isSelected: selectedProjectIds.contains(project.id),
-                  onTap: () {
-                    final newSelection = Set<String>.from(selectedProjectIds);
-                    if (newSelection.contains(project.id)) {
-                      newSelection.remove(project.id);
-                    } else {
-                      newSelection.add(project.id);
-                    }
-                    onSelectionChanged(newSelection);
-                  },
-                ),
-              )),
+          ...projects.map(
+            (project) => Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.sm),
+              child: _FilterChip(
+                label: project.title,
+                isSelected: selectedProjectIds.contains(project.id),
+                onTap: () {
+                  final newSelection = Set<String>.from(selectedProjectIds);
+                  if (newSelection.contains(project.id)) {
+                    newSelection.remove(project.id);
+                  } else {
+                    newSelection.add(project.id);
+                  }
+                  onSelectionChanged(newSelection);
+                },
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -87,9 +89,9 @@ class _FilterChip extends StatelessWidget {
           child: Text(
             label,
             style: AppTypography.bodyMedium.copyWith(
-              color: isSelected 
-                ? AppColors.accentHotPink 
-                : AppColors.textPrimary,
+              color: isSelected
+                  ? AppColors.accentHotPink
+                  : AppColors.textPrimary,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
@@ -114,10 +116,7 @@ class DashboardHeader extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Text(
-                'Projects',
-                style: AppTypography.headingMedium,
-              ),
+              Text('Projects', style: AppTypography.headingMedium),
               const Spacer(),
               projectsAsync.when(
                 loading: () => const SizedBox(
@@ -148,7 +147,8 @@ class DashboardHeader extends ConsumerWidget {
               projects: projects,
               selectedProjectIds: selectedProjectIds,
               onSelectionChanged: (newSelection) {
-                ref.read(selectedProjectsFilterProvider.notifier).state = newSelection;
+                ref.read(selectedProjectsFilterProvider.notifier).state =
+                    newSelection;
               },
             ),
           ),
@@ -168,4 +168,3 @@ class DashboardHeader extends ConsumerWidget {
     }
   }
 }
-

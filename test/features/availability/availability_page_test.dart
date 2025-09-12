@@ -95,7 +95,9 @@ void main() {
     expect(find.byType(AppBar), findsOneWidget);
   });
 
-  testWidgets('day_bottom_sheet uses GlassChip for status selection', (tester) async {
+  testWidgets('day_bottom_sheet uses GlassChip for status selection', (
+    tester,
+  ) async {
     // Arrange
     await tester.pumpWidget(
       MaterialApp(
@@ -128,7 +130,9 @@ void main() {
     expect(find.byKey(const Key('status_partial')), findsOneWidget);
   });
 
-  testWidgets('day_bottom_sheet displays selected status correctly', (tester) async {
+  testWidgets('day_bottom_sheet displays selected status correctly', (
+    tester,
+  ) async {
     // Arrange
     await tester.pumpWidget(
       MaterialApp(

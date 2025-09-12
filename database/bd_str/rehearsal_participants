@@ -1,0 +1,38 @@
+create table public.rehearsal_participants (
+  id uuid not null default gen_random_uuid (),
+  rehearsal_id uuid not null,
+  user_id uuid not null,
+  rsvp_status character varying(20) null default 'pending'::character varying,
+  response_at timestamp with time zone null,
+  notes text null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  constraint rehearsal_participants_pkey primary key (id),
+  constraint rehearsal_participants_rehearsal_id_user_id_key unique (rehearsal_id, user_id),
+  constraint rehearsal_participants_rehearsal_id_fkey foreign KEY (rehearsal_id) references rehearsals (id) on delete CASCADE,
+  constraint rehearsal_participants_user_id_fkey foreign KEY (user_id) references users (id) on delete CASCADE,
+  constraint rehearsal_participants_rsvp_status_check check (
+    (
+      (rsvp_status)::text = any (
+        (
+          array[
+            'attending'::character varying,
+            'declined'::character varying,
+            'maybe'::character varying,
+            'pending'::character varying
+          ]
+        )::text[]
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+create index IF not exists idx_rehearsal_participants_rehearsal on public.rehearsal_participants using btree (rehearsal_id) TABLESPACE pg_default;
+
+create index IF not exists idx_rehearsal_participants_user on public.rehearsal_participants using btree (user_id) TABLESPACE pg_default;
+
+create index IF not exists idx_rehearsal_participants_rsvp on public.rehearsal_participants using btree (rsvp_status) TABLESPACE pg_default;
+
+create trigger update_rehearsal_participants_updated_at BEFORE
+update on rehearsal_participants for EACH row
+execute FUNCTION update_updated_at_column ();

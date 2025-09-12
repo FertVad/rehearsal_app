@@ -41,10 +41,10 @@ class DayScroller extends StatefulWidget {
   /// Called when the centered day changes after a snap.
   /// NOTE: Currently not used, selection only happens on explicit taps.
   final ValueChanged<DateTime>? onDateChanged;
-  
+
   /// Called when a day is tapped.
   final ValueChanged<DateTime>? onDayTap;
-  
+
   /// Called when a day is long pressed.
   final ValueChanged<DateTime>? onDayLongPress;
 
@@ -70,7 +70,8 @@ class DayScroller extends StatefulWidget {
 }
 
 class _DayScrollerState extends State<DayScroller> {
-  static const int _anchor = 10000; // large center to allow scrolling in both directions
+  static const int _anchor =
+      10000; // large center to allow scrolling in both directions
   late PageController _controller;
   late DateTime _baseDate; // reference date for index 0
   late DateTime _selectedDate; // currently selected/centered date
@@ -186,8 +187,7 @@ class _DayScrollerState extends State<DayScroller> {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: SizedBox(
-                    height:
-                        widget.height - (AppSpacing.xxxl + AppSpacing.sm),
+                    height: widget.height - (AppSpacing.xxxl + AppSpacing.sm),
                     child: PageView.builder(
                       controller: _controller,
                       scrollDirection: Axis.horizontal,
@@ -200,8 +200,10 @@ class _DayScrollerState extends State<DayScroller> {
                       },
                       itemBuilder: (context, index) {
                         final date = _dateForIndex(index);
-                        final bool isSelected = widget.selectedDate != null && 
-                            _stripTime(date) == _stripTime(widget.selectedDate!);
+                        final bool isSelected =
+                            widget.selectedDate != null &&
+                            _stripTime(date) ==
+                                _stripTime(widget.selectedDate!);
                         final bool hasEvent =
                             widget.eventPredicate?.call(date) ?? false;
                         return Center(
@@ -212,8 +214,12 @@ class _DayScrollerState extends State<DayScroller> {
                               isSelected: isSelected,
                               hasEvent: hasEvent,
                               size: 36,
-                              onTap: widget.onDayTap != null ? () => widget.onDayTap!(date) : null,
-                              onLongPress: widget.onDayLongPress != null ? () => widget.onDayLongPress!(date) : null,
+                              onTap: widget.onDayTap != null
+                                  ? () => widget.onDayTap!(date)
+                                  : null,
+                              onLongPress: widget.onDayLongPress != null
+                                  ? () => widget.onDayLongPress!(date)
+                                  : null,
                             ),
                           ),
                         );

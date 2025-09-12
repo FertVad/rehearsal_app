@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:rehearsal_app/core/navigation/app_shell.dart';
 import 'package:rehearsal_app/features/about/presentation/about_page.dart';
 import 'package:rehearsal_app/features/auth/presentation/auth_page.dart';
+import 'package:rehearsal_app/features/invites/presentation/invite_handler_page.dart';
 import 'package:rehearsal_app/core/auth/auth_provider.dart';
 import 'package:rehearsal_app/core/utils/logger.dart';
 
@@ -18,22 +19,31 @@ final routerProvider = Provider<GoRouter>((ref) {
       final authService = ref.read(authServiceProvider);
       final isAuthenticated = authService.isAuthenticated;
       final isGoingToAuth = state.matchedLocation == '/auth';
-      
+      final isGoingToInvite = state.matchedLocation.startsWith('/join/');
+
       // Debug logging
-      Logger.navigation('GoRouter redirect: isAuthenticated=$isAuthenticated, location=${state.matchedLocation}');
-      
+      Logger.navigation(
+        'GoRouter redirect: isAuthenticated=$isAuthenticated, location=${state.matchedLocation}',
+      );
+
+      // Allow access to invite routes without authentication
+      if (isGoingToInvite) {
+        Logger.navigation('Allowing access to invite route');
+        return null;
+      }
+
       // If not authenticated and trying to go to protected route, go to auth
       if (!isAuthenticated && !isGoingToAuth) {
         Logger.navigation('Redirecting to /auth - not authenticated');
         return '/auth';
       }
-      
+
       // If authenticated and on auth page, go to home
       if (isAuthenticated && isGoingToAuth) {
         Logger.navigation('Redirecting to / - authenticated');
         return '/';
       }
-      
+
       // No redirect needed
       Logger.navigation('No redirect needed');
       return null;
@@ -46,7 +56,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'auth',
         builder: (context, state) => const AuthPage(),
       ),
-      
+
+      // Public invite route (doesn't require authentication)
+      GoRoute(
+        path: '/join/:slug',
+        name: 'invite',
+        builder: (context, state) {
+          final slug = state.pathParameters['slug']!;
+          return InviteHandlerPage(inviteSlug: slug);
+        },
+      ),
+
       // Main app routes (protected)
       GoRoute(
         path: '/',
@@ -60,24 +80,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      
+
       // Redirects for backwards compatibility
-      GoRoute(
-        path: '/dashboard',
-        redirect: (_, _) => '/',
-      ),
-      GoRoute(
-        path: '/calendar',
-        redirect: (_, _) => '/',
-      ),
-      GoRoute(
-        path: '/availability',
-        redirect: (_, _) => '/',
-      ),
-      GoRoute(
-        path: '/projects',
-        redirect: (_, _) => '/',
-      ),
+      GoRoute(path: '/dashboard', redirect: (_, _) => '/'),
+      GoRoute(path: '/calendar', redirect: (_, _) => '/'),
+      GoRoute(path: '/availability', redirect: (_, _) => '/'),
+      GoRoute(path: '/projects', redirect: (_, _) => '/'),
     ],
   );
 });
@@ -85,13 +93,13 @@ final routerProvider = Provider<GoRouter>((ref) {
 // Helper class to listen to auth state changes
 class AuthChangeNotifier extends ChangeNotifier {
   AuthChangeNotifier(this._ref) {
-    _subscription = _ref.read(authServiceProvider).authStateChanges.listen(
-      (authState) {
-        Logger.auth('Auth state changed - user: ${authState.session?.user.id}');
-        // Small delay to ensure state is properly updated
-        Future.microtask(() => notifyListeners());
-      },
-    );
+    _subscription = _ref.read(authServiceProvider).authStateChanges.listen((
+      authState,
+    ) {
+      Logger.auth('Auth state changed - user: ${authState.session?.user.id}');
+      // Small delay to ensure state is properly updated
+      Future.microtask(() => notifyListeners());
+    });
   }
 
   final Ref _ref;

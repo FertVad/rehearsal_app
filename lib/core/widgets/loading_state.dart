@@ -3,10 +3,7 @@ import 'package:rehearsal_app/core/design_system/app_colors.dart';
 import 'package:rehearsal_app/core/design_system/app_spacing.dart';
 
 class LoadingState extends StatelessWidget {
-  const LoadingState({
-    super.key,
-    this.message,
-  });
+  const LoadingState({super.key, this.message});
 
   final String? message;
 
@@ -21,9 +18,9 @@ class LoadingState extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             Text(
               message!,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ],

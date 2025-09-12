@@ -58,10 +58,14 @@ class LocalizationHelper {
   }
 
   /// Format date with localized month name
-  static String formatDate(BuildContext context, DateTime date, {bool shortMonth = false}) {
-    final months = shortMonth 
-      ? getMonthNamesShort(context)
-      : getMonthNames(context);
+  static String formatDate(
+    BuildContext context,
+    DateTime date, {
+    bool shortMonth = false,
+  }) {
+    final months = shortMonth
+        ? getMonthNamesShort(context)
+        : getMonthNames(context);
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
@@ -71,7 +75,7 @@ class LocalizationHelper {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final targetDate = DateTime(date.year, date.month, date.day);
-    
+
     if (targetDate == today) {
       return l10n.today;
     } else if (targetDate == today.add(const Duration(days: 1))) {

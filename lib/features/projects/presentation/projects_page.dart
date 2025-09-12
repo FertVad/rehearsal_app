@@ -8,19 +8,21 @@ import 'package:rehearsal_app/features/dashboard/widgets/dash_background.dart';
 import 'package:rehearsal_app/l10n/app.dart';
 import 'package:rehearsal_app/core/providers/index.dart';
 import 'package:rehearsal_app/domain/models/project.dart';
+import 'package:rehearsal_app/features/projects/presentation/join_project_page.dart';
+import 'package:rehearsal_app/features/projects/presentation/project_details_page.dart';
+import 'package:uuid/uuid.dart';
 
 // Real projects provider connected to database
 final projectsProvider = FutureProvider<List<Project>>((ref) async {
   final repository = ref.watch(projectsRepositoryProvider);
   final userId = ref.watch(currentUserIdProvider);
-  
+
   if (userId != null) {
     return await repository.listForUser(userId);
   } else {
     return await repository.listAll();
   }
 });
-
 
 class ProjectsPage extends ConsumerWidget {
   const ProjectsPage({super.key});
@@ -34,8 +36,14 @@ class ProjectsPage extends ConsumerWidget {
         title: Text(context.l10n.navProjects),
         actions: [
           IconButton(
+            icon: const Icon(Icons.group_add),
+            onPressed: () => _navigateToJoinProject(context),
+            tooltip: 'Join Project',
+          ),
+          IconButton(
             icon: const Icon(Icons.add),
             onPressed: () => _showCreateProjectDialog(context, ref),
+            tooltip: 'Create Project',
           ),
         ],
       ),
@@ -67,24 +75,24 @@ class ProjectsPage extends ConsumerWidget {
                         SliverPadding(
                           padding: AppSpacing.paddingLG,
                           sliver: SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                                final project = projects[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: AppSpacing.md,
-                                  ),
-                                  child: ProjectCard(
-                                    title: project.title,
-                                    memberCount: project.memberCount,
-                                    description: project.description,
-                                    lastActivity: project.lastActivity,
-                                    onTap: () => _openProject(context, project),
-                                  ),
-                                );
-                              },
-                              childCount: projects.length,
-                            ),
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final project = projects[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: AppSpacing.md,
+                                ),
+                                child: ProjectCard(
+                                  title: project.title,
+                                  memberCount: project.memberCount,
+                                  description: project.description,
+                                  lastActivity: project.lastActivity,
+                                  onTap: () => _openProject(context, project),
+                                ),
+                              );
+                            }, childCount: projects.length),
                           ),
                         ),
                       ],
@@ -112,10 +120,16 @@ class ProjectsPage extends ConsumerWidget {
     );
   }
 
+  void _navigateToJoinProject(BuildContext context) {
+    Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (context) => const JoinProjectPage()),
+    );
+  }
+
   void _openProject(BuildContext context, Project project) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Opening ${project.title}...'),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ProjectDetailsPage(project: project),
       ),
     );
   }
@@ -123,11 +137,12 @@ class ProjectsPage extends ConsumerWidget {
 
 class _CreateProjectDialog extends ConsumerStatefulWidget {
   const _CreateProjectDialog({required this.ref});
-  
+
   final WidgetRef ref;
 
   @override
-  ConsumerState<_CreateProjectDialog> createState() => _CreateProjectDialogState();
+  ConsumerState<_CreateProjectDialog> createState() =>
+      _CreateProjectDialogState();
 }
 
 class _CreateProjectDialogState extends ConsumerState<_CreateProjectDialog> {
@@ -181,10 +196,7 @@ class _CreateProjectDialogState extends ConsumerState<_CreateProjectDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
         ),
-        ElevatedButton(
-          onPressed: _createProject,
-          child: const Text('Create'),
-        ),
+        ElevatedButton(onPressed: _createProject, child: const Text('Create')),
       ],
     );
   }
@@ -194,7 +206,7 @@ class _CreateProjectDialogState extends ConsumerState<_CreateProjectDialog> {
       try {
         final repository = ref.read(projectsRepositoryProvider);
         final userId = ref.read(currentUserIdProvider);
-        
+
         // Debug: Check if user is authenticated
         if (userId == null) {
           if (mounted) {
@@ -207,8 +219,8 @@ class _CreateProjectDialogState extends ConsumerState<_CreateProjectDialog> {
           }
           return;
         }
-        
-        final projectId = DateTime.now().millisecondsSinceEpoch.toString();
+
+        final projectId = const Uuid().v4();
         final title = _titleController.text.trim();
         final description = _descriptionController.text.trim().isEmpty
             ? null
@@ -228,9 +240,7 @@ class _CreateProjectDialogState extends ConsumerState<_CreateProjectDialog> {
           Navigator.of(context).pop();
 
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Project "$title" created successfully!'),
-            ),
+            SnackBar(content: Text('Project "$title" created successfully!')),
           );
         }
       } catch (e) {

@@ -1,0 +1,36 @@
+create table public.projects (
+  id uuid not null default gen_random_uuid (),
+  name character varying(255) not null,
+  description text null,
+  creator_id uuid not null,
+  invite_code character varying(20) not null,
+  start_date date null,
+  end_date date null,
+  timezone character varying(50) null default 'UTC'::character varying,
+  is_active boolean null default true,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  deleted_at timestamp with time zone null,
+  constraint projects_pkey primary key (id),
+  constraint projects_invite_code_key unique (invite_code),
+  constraint projects_creator_id_fkey foreign KEY (creator_id) references users (id)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_projects_creator on public.projects using btree (creator_id) TABLESPACE pg_default;
+
+create index IF not exists idx_projects_invite_code on public.projects using btree (invite_code) TABLESPACE pg_default;
+
+create index IF not exists idx_projects_active on public.projects using btree (is_active) TABLESPACE pg_default
+where
+  (deleted_at is null);
+
+create trigger add_project_creator_as_member
+after INSERT on projects for EACH row
+execute FUNCTION add_creator_as_member ();
+
+create trigger generate_project_invite_code BEFORE INSERT on projects for EACH row
+execute FUNCTION set_project_invite_code ();
+
+create trigger update_projects_updated_at BEFORE
+update on projects for EACH row
+execute FUNCTION update_updated_at_column ();

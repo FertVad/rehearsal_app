@@ -17,10 +17,7 @@ class QuickActions extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            context.l10n.quickActions,
-            style: AppTypography.headingMedium,
-          ),
+          Text(context.l10n.quickActions, style: AppTypography.headingMedium),
           const SizedBox(height: AppSpacing.md),
           Row(
             children: [
@@ -85,4 +82,3 @@ class _ActionButton extends StatelessWidget {
     );
   }
 }
-

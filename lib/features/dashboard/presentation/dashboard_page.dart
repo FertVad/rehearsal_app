@@ -20,7 +20,8 @@ class DashboardPage extends ConsumerStatefulWidget {
 }
 
 class _DashboardPageState extends ConsumerState<DashboardPage> {
-  DateTime _selectedDate = DateTime.now(); // Изначально выбрано сегодняшнее число
+  DateTime _selectedDate =
+      DateTime.now(); // Изначально выбрано сегодняшнее число
   final Map<String, bool> _eventCache = {}; // Кэш для событий по датам
 
   // Функция проверки наличия событий на дату
@@ -42,24 +43,31 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   void _loadEventsForRange(DateTime centerDate) async {
     try {
       final rehearsalsRepo = ref.read(rehearsalsRepositoryProvider);
-      final userId = ref.read(currentUserIdProvider) ?? 'anonymous';
+      final userId = ref.read(currentUserIdProvider);
       final selectedProjectIds = ref.read(selectedProjectsFilterProvider);
-      
+
+      // Skip if user is not authenticated
+      if (userId == null) {
+        return;
+      }
+
       // Загружаем события на ±10 дней от центральной даты
       final startDate = centerDate.subtract(const Duration(days: 10));
       final endDate = centerDate.add(const Duration(days: 10));
-      
+
       final rehearsals = await rehearsalsRepo.listForUserInRange(
         userId: userId,
         fromUtc: startDate.toUtc().millisecondsSinceEpoch,
         toUtc: endDate.toUtc().millisecondsSinceEpoch,
       );
-      
+
       // Фильтруем по выбранным проектам
-      final filteredRehearsals = selectedProjectIds.isEmpty 
-          ? rehearsals 
-          : rehearsals.where((r) => selectedProjectIds.contains(r.projectId)).toList();
-      
+      final filteredRehearsals = selectedProjectIds.isEmpty
+          ? rehearsals
+          : rehearsals
+                .where((r) => selectedProjectIds.contains(r.projectId))
+                .toList();
+
       // Обновляем кэш
       if (mounted) {
         setState(() {
@@ -88,26 +96,24 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     // Загружаем события для нового диапазона
     _loadEventsForRange(date);
   }
-  
+
   void _handleDayTap(DateTime date) {
     AppHaptics.selection();
     _handleDateChanged(date); // Повторное использование логики
   }
-  
+
   void _handleDayLongPress(DateTime date) {
     AppHaptics.light();
     _createRehearsalForDate(date);
   }
-  
+
   Future<void> _createRehearsalForDate(DateTime date) async {
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (context) => RehearsalCreatePage(
-          selectedDate: date,
-        ),
+        builder: (context) => RehearsalCreatePage(selectedDate: date),
       ),
     );
-    
+
     if (result == true) {
       // Refresh the page
       setState(() {});
@@ -120,7 +126,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     ref.listen(selectedProjectsFilterProvider, (previous, next) {
       _loadEventsForRange(DateTime.now());
     });
-    
+
     return Scaffold(
       body: DashBackground(
         child: SafeArea(
@@ -130,55 +136,50 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             },
             child: CustomScrollView(
               slivers: [
-              // Header with greeting
-              SliverToBoxAdapter(
-                child: DashboardHeader(),
-              ),
+                // Header with greeting
+                SliverToBoxAdapter(child: DashboardHeader()),
 
-              // Day scroller
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                    vertical: AppSpacing.md,
-                  ),
-                  child: SizedBox(
-                    height: 120,
-                    child: DayScroller(
-                      initialDate: DateTime.now(), // Показывать календарь с сегодняшней даты
-                      selectedDate: _selectedDate, // Выделенный день (сегодняшний по умолчанию)
-                      eventPredicate: _hasEventsOnDate, // Проверка наличия событий
-                      onDayTap: _handleDayTap, // Только явные тапы
-                      onDayLongPress: _handleDayLongPress,
+                // Day scroller
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                      vertical: AppSpacing.md,
+                    ),
+                    child: SizedBox(
+                      height: 120,
+                      child: DayScroller(
+                        initialDate:
+                            DateTime.now(), // Показывать календарь с сегодняшней даты
+                        selectedDate:
+                            _selectedDate, // Выделенный день (сегодняшний по умолчанию)
+                        eventPredicate:
+                            _hasEventsOnDate, // Проверка наличия событий
+                        onDayTap: _handleDayTap, // Только явные тапы
+                        onDayLongPress: _handleDayLongPress,
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              // Upcoming rehearsals
-              SliverToBoxAdapter(
-                child: UpcomingRehearsals(
-                  selectedDate: _selectedDate,
+                // Upcoming rehearsals
+                SliverToBoxAdapter(
+                  child: UpcomingRehearsals(selectedDate: _selectedDate),
                 ),
-              ),
 
-              const SliverToBoxAdapter(
-                child: SizedBox(height: AppSpacing.lg),
-              ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: AppSpacing.lg),
+                ),
 
-              // Project availability
-              const SliverToBoxAdapter(
-                child: ProjectAvailability(),
-              ),
+                // Project availability
+                const SliverToBoxAdapter(child: ProjectAvailability()),
 
-              const SliverToBoxAdapter(
-                child: SizedBox(height: AppSpacing.lg),
-              ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: AppSpacing.lg),
+                ),
 
-              // Quick actions
-              const SliverToBoxAdapter(
-                child: QuickActions(),
-              ),
+                // Quick actions
+                const SliverToBoxAdapter(child: QuickActions()),
 
                 const SliverToBoxAdapter(
                   child: SizedBox(height: AppSpacing.xl),
@@ -191,4 +192,3 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     );
   }
 }
-

@@ -21,12 +21,7 @@ class ProjectAvailability extends StatelessWidget {
             style: AppTypography.headingMedium,
           ),
           const SizedBox(height: AppSpacing.md),
-          GlassCard(
-            child: SizedBox(
-              height: 120,
-              child: _AvailabilityChart(),
-            ),
-          ),
+          GlassCard(child: SizedBox(height: 120, child: _AvailabilityChart())),
         ],
       ),
     );
@@ -43,7 +38,7 @@ class _AvailabilityChart extends StatelessWidget {
           final weekdayNames = LocalizationHelper.getWeekdayNamesShort(context);
           final days = weekdayNames.map((day) => day.substring(0, 1)).toList();
           final availability = [0.8, 0.6, 0.9, 0.4, 0.7, 0.3, 0.5][index];
-          
+
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -67,10 +62,7 @@ class _AvailabilityChart extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
-              Text(
-                days[index],
-                style: AppTypography.calendarWeekday,
-              ),
+              Text(days[index], style: AppTypography.calendarWeekday),
             ],
           );
         }),
@@ -78,4 +70,3 @@ class _AvailabilityChart extends StatelessWidget {
     );
   }
 }
-

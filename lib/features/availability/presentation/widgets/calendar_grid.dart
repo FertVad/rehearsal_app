@@ -49,14 +49,29 @@ class CalendarGrid extends StatelessWidget {
         final keyBase = dateUtc00(day);
         final status = byDate[keyBase];
         final isCurrentMonth = day.month == month.month;
+        final isToday = _isToday(day);
 
         return GestureDetector(
           key: Key('day-$keyBase'),
           onTap: () => onDayTap?.call(day),
           child: Container(
-            alignment: Alignment.center,
+            margin: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: isToday
+                  ? AppColors.primaryPurple.withValues(alpha: 0.2)
+                  : isCurrentMonth
+                  ? AppColors.glassLightBase.withValues(alpha: 0.6)
+                  : AppColors.glassLightBase.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusSM),
+              border: Border.all(
+                color: isToday
+                    ? AppColors.primaryPurple.withValues(alpha: 0.8)
+                    : AppColors.glassLightStroke.withValues(alpha: 0.4),
+                width: isToday ? 2 : 1,
+              ),
+            ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   '${day.day}',
@@ -64,18 +79,26 @@ class CalendarGrid extends StatelessWidget {
                     color: isCurrentMonth
                         ? AppColors.textPrimary
                         : AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 if (status != null)
                   StatusIndicator(key: Key('dot-$keyBase'), status: status)
                 else
-                  const SizedBox(height: AppSpacing.sm, width: AppSpacing.sm),
+                  const SizedBox(height: 6, width: 6),
               ],
             ),
           ),
         );
       },
     );
+  }
+
+  bool _isToday(DateTime day) {
+    final today = DateTime.now();
+    return day.year == today.year &&
+        day.month == today.month &&
+        day.day == today.day;
   }
 }
